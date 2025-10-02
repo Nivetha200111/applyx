@@ -26,32 +26,70 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 async function handleParseResume(data, sendResponse) {
   try {
     console.log('Parsing resume:', data.filename);
+    console.log('File type:', data.type);
+    console.log('Content length:', data.content.length);
     
-    // Convert base64 to text
-    const text = await base64ToText(data.content);
-    
-    // Send to API
-    const response = await fetch(`${API_BASE_URL}/parse-text`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        text: text,
-        filename: data.filename
-      })
-    });
+    // For PDF files, we need to handle them differently
+    if (data.type === 'application/pdf' || data.filename.toLowerCase().endsWith('.pdf')) {
+      // For PDFs, we'll send the base64 content directly to a PDF parsing endpoint
+      const response = await fetch(`${API_BASE_URL}/parse-pdf`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          filename: data.filename,
+          content: data.content,
+          type: data.type
+        })
+      });
 
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
-    }
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
+      }
 
-    const result = await response.json();
-    
-    if (result.success) {
-      sendResponse({ success: true, profile: result.profile });
+      const result = await response.json();
+      console.log('API Response:', result);
+      
+      if (result.success) {
+        sendResponse({ success: true, profile: result.profile });
+      } else {
+        sendResponse({ success: false, error: result.error || 'Unknown parsing error' });
+      }
     } else {
-      sendResponse({ success: false, error: result.error });
+      // For text files, convert base64 to text
+      const text = await base64ToText(data.content);
+      console.log('Extracted text length:', text.length);
+      console.log('Text preview:', text.substring(0, 200));
+      
+      // Send to API
+      const response = await fetch(`${API_BASE_URL}/parse-text`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: text,
+          filename: data.filename
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('API Response:', result);
+      
+      if (result.profile) {
+        sendResponse({ success: true, profile: result.profile });
+      } else {
+        sendResponse({ success: false, error: result.error || 'No profile data returned' });
+      }
     }
   } catch (error) {
     console.error('Parse resume error:', error);
