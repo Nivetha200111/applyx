@@ -8,9 +8,7 @@
     "storage",
     "scripting",
     "tabs",
-    "downloads",
-    "webRequest",
-    "webRequestBlocking"
+    "downloads"
   ],
   "host_permissions": [
     "https://*/*",
