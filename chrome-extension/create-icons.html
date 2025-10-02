@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create ApplyX Icons</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .icon-container {
+            display: inline-block;
+            margin: 20px;
+            text-align: center;
+        }
+        .icon {
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .icon-16 { width: 16px; height: 16px; background: #4CAF50; font-size: 8px; }
+        .icon-48 { width: 48px; height: 48px; background: #4CAF50; font-size: 24px; }
+        .icon-128 { width: 128px; height: 128px; background: #4CAF50; font-size: 64px; }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 10px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 ApplyX Icon Generator</h1>
+    <p>This page will help you create the required icon sizes for the Chrome extension.</p>
+    
+    <div class="icon-container">
+        <div class="icon icon-16">🚀</div>
+        <div>16x16</div>
+    </div>
+    
+    <div class="icon-container">
+        <div class="icon icon-48">🚀</div>
+        <div>48x48</div>
+    </div>
+    
+    <div class="icon-container">
+        <div class="icon icon-128">🚀</div>
+        <div>128x128</div>
+    </div>
+    
+    <h2>Generated Icons:</h2>
+    <canvas id="icon16" width="16" height="16"></canvas>
+    <canvas id="icon48" width="48" height="48"></canvas>
+    <canvas id="icon128" width="128" height="128"></canvas>
+    
+    <br><br>
+    <button onclick="generateIcons()">Generate Icons</button>
+    <button onclick="downloadIcons()">Download Icons</button>
+    
+    <script>
+        function generateIcons() {
+            // Generate 16x16 icon
+            const canvas16 = document.getElementById('icon16');
+            const ctx16 = canvas16.getContext('2d');
+            ctx16.fillStyle = '#4CAF50';
+            ctx16.fillRect(0, 0, 16, 16);
+            ctx16.fillStyle = 'white';
+            ctx16.font = '8px Arial';
+            ctx16.textAlign = 'center';
+            ctx16.fillText('🚀', 8, 10);
+            
+            // Generate 48x48 icon
+            const canvas48 = document.getElementById('icon48');
+            const ctx48 = canvas48.getContext('2d');
+            ctx48.fillStyle = '#4CAF50';
+            ctx48.fillRect(0, 0, 48, 48);
+            ctx48.fillStyle = 'white';
+            ctx48.font = '24px Arial';
+            ctx48.textAlign = 'center';
+            ctx48.fillText('🚀', 24, 30);
+            
+            // Generate 128x128 icon
+            const canvas128 = document.getElementById('icon128');
+            const ctx128 = canvas128.getContext('2d');
+            ctx128.fillStyle = '#4CAF50';
+            ctx128.fillRect(0, 0, 128, 128);
+            ctx128.fillStyle = 'white';
+            ctx128.font = '64px Arial';
+            ctx128.textAlign = 'center';
+            ctx128.fillText('🚀', 64, 80);
+        }
+        
+        function downloadIcons() {
+            // Download 16x16
+            const canvas16 = document.getElementById('icon16');
+            const link16 = document.createElement('a');
+            link16.download = 'icon16.png';
+            link16.href = canvas16.toDataURL();
+            link16.click();
+            
+            // Download 48x48
+            const canvas48 = document.getElementById('icon48');
+            const link48 = document.createElement('a');
+            link48.download = 'icon48.png';
+            link48.href = canvas48.toDataURL();
+            link48.click();
+            
+            // Download 128x128
+            const canvas128 = document.getElementById('icon128');
+            const link128 = document.createElement('a');
+            link128.download = 'icon128.png';
+            link128.href = canvas128.toDataURL();
+            link128.click();
+        }
+        
+        // Auto-generate on page load
+        window.onload = generateIcons;
+    </script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Convert ApplyX Icons</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .icon-preview {
+            display: inline-block;
+            margin: 20px;
+            text-align: center;
+            border: 2px solid #ddd;
+            padding: 10px;
+            border-radius: 8px;
+            background: white;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 10px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .instructions {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 ApplyX Icon Converter</h1>
+    
+    <div class="instructions">
+        <h3>📋 Instructions:</h3>
+        <ol>
+            <li>Click "Convert All Icons" below</li>
+            <li>Download each PNG file when prompted</li>
+            <li>Save them as icon48.png and icon128.png in the chrome-extension/icons/ folder</li>
+            <li>Your Chrome extension will be ready!</li>
+        </ol>
+    </div>
+    
+    <div class="icon-preview">
+        <h3>48x48 Icon</h3>
+        <canvas id="icon48" width="48" height="48"></canvas>
+        <br>
+        <button onclick="downloadIcon48()">Download icon48.png</button>
+    </div>
+    
+    <div class="icon-preview">
+        <h3>128x128 Icon</h3>
+        <canvas id="icon128" width="128" height="128"></canvas>
+        <br>
+        <button onclick="downloadIcon128()">Download icon128.png</button>
+    </div>
+    
+    <br><br>
+    <button onclick="convertAllIcons()" style="background: #2196F3; font-size: 16px; padding: 15px 30px;">
+        🎨 Convert All Icons
+    </button>
+    
+    <script>
+        function convertAllIcons() {
+            // Convert 48x48
+            const canvas48 = document.getElementById('icon48');
+            const ctx48 = canvas48.getContext('2d');
+            
+            // Create gradient background
+            const gradient48 = ctx48.createLinearGradient(0, 0, 48, 48);
+            gradient48.addColorStop(0, '#4CAF50');
+            gradient48.addColorStop(1, '#45a049');
+            ctx48.fillStyle = gradient48;
+            ctx48.fillRect(0, 0, 48, 48);
+            
+            // Add rocket emoji
+            ctx48.fillStyle = 'white';
+            ctx48.font = '24px Arial';
+            ctx48.textAlign = 'center';
+            ctx48.textBaseline = 'middle';
+            ctx48.fillText('🚀', 24, 24);
+            
+            // Convert 128x128
+            const canvas128 = document.getElementById('icon128');
+            const ctx128 = canvas128.getContext('2d');
+            
+            // Create gradient background
+            const gradient128 = ctx128.createLinearGradient(0, 0, 128, 128);
+            gradient128.addColorStop(0, '#4CAF50');
+            gradient128.addColorStop(1, '#45a049');
+            ctx128.fillStyle = gradient128;
+            ctx128.fillRect(0, 0, 128, 128);
+            
+            // Add rocket emoji
+            ctx128.fillStyle = 'white';
+            ctx128.font = '64px Arial';
+            ctx128.textAlign = 'center';
+            ctx128.textBaseline = 'middle';
+            ctx128.fillText('🚀', 64, 64);
+            
+            console.log('✅ Icons converted successfully!');
+        }
+        
+        function downloadIcon48() {
+            const canvas48 = document.getElementById('icon48');
+            const link = document.createElement('a');
+            link.download = 'icon48.png';
+            link.href = canvas48.toDataURL('image/png');
+            link.click();
+        }
+        
+        function downloadIcon128() {
+            const canvas128 = document.getElementById('icon128');
+            const link = document.createElement('a');
+            link.download = 'icon128.png';
+            link.href = canvas128.toDataURL('image/png');
+            link.click();
+        }
+        
+        // Auto-convert on page load
+        window.onload = convertAllIcons;
+    </script>
+</body>
+</html>
