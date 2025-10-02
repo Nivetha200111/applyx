@@ -2,6 +2,7 @@
 
 let currentProfile = null;
 let currentJobs = [];
+let selectedFile = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Load saved profile
@@ -37,30 +38,35 @@ function handleFileSelect(event) {
   const fileInput = document.getElementById('fileInput');
   
   if (file) {
+    selectedFile = file; // Store the file globally
     parseBtn.disabled = false;
     showStatus('FILE SELECTED: ' + file.name, 'info');
-    fileInput.innerHTML = `
+    
+    // Update the display without removing the input
+    const displayDiv = fileInput.querySelector('.file-display') || fileInput.appendChild(document.createElement('div'));
+    displayDiv.className = 'file-display';
+    displayDiv.innerHTML = `
       <div class="terminal-prompt">[SELECTED]</div>
       <div>${file.name}</div>
       <div style="font-size: 10px; color: #00aa00;">SIZE: ${(file.size / 1024).toFixed(1)} KB</div>
     `;
   } else {
+    selectedFile = null;
     parseBtn.disabled = true;
-    fileInput.innerHTML = `
-      <input type="file" id="resumeFile" accept=".pdf,.txt,.doc,.docx">
-      <div class="terminal-prompt">[UPLOAD]</div>
-      <div>SELECT RESUME FILE (PDF/TXT/DOC)</div>
-    `;
-    // Re-attach event listener
-    document.getElementById('resumeFile').addEventListener('change', handleFileSelect);
+    
+    // Reset the display
+    const displayDiv = fileInput.querySelector('.file-display');
+    if (displayDiv) {
+      displayDiv.innerHTML = `
+        <div class="terminal-prompt">[UPLOAD]</div>
+        <div>SELECT RESUME FILE (PDF/TXT/DOC)</div>
+      `;
+    }
   }
 }
 
 async function parseResume() {
-  const fileInput = document.getElementById('resumeFile');
-  const file = fileInput.files[0];
-  
-  if (!file) {
+  if (!selectedFile) {
     showStatus('ERROR: NO FILE SELECTED', 'error');
     return;
   }
@@ -70,15 +76,15 @@ async function parseResume() {
 
   try {
     // Convert file to base64 for transmission
-    const base64 = await fileToBase64(file);
+    const base64 = await fileToBase64(selectedFile);
     
     // Send to background script for processing
     const response = await chrome.runtime.sendMessage({
       action: 'parseResume',
       data: {
-        filename: file.name,
+        filename: selectedFile.name,
         content: base64,
-        type: file.type
+        type: selectedFile.type
       }
     });
 
