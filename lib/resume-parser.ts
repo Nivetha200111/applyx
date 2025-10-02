@@ -28,22 +28,42 @@ export class ResumeParser {
   }
 
   async parseResume(file: Buffer): Promise<UserProfile> {
-    // For now, let's use a simple text extraction approach
-    // This will work for both PDF and text files
     let text: string;
     
     try {
-      // Try to extract text from the buffer
-      text = file.toString('utf-8');
+      // Check if it's a PDF by looking at the header
+      const isPDF = file.toString('ascii', 0, 4) === '%PDF';
       
-      // If it's mostly binary data, try to extract readable text
-      if (text.length < 100 || text.includes('\0')) {
-        // This is likely a PDF, so we'll use a simple approach
-        // Extract any readable text from the PDF
-        const readableText = text.replace(/[^\x20-\x7E\n\r]/g, ' ').replace(/\s+/g, ' ').trim();
-        text = readableText || 'PDF content - please provide text version for better parsing';
+      if (isPDF) {
+        // For PDFs, extract readable text
+        const pdfText = file.toString('utf-8');
+        // Extract text between PDF objects
+        const textMatches = pdfText.match(/BT\s+([^E]+)ET/g);
+        if (textMatches) {
+          text = textMatches
+            .map(match => match.replace(/BT\s+/, '').replace(/ET/, ''))
+            .join(' ')
+            .replace(/[^\x20-\x7E\n\r]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+        } else {
+          // Fallback: extract any readable text
+          text = pdfText
+            .replace(/[^\x20-\x7E\n\r]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .substring(0, 5000); // Limit size
+        }
+        
+        if (!text || text.length < 50) {
+          text = 'PDF content extracted but may be incomplete. Please provide a text version for better parsing.';
+        }
+      } else {
+        // For text files, use as-is
+        text = file.toString('utf-8');
       }
-    } catch {
+    } catch (error) {
+      console.error('File parsing error:', error);
       text = 'Unable to parse file content';
     }
 
