@@ -32,7 +32,7 @@ async function handleParseResume(data, sendResponse) {
     // For PDF files, we need to handle them differently
     if (data.type === 'application/pdf' || data.filename.toLowerCase().endsWith('.pdf')) {
       // For PDFs, we'll send the base64 content directly to a PDF parsing endpoint
-      const response = await fetch(`${API_BASE_URL}/simple-upload`, {
+      const response = await fetch(`${API_BASE_URL}/chrome-upload`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
