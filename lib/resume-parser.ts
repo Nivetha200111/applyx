@@ -47,7 +47,7 @@ export class ResumeParser {
       text = 'Unable to parse file content';
     }
 
-    const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
+    const model = process.env.OPENAI_MODEL || "grok-3";
 
     const response = await this.openai.chat.completions.create({
       model,
