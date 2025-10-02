@@ -75,8 +75,13 @@ async function parseResume() {
   setLoading(true);
 
   try {
+    console.log('Starting resume parse for:', selectedFile.name);
+    console.log('File type:', selectedFile.type);
+    console.log('File size:', selectedFile.size);
+    
     // Convert file to base64 for transmission
     const base64 = await fileToBase64(selectedFile);
+    console.log('Base64 length:', base64.length);
     
     // Send to background script for processing
     const response = await chrome.runtime.sendMessage({
@@ -88,15 +93,20 @@ async function parseResume() {
       }
     });
 
+    console.log('Background script response:', response);
+
     if (response.success) {
       currentProfile = response.profile;
+      console.log('Parsed profile:', currentProfile);
       await chrome.storage.local.set({ profile: currentProfile });
       showProfilePreview(response.profile);
       showStatus('SUCCESS: RESUME PARSED', 'success');
     } else {
+      console.error('Parse error:', response.error);
       showStatus('ERROR: ' + response.error, 'error');
     }
   } catch (error) {
+    console.error('Parse resume error:', error);
     showStatus('ERROR: ' + error.message, 'error');
   } finally {
     setLoading(false);
