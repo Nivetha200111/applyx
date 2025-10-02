@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     // In a real system, push search task into queue or trigger scraper
     // Here we simply acknowledge receipt
     return NextResponse.json({ ok: true, profile });
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Failed to start job search" }, { status: 500 });
   }
 }

@@ -43,7 +43,7 @@ export class ResumeParser {
         const readableText = text.replace(/[^\x20-\x7E\n\r]/g, ' ').replace(/\s+/g, ' ').trim();
         text = readableText || 'PDF content - please provide text version for better parsing';
       }
-    } catch (error) {
+    } catch {
       text = 'Unable to parse file content';
     }
 
@@ -66,13 +66,13 @@ export class ResumeParser {
     // Try strict JSON parse first
     try {
       return JSON.parse(raw);
-    } catch (_) {
+    } catch {
       // Fallback: extract first JSON object from the text
       const match = raw.match(/\{[\s\S]*\}/);
       if (match) {
         try {
           return JSON.parse(match[0]);
-        } catch (_) {}
+        } catch {}
       }
       // Final fallback minimal shape
       return { skills: [], experience: [], education: [], desired_roles: [] };

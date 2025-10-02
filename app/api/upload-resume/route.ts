@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
     await supabaseAdmin.from("profiles").upsert({
       user_id: userId,
-      resume_data: profile as any,
+      resume_data: profile as Record<string, unknown>,
       skills: profile.skills ?? [],
       experience_years: profile.experience_years ?? null,
     });
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     // In free setup, we do not enqueue. GitHub Actions periodic job will scrape.
 
     return NextResponse.json({ profile });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to process resume" }, { status: 500 });
   }
 }

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const [uploading, setUploading] = useState(false);
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
   const { getRootProps, getInputProps } = useDropzone({
     accept: { "application/pdf": [".pdf"] },
     multiple: false,
