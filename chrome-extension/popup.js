@@ -126,36 +126,33 @@ async function scrapeJobs() {
 
 async function autoApply() {
   if (!currentProfile) {
-    showStatus('Please parse a resume first', 'error');
+    showStatus('ERROR: NO PROFILE DATA', 'error');
     return;
   }
 
-  if (currentJobs.length === 0) {
-    showStatus('Please scrape jobs first', 'error');
-    return;
-  }
-
-  showStatus('Starting auto-application process...', 'info');
+  showStatus('LAUNCHING TERMINAL PROCESS...', 'info');
   setLoading(true);
 
   try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    // Open terminal overlay in new window
+    const terminalWindow = window.open(
+      chrome.runtime.getURL('terminal-overlay.html'),
+      'ApplyXTerminal',
+      'width=1200,height=800,scrollbars=yes,resizable=yes'
+    );
     
-    const response = await chrome.tabs.sendMessage(tab.id, {
-      action: 'autoApply',
-      data: {
+    // Send profile data to terminal
+    setTimeout(() => {
+      terminalWindow.postMessage({
+        action: 'startProcess',
         profile: currentProfile,
         jobs: currentJobs
-      }
-    });
-
-    if (response.success) {
-      showStatus(`Applied to ${response.appliedCount} jobs successfully!`, 'success');
-    } else {
-      showStatus('Error: ' + response.error, 'error');
-    }
+      }, '*');
+    }, 1000);
+    
+    showStatus('TERMINAL PROCESS LAUNCHED', 'success');
   } catch (error) {
-    showStatus('Error: ' + error.message, 'error');
+    showStatus('ERROR: ' + error.message, 'error');
   } finally {
     setLoading(false);
   }

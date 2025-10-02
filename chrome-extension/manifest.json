@@ -30,7 +30,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["injected.js"],
+      "resources": ["injected.js", "terminal-overlay.html", "terminal-overlay.js"],
       "matches": ["https://*/*"]
     }
   ],
