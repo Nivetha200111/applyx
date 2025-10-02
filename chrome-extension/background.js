@@ -31,16 +31,20 @@ async function handleParseResume(data, sendResponse) {
     
     // For PDF files, we need to handle them differently
     if (data.type === 'application/pdf' || data.filename.toLowerCase().endsWith('.pdf')) {
-      // For PDFs, we'll send the base64 content directly to a PDF parsing endpoint
-      const response = await fetch(`${API_BASE_URL}/chrome-upload`, {
+      // Extract text from PDF locally and send to parse-text endpoint
+      const text = await extractTextFromPDF(data.content);
+      console.log('Extracted PDF text length:', text.length);
+      console.log('PDF text preview:', text.substring(0, 200));
+      
+      // Send to working parse-text endpoint
+      const response = await fetch(`${API_BASE_URL}/parse-text`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          filename: data.filename,
-          content: data.content,
-          type: data.type
+          text: text,
+          filename: data.filename
         })
       });
 
@@ -53,10 +57,10 @@ async function handleParseResume(data, sendResponse) {
       const result = await response.json();
       console.log('API Response:', result);
       
-      if (result.success) {
+      if (result.profile) {
         sendResponse({ success: true, profile: result.profile });
       } else {
-        sendResponse({ success: false, error: result.error || 'Unknown parsing error' });
+        sendResponse({ success: false, error: result.error || 'No profile data returned' });
       }
     } else {
       // For text files, convert base64 to text
@@ -163,6 +167,44 @@ function base64ToText(base64) {
     return binaryString;
   } catch (error) {
     throw new Error('Failed to decode file: ' + error.message);
+  }
+}
+
+// Helper function to extract text from PDF
+async function extractTextFromPDF(base64) {
+  try {
+    // Remove data URL prefix if present
+    const base64Data = base64.includes(',') ? base64.split(',')[1] : base64;
+    const binaryString = atob(base64Data);
+    
+    // Convert to text and extract readable content
+    const pdfText = binaryString;
+    
+    // Extract text between PDF objects (BT...ET)
+    const textMatches = pdfText.match(/BT\s+([^E]+)ET/g);
+    if (textMatches) {
+      const extractedText = textMatches
+        .map(match => match.replace(/BT\s+/, '').replace(/ET/, ''))
+        .join(' ')
+        .replace(/[^\x20-\x7E\n\r]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      
+      if (extractedText.length > 50) {
+        return extractedText;
+      }
+    }
+    
+    // Fallback: extract any readable text
+    const fallbackText = pdfText
+      .replace(/[^\x20-\x7E\n\r]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .substring(0, 5000);
+    
+    return fallbackText || 'PDF content extracted but may be incomplete.';
+  } catch (error) {
+    throw new Error('Failed to extract PDF text: ' + error.message);
   }
 }
 
