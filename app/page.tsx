@@ -9,7 +9,10 @@ export default function Home() {
   const [uploading, setUploading] = useState(false);
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
   const { getRootProps, getInputProps } = useDropzone({
-    accept: { "application/pdf": [".pdf"] },
+    accept: { 
+      "application/pdf": [".pdf"],
+      "text/plain": [".txt"]
+    },
     multiple: false,
     onDrop: async (files) => {
       setUploading(true);
@@ -17,9 +20,13 @@ export default function Home() {
         const formData = new FormData();
         formData.append("resume", files[0]);
 
-        const res = await fetch("/api/upload-resume", { method: "POST", body: formData });
+        // Try simple upload first
+        const res = await fetch("/api/simple-upload", { method: "POST", body: formData });
         const json = await res.json();
         setProfile(json.profile);
+      } catch (error) {
+        console.error("Upload error:", error);
+        setProfile({ error: "Upload failed" });
       } finally {
         setUploading(false);
       }
