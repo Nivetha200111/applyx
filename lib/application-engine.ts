@@ -36,7 +36,7 @@ export class ApplicationEngine {
   private async applyLinkedIn(job: Record<string, unknown>) {
     const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
-    await page.goto(job.url);
+    await page.goto(job.url as string);
     await browser.close();
   }
 }
