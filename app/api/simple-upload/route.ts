@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: "system",
-          content: "Extract name, email, skills, and experience from this resume. Return JSON only.",
+          content: "You are a resume parser. Extract information from this resume text and return ONLY valid JSON with these exact keys: name, email, skills (array), experience_years (number). Example: {\"name\": \"John Doe\", \"email\": \"john@email.com\", \"skills\": [\"JavaScript\", \"React\"], \"experience_years\": 5}",
         },
         { role: "user", content: text },
       ],
@@ -52,8 +52,21 @@ export async function POST(request: NextRequest) {
     let profile;
     try {
       profile = JSON.parse(result);
-    } catch {
-      profile = { name: "Unknown", email: "Unknown", skills: [], experience: [] };
+    } catch (parseError) {
+      console.log("JSON parse error:", parseError);
+      console.log("Raw AI response:", result);
+      
+      // Try to extract JSON from the response
+      const jsonMatch = result.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        try {
+          profile = JSON.parse(jsonMatch[0]);
+        } catch {
+          profile = { name: "Unknown", email: "Unknown", skills: [], experience_years: 0 };
+        }
+      } else {
+        profile = { name: "Unknown", email: "Unknown", skills: [], experience_years: 0 };
+      }
     }
     
     console.log("=== SIMPLE UPLOAD SUCCESS ===");
