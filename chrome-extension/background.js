@@ -31,6 +31,25 @@ async function handleParseResume(data, sendResponse) {
     
     // For PDF files, we need to handle them differently
     if (data.type === 'application/pdf' || data.filename.toLowerCase().endsWith('.pdf')) {
+      // First, test the PDF extraction to see what we're getting
+      console.log('Testing PDF extraction...');
+      const testResponse = await fetch(`${API_BASE_URL}/test-pdf`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          filename: data.filename,
+          content: data.content,
+          type: data.type
+        })
+      });
+
+      if (testResponse.ok) {
+        const testResult = await testResponse.json();
+        console.log('PDF Test Results:', testResult.debug);
+      }
+
       // Extract text from PDF locally and send to parse-text endpoint
       const text = await extractTextFromPDF(data.content);
       console.log('Extracted PDF text length:', text.length);
