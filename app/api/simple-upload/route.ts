@@ -12,6 +12,7 @@ export async function POST(request: NextRequest) {
     
     // Check if request is JSON (from Chrome extension) or FormData (from web)
     const contentType = request.headers.get('content-type');
+    console.log("Content-Type:", contentType);
     
     if (contentType?.includes('application/json')) {
       // Handle JSON request from Chrome extension
@@ -92,7 +93,7 @@ export async function POST(request: NextRequest) {
     });
 
     const response = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "grok-2-1212",
+      model: process.env.OPENAI_MODEL || "grok-4",
       messages: [
         {
           role: "system",

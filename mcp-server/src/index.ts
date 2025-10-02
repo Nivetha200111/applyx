@@ -109,7 +109,7 @@ server.setRequestHandler("tools/call", async (request) => {
 async function parseResume(resumeContent: string) {
   try {
     const response = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "grok-2-1212",
+      model: process.env.OPENAI_MODEL || "grok-4",
       messages: [
         {
           role: "system",
@@ -146,7 +146,7 @@ async function parseResume(resumeContent: string) {
 async function matchJobs(profile: any, filters: any) {
   try {
     const response = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "grok-2-1212",
+      model: process.env.OPENAI_MODEL || "grok-4",
       messages: [
         {
           role: "system",
@@ -183,7 +183,7 @@ async function matchJobs(profile: any, filters: any) {
 async function customizeApplication(jobDescription: string, userProfile: any) {
   try {
     const response = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "grok-2-1212",
+      model: process.env.OPENAI_MODEL || "grok-4",
       messages: [
         {
           role: "system",
@@ -244,7 +244,7 @@ async function scrapeJobSites(platform: string, searchParams: any) {
 async function generateCoverLetter(jobDescription: string, userProfile: any, companyInfo: any) {
   try {
     const response = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "grok-2-1212",
+      model: process.env.OPENAI_MODEL || "grok-4",
       messages: [
         {
           role: "system",

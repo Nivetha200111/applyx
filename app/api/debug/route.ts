@@ -24,7 +24,7 @@ export async function GET() {
       });
       
       const response = await client.chat.completions.create({
-        model: process.env.OPENAI_MODEL || "grok-2-1212",
+        model: process.env.OPENAI_MODEL || "grok-4",
         messages: [{ role: "user", content: "Hello" }],
         max_tokens: 5,
       });

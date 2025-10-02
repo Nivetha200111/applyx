@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     });
 
     const response = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "grok-2-1212",
+      model: process.env.OPENAI_MODEL || "grok-4",
       messages: [
         {
           role: "system",

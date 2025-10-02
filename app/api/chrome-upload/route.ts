@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
       baseURL: process.env.OPENAI_BASE_URL,
     });
 
-    const model = process.env.OPENAI_MODEL || "grok-2-1212";
+    const model = process.env.OPENAI_MODEL || "grok-4";
     console.log("Using AI model:", model);
 
     const response = await openai.chat.completions.create({
