@@ -7,185 +7,254 @@
       width: 400px;
       min-height: 500px;
       margin: 0;
-      padding: 20px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-    
-    .header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    
-    .header h1 {
-      margin: 0;
-      font-size: 24px;
-      font-weight: 600;
-    }
-    
-    .header p {
-      margin: 5px 0 0 0;
-      opacity: 0.8;
-      font-size: 14px;
-    }
-    
-    .section {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
-      backdrop-filter: blur(10px);
-    }
-    
-    .section h3 {
-      margin: 0 0 15px 0;
-      font-size: 16px;
-      font-weight: 600;
-    }
-    
-    .file-input {
-      width: 100%;
-      padding: 12px;
-      border: 2px dashed rgba(255, 255, 255, 0.3);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      cursor: pointer;
-      text-align: center;
-      margin-bottom: 15px;
-      transition: all 0.3s ease;
-    }
-    
-    .file-input:hover {
-      border-color: rgba(255, 255, 255, 0.5);
-      background: rgba(255, 255, 255, 0.2);
-    }
-    
-    .file-input input {
-      display: none;
-    }
-    
-    .btn {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      margin-bottom: 10px;
-    }
-    
-    .btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: translateY(-2px);
-    }
-    
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-    
-    .btn.primary {
-      background: #4CAF50;
-    }
-    
-    .btn.primary:hover {
-      background: #45a049;
-    }
-    
-    .status {
-      padding: 10px;
-      border-radius: 6px;
-      margin-bottom: 15px;
-      font-size: 14px;
-      text-align: center;
-    }
-    
-    .status.success {
-      background: rgba(76, 175, 80, 0.3);
-      border: 1px solid rgba(76, 175, 80, 0.5);
-    }
-    
-    .status.error {
-      background: rgba(244, 67, 54, 0.3);
-      border: 1px solid rgba(244, 67, 54, 0.5);
-    }
-    
-    .status.info {
-      background: rgba(33, 150, 243, 0.3);
-      border: 1px solid rgba(33, 150, 243, 0.5);
-    }
-    
-    .profile-preview {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
       padding: 15px;
-      margin-top: 15px;
-      font-size: 13px;
+      font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+      background: #000000;
+      color: #00ff00;
+      font-size: 12px;
+      line-height: 1.4;
     }
     
-    .profile-item {
+    .terminal-header {
+      text-align: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #00ff00;
+      padding-bottom: 10px;
+    }
+    
+    .terminal-header h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: bold;
+      color: #00ff00;
+      text-shadow: 0 0 5px #00ff00;
+    }
+    
+    .terminal-header p {
+      margin: 5px 0 0 0;
+      color: #00aa00;
+      font-size: 11px;
+    }
+    
+    .terminal-section {
+      background: #111111;
+      border: 1px solid #00ff00;
+      border-radius: 0;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
+    }
+    
+    .terminal-section h3 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      font-weight: bold;
+      color: #00ff00;
+      text-transform: uppercase;
+    }
+    
+    .terminal-input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #00ff00;
+      border-radius: 0;
+      background: #000000;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      margin-bottom: 10px;
+      outline: none;
+    }
+    
+    .terminal-input:focus {
+      box-shadow: 0 0 5px #00ff00;
+    }
+    
+    .terminal-btn {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #00ff00;
+      border-radius: 0;
+      background: #000000;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
       margin-bottom: 8px;
+      text-transform: uppercase;
     }
     
-    .profile-item strong {
+    .terminal-btn:hover {
+      background: #00ff00;
+      color: #000000;
+      box-shadow: 0 0 10px #00ff00;
+    }
+    
+    .terminal-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      background: #000000;
+      color: #00ff00;
+    }
+    
+    .terminal-btn.primary {
+      background: #00ff00;
+      color: #000000;
+    }
+    
+    .terminal-btn.primary:hover {
+      background: #00aa00;
+      color: #ffffff;
+    }
+    
+    .terminal-status {
+      padding: 8px;
+      border-radius: 0;
+      margin-bottom: 10px;
+      font-size: 11px;
+      text-align: center;
+      border: 1px solid;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .terminal-status.success {
+      background: #001100;
+      border-color: #00ff00;
+      color: #00ff00;
+    }
+    
+    .terminal-status.error {
+      background: #110000;
+      border-color: #ff0000;
+      color: #ff0000;
+    }
+    
+    .terminal-status.info {
+      background: #000011;
+      border-color: #0088ff;
+      color: #0088ff;
+    }
+    
+    .terminal-preview {
+      background: #000000;
+      border: 1px solid #00ff00;
+      border-radius: 0;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 10px;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .terminal-preview-item {
+      margin-bottom: 5px;
+      color: #00ff00;
+    }
+    
+    .terminal-preview-item strong {
       display: inline-block;
-      width: 80px;
+      width: 60px;
+      color: #00aa00;
     }
     
     .hidden {
       display: none;
     }
     
-    .loading {
+    .terminal-loading {
       display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
+      width: 12px;
+      height: 12px;
+      border: 2px solid #00ff00;
       border-radius: 50%;
-      border-top-color: white;
-      animation: spin 1s ease-in-out infinite;
+      border-top-color: transparent;
+      animation: terminal-spin 1s linear infinite;
     }
     
-    @keyframes spin {
+    @keyframes terminal-spin {
       to { transform: rotate(360deg); }
+    }
+    
+    .terminal-prompt {
+      color: #00aa00;
+      font-weight: bold;
+    }
+    
+    .terminal-cursor {
+      animation: blink 1s infinite;
+    }
+    
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+    
+    .file-input-wrapper {
+      position: relative;
+      margin-bottom: 10px;
+    }
+    
+    .file-input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #00ff00;
+      border-radius: 0;
+      background: #000000;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    .file-input:hover {
+      background: #001100;
+      box-shadow: 0 0 5px #00ff00;
+    }
+    
+    .file-input input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>🚀 ApplyX</h1>
-    <p>Automated Job Application Assistant</p>
+  <div class="terminal-header">
+    <h1>APPLYX.EXE</h1>
+    <p>Automated Job Application System v1.0.0</p>
   </div>
 
-  <div class="section">
-    <h3>📄 Resume Upload</h3>
-    <div class="file-input" id="fileInput">
-      <input type="file" id="resumeFile" accept=".pdf,.txt,.doc,.docx">
-      <div>📁 Click to upload resume (PDF, TXT, DOC)</div>
+  <div class="terminal-section">
+    <h3>RESUME PARSER</h3>
+    <div class="file-input-wrapper">
+      <div class="file-input" id="fileInput">
+        <input type="file" id="resumeFile" accept=".pdf,.txt,.doc,.docx">
+        <div class="terminal-prompt">[UPLOAD]</div>
+        <div>SELECT RESUME FILE (PDF/TXT/DOC)</div>
+      </div>
     </div>
-    <button class="btn primary" id="parseBtn" disabled>🤖 Parse Resume</button>
-    <div id="parseStatus" class="status hidden"></div>
-    <div id="profilePreview" class="profile-preview hidden"></div>
+    <button class="terminal-btn primary" id="parseBtn" disabled>PARSE RESUME</button>
+    <div id="parseStatus" class="terminal-status hidden"></div>
+    <div id="profilePreview" class="terminal-preview hidden"></div>
   </div>
 
-  <div class="section">
-    <h3>🎯 Job Application</h3>
-    <button class="btn" id="scrapeJobsBtn">🔍 Find Jobs on This Page</button>
-    <button class="btn" id="applyBtn" disabled>📝 Auto-Apply to Jobs</button>
-    <div id="jobStatus" class="status hidden"></div>
+  <div class="terminal-section">
+    <h3>JOB APPLICATION</h3>
+    <button class="terminal-btn" id="scrapeJobsBtn">SCAN JOBS</button>
+    <button class="terminal-btn" id="applyBtn" disabled>AUTO-APPLY</button>
+    <div id="jobStatus" class="terminal-status hidden"></div>
   </div>
 
-  <div class="section">
-    <h3>⚙️ Settings</h3>
-    <button class="btn" id="settingsBtn">⚙️ Configure Settings</button>
-    <button class="btn" id="testConnectionBtn">🔗 Test API Connection</button>
+  <div class="terminal-section">
+    <h3>SYSTEM</h3>
+    <button class="terminal-btn" id="settingsBtn">CONFIG</button>
+    <button class="terminal-btn" id="testConnectionBtn">TEST API</button>
   </div>
 
   <script src="popup.js"></script>

@@ -34,12 +34,25 @@ function setupEventListeners() {
 function handleFileSelect(event) {
   const file = event.target.files[0];
   const parseBtn = document.getElementById('parseBtn');
+  const fileInput = document.getElementById('fileInput');
   
   if (file) {
     parseBtn.disabled = false;
-    showStatus('File selected: ' + file.name, 'info');
+    showStatus('FILE SELECTED: ' + file.name, 'info');
+    fileInput.innerHTML = `
+      <div class="terminal-prompt">[SELECTED]</div>
+      <div>${file.name}</div>
+      <div style="font-size: 10px; color: #00aa00;">SIZE: ${(file.size / 1024).toFixed(1)} KB</div>
+    `;
   } else {
     parseBtn.disabled = true;
+    fileInput.innerHTML = `
+      <input type="file" id="resumeFile" accept=".pdf,.txt,.doc,.docx">
+      <div class="terminal-prompt">[UPLOAD]</div>
+      <div>SELECT RESUME FILE (PDF/TXT/DOC)</div>
+    `;
+    // Re-attach event listener
+    document.getElementById('resumeFile').addEventListener('change', handleFileSelect);
   }
 }
 
@@ -48,11 +61,11 @@ async function parseResume() {
   const file = fileInput.files[0];
   
   if (!file) {
-    showStatus('Please select a file first', 'error');
+    showStatus('ERROR: NO FILE SELECTED', 'error');
     return;
   }
 
-  showStatus('Parsing resume...', 'info');
+  showStatus('PARSING RESUME...', 'info');
   setLoading(true);
 
   try {
@@ -73,12 +86,12 @@ async function parseResume() {
       currentProfile = response.profile;
       await chrome.storage.local.set({ profile: currentProfile });
       showProfilePreview(response.profile);
-      showStatus('Resume parsed successfully!', 'success');
+      showStatus('SUCCESS: RESUME PARSED', 'success');
     } else {
-      showStatus('Error: ' + response.error, 'error');
+      showStatus('ERROR: ' + response.error, 'error');
     }
   } catch (error) {
-    showStatus('Error: ' + error.message, 'error');
+    showStatus('ERROR: ' + error.message, 'error');
   } finally {
     setLoading(false);
   }
@@ -176,10 +189,11 @@ async function testConnection() {
 function showProfilePreview(profile) {
   const preview = document.getElementById('profilePreview');
   preview.innerHTML = `
-    <div class="profile-item"><strong>Name:</strong> ${profile.name || 'Not found'}</div>
-    <div class="profile-item"><strong>Email:</strong> ${profile.email || 'Not found'}</div>
-    <div class="profile-item"><strong>Skills:</strong> ${Array.isArray(profile.skills) ? profile.skills.join(', ') : 'Not found'}</div>
-    <div class="profile-item"><strong>Experience:</strong> ${profile.experience_years || 0} years</div>
+    <div class="terminal-prompt">[PROFILE DATA]</div>
+    <div class="terminal-preview-item"><strong>NAME:</strong> ${profile.name || 'NOT_FOUND'}</div>
+    <div class="terminal-preview-item"><strong>EMAIL:</strong> ${profile.email || 'NOT_FOUND'}</div>
+    <div class="terminal-preview-item"><strong>SKILLS:</strong> ${Array.isArray(profile.skills) ? profile.skills.join(', ') : 'NOT_FOUND'}</div>
+    <div class="terminal-preview-item"><strong>EXP:</strong> ${profile.experience_years || 0} YEARS</div>
   `;
   preview.classList.remove('hidden');
 }
@@ -187,7 +201,7 @@ function showProfilePreview(profile) {
 function showStatus(message, type) {
   const status = document.getElementById('parseStatus');
   status.textContent = message;
-  status.className = `status ${type}`;
+  status.className = `terminal-status ${type}`;
   status.classList.remove('hidden');
   
   // Auto-hide after 5 seconds
@@ -197,17 +211,17 @@ function showStatus(message, type) {
 }
 
 function setLoading(loading) {
-  const buttons = document.querySelectorAll('.btn');
+  const buttons = document.querySelectorAll('.terminal-btn');
   buttons.forEach(btn => {
     btn.disabled = loading;
     if (loading) {
-      btn.innerHTML = '<span class="loading"></span> Processing...';
+      btn.innerHTML = '<span class="terminal-loading"></span> PROCESSING...';
     } else {
       // Reset button text
-      if (btn.id === 'parseBtn') btn.innerHTML = '🤖 Parse Resume';
-      else if (btn.id === 'scrapeJobsBtn') btn.innerHTML = '🔍 Find Jobs on This Page';
-      else if (btn.id === 'applyBtn') btn.innerHTML = '📝 Auto-Apply to Jobs';
-      else if (btn.id === 'testConnectionBtn') btn.innerHTML = '🔗 Test API Connection';
+      if (btn.id === 'parseBtn') btn.innerHTML = 'PARSE RESUME';
+      else if (btn.id === 'scrapeJobsBtn') btn.innerHTML = 'SCAN JOBS';
+      else if (btn.id === 'applyBtn') btn.innerHTML = 'AUTO-APPLY';
+      else if (btn.id === 'testConnectionBtn') btn.innerHTML = 'TEST API';
     }
   });
 }
