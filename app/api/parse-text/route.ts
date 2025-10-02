@@ -27,11 +27,11 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: "system",
-          content: "You are a resume parser. Extract information from this resume text and return ONLY valid JSON with these exact keys: name, email, skills (array), experience_years (number). Example: {\"name\": \"John Doe\", \"email\": \"john@email.com\", \"skills\": [\"JavaScript\", \"React\"], \"experience_years\": 5}",
+          content: "You are a resume parser. Extract REAL information from this resume text. Do NOT use placeholder data like 'Unknown' or 'John Doe'. If you cannot find specific information, use empty strings or empty arrays. Return ONLY valid JSON with these exact keys: name, email, phone, location, skills (array), experience (array of {company, role, duration, description}), education (array), desired_roles (array), experience_years (number), salary_preference (object with min/max). Example: {\"name\": \"Nivetha Sivakumar\", \"email\": \"nivetha@email.com\", \"phone\": \"+1234567890\", \"location\": \"City, State\", \"skills\": [\"JavaScript\", \"React\", \"Node.js\"], \"experience\": [{\"company\": \"Tech Corp\", \"role\": \"Software Engineer\", \"duration\": \"2 years\", \"description\": \"Developed web applications\"}], \"education\": [\"Bachelor's in Computer Science\"], \"desired_roles\": [\"Software Engineer\", \"Full Stack Developer\"], \"experience_years\": 3, \"salary_preference\": {\"min\": 80000, \"max\": 120000}}",
         },
         { role: "user", content: text },
       ],
-      max_tokens: 500,
+      max_tokens: 1000,
     });
     
     const result = response.choices[0]?.message?.content || "{}";

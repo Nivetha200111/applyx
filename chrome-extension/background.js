@@ -179,31 +179,86 @@ async function extractTextFromPDF(base64) {
     
     // Convert to text and extract readable content
     const pdfText = binaryString;
+    console.log('PDF binary string length:', pdfText.length);
     
-    // Extract text between PDF objects (BT...ET)
+    // Method 1: Extract text between PDF objects (BT...ET)
+    let extractedText = '';
     const textMatches = pdfText.match(/BT\s+([^E]+)ET/g);
-    if (textMatches) {
-      const extractedText = textMatches
+    if (textMatches && textMatches.length > 0) {
+      extractedText = textMatches
         .map(match => match.replace(/BT\s+/, '').replace(/ET/, ''))
         .join(' ')
         .replace(/[^\x20-\x7E\n\r]/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
-      
-      if (extractedText.length > 50) {
-        return extractedText;
+      console.log('Method 1 - BT/ET extraction:', extractedText.length, 'chars');
+    }
+    
+    // Method 2: Extract text from stream objects
+    if (extractedText.length < 100) {
+      const streamMatches = pdfText.match(/stream\s+([^e]+)endstream/g);
+      if (streamMatches && streamMatches.length > 0) {
+        const streamText = streamMatches
+          .map(match => match.replace(/stream\s+/, '').replace(/endstream/, ''))
+          .join(' ')
+          .replace(/[^\x20-\x7E\n\r]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+        console.log('Method 2 - Stream extraction:', streamText.length, 'chars');
+        if (streamText.length > extractedText.length) {
+          extractedText = streamText;
+        }
       }
     }
     
-    // Fallback: extract any readable text
-    const fallbackText = pdfText
-      .replace(/[^\x20-\x7E\n\r]/g, ' ')
+    // Method 3: Extract any readable ASCII text
+    if (extractedText.length < 100) {
+      const asciiText = pdfText
+        .replace(/[^\x20-\x7E\n\r]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      console.log('Method 3 - ASCII extraction:', asciiText.length, 'chars');
+      if (asciiText.length > extractedText.length) {
+        extractedText = asciiText;
+      }
+    }
+    
+    // Method 4: Look for common resume keywords and extract surrounding text
+    if (extractedText.length < 100) {
+      const keywords = ['resume', 'cv', 'experience', 'education', 'skills', 'contact', 'email', 'phone'];
+      let keywordText = '';
+      
+      for (const keyword of keywords) {
+        const keywordIndex = pdfText.toLowerCase().indexOf(keyword);
+        if (keywordIndex !== -1) {
+          const start = Math.max(0, keywordIndex - 200);
+          const end = Math.min(pdfText.length, keywordIndex + 200);
+          const context = pdfText.substring(start, end)
+            .replace(/[^\x20-\x7E\n\r]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+          keywordText += context + ' ';
+        }
+      }
+      
+      if (keywordText.length > extractedText.length) {
+        extractedText = keywordText;
+        console.log('Method 4 - Keyword extraction:', extractedText.length, 'chars');
+      }
+    }
+    
+    // Clean up the final text
+    extractedText = extractedText
       .replace(/\s+/g, ' ')
       .trim()
-      .substring(0, 5000);
+      .substring(0, 10000); // Limit to 10k chars
     
-    return fallbackText || 'PDF content extracted but may be incomplete.';
+    console.log('Final extracted text length:', extractedText.length);
+    console.log('Final text preview:', extractedText.substring(0, 300));
+    
+    return extractedText || 'PDF content extracted but may be incomplete. Please try a text version.';
   } catch (error) {
+    console.error('PDF extraction error:', error);
     throw new Error('Failed to extract PDF text: ' + error.message);
   }
 }
