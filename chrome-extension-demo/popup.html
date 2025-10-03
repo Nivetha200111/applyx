@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ApplyX Terminal</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            width: 400px;
+            height: 500px;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            background: #0a0a0a;
+            color: #00ff41;
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        .terminal {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            border: 1px solid #00ff41;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+            position: relative;
+        }
+        
+        .terminal-header {
+            background: #1a1a1a;
+            border-bottom: 1px solid #00ff41;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .terminal-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .terminal-icon {
+            width: 16px;
+            height: 16px;
+            background: #00ff41;
+            border-radius: 2px;
+            position: relative;
+        }
+        
+        .terminal-icon::after {
+            content: '>';
+            position: absolute;
+            top: -2px;
+            left: 2px;
+            color: #0a0a0a;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .terminal-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #00ff41;
+        }
+        
+        .terminal-version {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .terminal-body {
+            padding: 12px;
+            height: calc(100% - 40px);
+            overflow-y: auto;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        .terminal-line {
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .terminal-prompt {
+            color: #00ff41;
+            font-weight: 600;
+        }
+        
+        .terminal-command {
+            color: #ffffff;
+        }
+        
+        .terminal-output {
+            color: #00ff41;
+            margin-left: 20px;
+        }
+        
+        .terminal-success {
+            color: #00ff41;
+        }
+        
+        .terminal-info {
+            color: #66ff99;
+        }
+        
+        .terminal-warning {
+            color: #ffaa00;
+        }
+        
+        .terminal-error {
+            color: #ff4444;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 12px 0;
+        }
+        
+        .status-item {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 8px;
+            border-radius: 2px;
+        }
+        
+        .status-label {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #00ff41;
+            margin-top: 2px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 2px;
+            background: #333;
+            border-radius: 1px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff41, #66ff99);
+            transition: width 0.3s ease;
+        }
+        
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background: #00ff41;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .scrollbar::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        
+        .scrollbar::-webkit-scrollbar-thumb {
+            background: #00ff41;
+            border-radius: 3px;
+        }
+        
+        .scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #66ff99;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <div class="terminal-header">
+            <div class="terminal-title">
+                <div class="terminal-icon"></div>
+                <span class="terminal-name">ApplyX Terminal</span>
+            </div>
+            <div class="terminal-version">v1.0.0</div>
+        </div>
+        
+        <div class="terminal-body scrollbar">
+            <div id="terminal-content">
+                <!-- Terminal content will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

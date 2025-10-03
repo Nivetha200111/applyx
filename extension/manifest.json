@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "ApplyX Uploader",
+  "version": "0.1.0",
+  "action": { "default_popup": "popup.html" },
+  "permissions": ["storage"],
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "http://localhost:3001/*"
+  ]
+}
+
+

@@ -19,11 +19,15 @@ export default function Home() {
       try {
         const formData = new FormData();
         formData.append("resume", files[0]);
-
-        // Try simple upload first
-        const res = await fetch("/api/simple-upload", { method: "POST", body: formData });
+        
+        // Try full AI+DB flow first
+        let res = await fetch("/api/upload-resume", { method: "POST", body: formData });
+        if (!res.ok) {
+          // Fallback to simple preview-only parsing
+          res = await fetch("/api/simple-upload", { method: "POST", body: formData });
+        }
         const json = await res.json();
-        setProfile(json.profile);
+        setProfile(json.profile ?? json);
       } catch (error) {
         console.error("Upload error:", error);
         setProfile({ error: "Upload failed" });

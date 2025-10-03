@@ -1,0 +1,5 @@
+   John Doe
+   john@email.com
+   Software Engineer
+   Skills: JavaScript, React, Node.js
+   Experience: 5 years

@@ -85,53 +85,64 @@ export async function POST(request: NextRequest) {
     
     console.log("Text extracted:", text.substring(0, 200) + "...");
     
-    // Simple AI parsing
-    const { OpenAI } = await import("openai");
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-      baseURL: process.env.OPENAI_BASE_URL,
-    });
+    // Heuristic extraction (no AI)
+    const lines = text.split(/\n+/).map((l) => l.trim()).filter(Boolean);
+    const joined = text;
 
-    const response = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "grok-4",
-      messages: [
-        {
-          role: "system",
-          content: "You are a resume parser. Extract comprehensive information from this resume text and return ONLY valid JSON with these exact keys: name, email, phone, location, skills (array), experience (array of {company, role, duration, description}), education (array), desired_roles (array), experience_years (number), salary_preference (object with min/max). Example: {\"name\": \"Nivetha Sivakumar\", \"email\": \"nivetha@email.com\", \"phone\": \"+1234567890\", \"location\": \"City, State\", \"skills\": [\"JavaScript\", \"React\", \"Node.js\"], \"experience\": [{\"company\": \"Tech Corp\", \"role\": \"Software Engineer\", \"duration\": \"2 years\", \"description\": \"Developed web applications\"}], \"education\": [\"Bachelor's in Computer Science\"], \"desired_roles\": [\"Software Engineer\", \"Full Stack Developer\"], \"experience_years\": 3, \"salary_preference\": {\"min\": 80000, \"max\": 120000}}",
-        },
-        { role: "user", content: text },
-      ],
-      max_tokens: 1000,
-    });
-    
-    const result = response.choices[0]?.message?.content || "{}";
-    console.log("AI response:", result);
-    
-    // Parse JSON
-    let profile;
-    try {
-      profile = JSON.parse(result);
-    } catch (parseError) {
-      console.log("JSON parse error:", parseError);
-      console.log("Raw AI response:", result);
-      
-      // Try to extract JSON from the response
-      const jsonMatch = result.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        try {
-          profile = JSON.parse(jsonMatch[0]);
-        } catch {
-          profile = { name: "Unknown", email: "Unknown", skills: [], experience_years: 0 };
+    const emailMatch = joined.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+    const phoneMatch = joined.match(/(?:\+?\d{1,3}[\s-]?)?(?:\(?\d{3}\)?[\s-]?)?\d{3}[\s-]?\d{4}/);
+
+    // Name: look for explicit label or first non-empty line before email
+    let name: string | undefined;
+    const labeledName = joined.match(/\bname\s*[:|-]\s*([^\n\r]+)/i);
+    if (labeledName) {
+      name = labeledName[1].trim();
+    } else if (emailMatch) {
+      const emailLineIdx = lines.findIndex((l) => l.includes(emailMatch[0]));
+      if (emailLineIdx > 0) {
+        // pick a preceding line that looks like a person name (<= 5 words, letters)
+        for (let i = emailLineIdx - 1; i >= Math.max(0, emailLineIdx - 3); i--) {
+          const candidate = lines[i];
+          if (/^[A-Za-z][A-Za-z .'-]{1,60}$/.test(candidate) && candidate.split(/\s+/).length <= 5) {
+            name = candidate;
+            break;
+          }
         }
-      } else {
-        profile = { name: "Unknown", email: "Unknown", skills: [], experience_years: 0 };
       }
     }
-    
+
+    // Experience years
+    let experience_years = 0;
+    const yearsPatterns = [
+      /(experience|exp|overall experience|total experience)\s*[:\-]?\s*(\d{1,2})\+?\s*(years?|yrs?)/i,
+      /\b(\d{1,2})\+?\s*(years?|yrs?)\b/i,
+    ];
+    for (const re of yearsPatterns) {
+      const m = joined.match(re);
+      if (m) {
+        const num = Number(m[2] ?? m[1]);
+        if (!Number.isNaN(num)) {
+          experience_years = num;
+          break;
+        }
+      }
+    }
+
     console.log("=== SIMPLE UPLOAD SUCCESS ===");
-    return NextResponse.json({ 
-      success: true, 
-      profile,
+    return NextResponse.json({
+      success: true,
+      profile: {
+        name,
+        email: emailMatch?.[0],
+        phone: phoneMatch?.[0],
+        location: undefined,
+        skills: [],
+        experience: [],
+        education: [],
+        desired_roles: [],
+        experience_years,
+        preview: text.substring(0, 500),
+      },
       textPreview: text.substring(0, 200),
     });
 
