@@ -1,8 +1,9 @@
 name: Job Scraper and Applicator
 
 on:
-  schedule:
-    - cron: '0 */3 * * *'
+  # DISABLED: Commented out to prevent database connection errors
+  # schedule:
+  #   - cron: '0 */3 * * *'
   workflow_dispatch:
 
 jobs:
