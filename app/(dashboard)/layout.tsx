@@ -1,25 +1,20 @@
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
 
-export default async function DashboardLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth.api.getSession({
-    headers: headers(),
-  });
-
-  if (!session) {
-    redirect("/login?next=/dashboard");
-  }
-
   return (
     <div className="min-h-screen lg:flex">
       <DashboardSidebar />
-      <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">{children}</main>
+      <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
+        <div className="mb-6 rounded-[28px] border border-amber-300/70 bg-amber-50 px-5 py-4 text-sm leading-6 text-amber-950">
+          Public demo mode is active. You can browse the dashboard with sample data, but
+          uploads, saved history, and real accounts are disabled in this build.
+        </div>
+        {children}
+      </main>
     </div>
   );
 }

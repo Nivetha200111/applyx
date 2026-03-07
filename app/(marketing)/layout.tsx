@@ -22,9 +22,8 @@ export default function MarketingLayout({
           </Link>
           <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
             <Link href="/pricing">Pricing</Link>
-            <Link href="/login">Login</Link>
-            <Link className={cn(buttonVariants())} href="/signup">
-              Tailor Your First Resume Free
+            <Link className={cn(buttonVariants())} href="/dashboard">
+              Open Demo Dashboard
             </Link>
           </nav>
         </div>
@@ -35,7 +34,7 @@ export default function MarketingLayout({
           <p>Built for Indian job seekers applying at scale.</p>
           <div className="flex gap-4">
             <Link href="/pricing">Pricing</Link>
-            <Link href="/signup">Get Started</Link>
+            <Link href="/dashboard">Open Demo</Link>
           </div>
         </div>
       </footer>
