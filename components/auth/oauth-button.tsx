@@ -4,7 +4,7 @@ import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/client";
+import { authClient } from "@/lib/auth-client";
 
 interface OAuthButtonProps {
   label: string;
@@ -19,16 +19,9 @@ export function OAuthButton({
 
   async function handleGoogleSignIn() {
     setIsLoading(true);
-
-    const supabase = createClient();
-    const redirectTo = new URL("/auth/callback", window.location.origin);
-    redirectTo.searchParams.set("next", next.startsWith("/") ? next : "/dashboard");
-
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { error } = await authClient.signIn.social({
       provider: "google",
-      options: {
-        redirectTo: redirectTo.toString(),
-      },
+      callbackURL: next.startsWith("/") ? next : "/dashboard",
     });
 
     if (error) {
@@ -48,7 +41,7 @@ export function OAuthButton({
       {isLoading ? (
         <>
           <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-          Redirecting...
+          Redirecting to Google...
         </>
       ) : (
         label

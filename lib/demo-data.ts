@@ -57,7 +57,7 @@ export const demoResume: ParsedResume = {
       "REST APIs",
     ],
     tools: [
-      "Supabase",
+      "PostgreSQL",
       "Vercel",
       "Figma",
       "GitHub Actions",
@@ -72,7 +72,7 @@ export const demoResume: ParsedResume = {
       name: "Resume Rewriter",
       description:
         "Built an internal AI-assisted resume review workflow for recruiting coordinators.",
-      techStack: ["Next.js", "OpenAI", "Supabase"],
+      techStack: ["Next.js", "OpenAI", "PostgreSQL"],
       bullets: [
         "Automated resume extraction and structured scoring for more than 12,000 candidate submissions.",
         "Designed a review interface that highlighted missing keywords and experience gaps for recruiters.",
@@ -116,7 +116,7 @@ export const demoTailorResult: TailorResult = {
         "PostgreSQL",
         "Node.js",
       ],
-      tools: ["Supabase", "Vercel", "Sentry", "Figma", "GitHub Actions"],
+      tools: ["PostgreSQL", "Vercel", "Sentry", "Figma", "GitHub Actions"],
       soft: ["Cross-functional collaboration", "Product thinking", "Mentoring"],
       languages: ["English", "Tamil"],
       certifications: ["Google UX Design Certificate"],
