@@ -1,10 +1,21 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 
-export default function AuthLayout({
+export default async function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="grid min-h-screen lg:grid-cols-[0.9fr_1.1fr]">
       <div className="hidden border-r border-border/70 bg-slate-950 px-10 py-12 text-slate-100 lg:flex lg:flex-col lg:justify-between">
