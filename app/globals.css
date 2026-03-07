@@ -1,26 +1,65 @@
-@import "tailwindcss";
-
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: 52 43% 97%;
+  --foreground: 210 24% 14%;
+  --card: 0 0% 100%;
+  --card-foreground: 210 24% 14%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 210 24% 14%;
+  --primary: 152 63% 45%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 33 84% 92%;
+  --secondary-foreground: 210 24% 14%;
+  --muted: 45 20% 92%;
+  --muted-foreground: 215 14% 40%;
+  --accent: 32 91% 57%;
+  --accent-foreground: 210 24% 14%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 42 20% 84%;
+  --input: 42 20% 84%;
+  --ring: 152 63% 45%;
+  --radius: 1.25rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(circle at top left, rgba(35, 204, 142, 0.14), transparent 28rem),
+      radial-gradient(circle at top right, rgba(251, 146, 60, 0.18), transparent 22rem),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0));
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply tracking-tight text-balance;
+  }
+
+  p {
+    @apply text-pretty;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .surface {
+    @apply border border-border/70 bg-white/80 backdrop-blur-xl;
+  }
+
+  .page-shell {
+    @apply min-h-screen;
+  }
 }

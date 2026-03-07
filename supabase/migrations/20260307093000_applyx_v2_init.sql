@@ -190,4 +190,3 @@ with check (
   bucket_id in ('resume-files', 'generated-resumes')
   and auth.uid()::text = (storage.foldername(name))[1]
 );
-

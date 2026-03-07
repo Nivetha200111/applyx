@@ -1,0 +1,18 @@
+{
+  "extends": ["next/core-web-vitals", "next/typescript"],
+  "ignorePatterns": [
+    ".next/",
+    "node_modules/",
+    "build/",
+    "out/",
+    "chrome-extension/",
+    "chrome-extension-demo/",
+    "extension/",
+    "mcp-server/",
+    "scraper/",
+    "scripts/",
+    "terminal-app.js",
+    "terminal-app-simple.js",
+    "resume-processor.js"
+  ]
+}
