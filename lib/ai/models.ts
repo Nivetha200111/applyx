@@ -40,15 +40,15 @@ const PLAN_MODEL_MAP: Record<
 > = {
   demo: {
     primary: MODELS["grok-3-mini"],
-    fallback: MODELS["gpt-4o-mini"],
+    fallback: MODELS["grok-4-fast"],
   },
   basic: {
-    primary: MODELS["gpt-4o-mini"],
-    fallback: MODELS["grok-3-mini"],
+    primary: MODELS["grok-3-mini"],
+    fallback: MODELS["grok-4-fast"],
   },
   premium: {
     primary: MODELS["grok-4-fast"],
-    fallback: MODELS["gpt-4o"],
+    fallback: MODELS["grok-3-mini"],
   },
 };
 
@@ -65,5 +65,5 @@ export function getFallbackModelLabel(modelTier: ModelTier) {
 }
 
 export function getEmergencyFallbackModel() {
-  return MODELS["grok-4-fast"];
+  return MODELS["gpt-4o"];
 }

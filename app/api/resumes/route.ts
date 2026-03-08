@@ -10,6 +10,22 @@ import { getPlanById } from "@/lib/plans";
 export const runtime = "nodejs";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_RESUME_TEXT_CHARS = 24000;
+
+function prepareResumeTextForAi(rawText: string) {
+  const normalized = rawText
+    .replace(/\u0000/g, " ")
+    .replace(/\r/g, "")
+    .replace(/[^\S\n]+/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+
+  if (normalized.length <= MAX_RESUME_TEXT_CHARS) {
+    return normalized;
+  }
+
+  return normalized.slice(0, MAX_RESUME_TEXT_CHARS);
+}
 
 async function extractResumeText(file: File) {
   const buffer = Buffer.from(await file.arrayBuffer());
@@ -74,7 +90,16 @@ export async function POST(request: Request) {
     }
 
     const { fileKind, rawText } = await extractResumeText(file);
-    const { parsedResume } = await parseResumeWithAi(rawText);
+    const aiReadyText = prepareResumeTextForAi(rawText);
+
+    if (!aiReadyText) {
+      return NextResponse.json(
+        { error: "We could not extract readable text from that resume." },
+        { status: 400 },
+      );
+    }
+
+    const { parsedResume } = await parseResumeWithAi(aiReadyText);
 
     const result = await dbQuery<{ id: string }>(
       `insert into public.master_resumes (

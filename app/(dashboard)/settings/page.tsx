@@ -47,10 +47,10 @@ export default async function SettingsPage() {
         </CardHeader>
         <CardContent className="text-sm leading-7 text-muted-foreground">
           {user.plan === "premium"
-            ? "Premium routes to Grok 4 Fast first and falls back to GPT-4o."
+            ? "Premium routes to Grok 4 Fast first and falls back to Grok 3 Mini."
             : user.plan === "basic"
-              ? "Basic routes to GPT-4o mini first and falls back to Grok 3 Mini."
-              : "Free gives you 2 live demos using Grok 3 Mini / GPT-4o mini before you need to upgrade."}
+              ? "Basic routes to Grok 3 Mini first and falls back to Grok 4 Fast."
+              : "Free gives you 2 live demos using Grok 3 Mini / Grok 4 Fast before you need to upgrade."}
         </CardContent>
       </Card>
 

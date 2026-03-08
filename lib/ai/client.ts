@@ -20,7 +20,11 @@ interface CompletionOptions {
 }
 
 const openAiClient = process.env.OPENAI_API_KEY
-  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  ? new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+      // Ignore stale OPENAI_BASE_URL env overrides left from prior provider experiments.
+      baseURL: "https://api.openai.com/v1",
+    })
   : null;
 
 const xAiClient = process.env.XAI_API_KEY
@@ -141,20 +145,24 @@ export async function completeJson<T>(
   let rawText = "";
   let usedTarget = primary;
   const failedTargets: string[] = [];
+  const failureDetails: string[] = [];
 
   for (const target of targets) {
     try {
       rawText = await withRetry(() => callProvider(target, options));
       usedTarget = target;
       break;
-    } catch {
+    } catch (error) {
       failedTargets.push(target.label);
+      const message = getErrorMessage(error) || "Unknown error";
+      failureDetails.push(`${target.label}: ${message}`);
+      console.error(`[AI] ${target.label} failed: ${message}`);
     }
   }
 
   if (!rawText) {
     throw new Error(
-      `AI generation failed across ${failedTargets.join(", ")}. Check provider credits and API keys.`,
+      `AI generation failed across ${failedTargets.join(", ")}. ${failureDetails.join(" | ")}`,
     );
   }
 
