@@ -2,13 +2,13 @@ import type { ParsedResume, TailorResult } from "@/lib/types";
 
 export const demoResume: ParsedResume = {
   personal: {
-    name: "Nivetha Raman",
-    email: "nivetha.raman@example.com",
-    phone: "+91 98765 43210",
+    name: "Jane Doe",
+    email: "jane.doe@example.com",
+    phone: "+1 415 555 0132",
     location: "Singapore",
-    linkedin: "linkedin.com/in/nivetha-raman",
-    github: "github.com/nivetharaman",
-    portfolio: "nivetharaman.dev",
+    linkedin: "linkedin.com/in/jane-doe",
+    github: "github.com/janedoe",
+    portfolio: "janedoe.dev",
   },
   summary:
     "Product-minded software engineer with 4+ years of experience shipping user-facing platforms, workflow automation, and measurable growth experiments across B2C and SaaS products.",

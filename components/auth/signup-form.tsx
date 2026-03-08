@@ -71,7 +71,7 @@ export function SignupForm({ next }: SignupFormProps) {
             autoComplete="name"
             id="full-name"
             name="full_name"
-            placeholder="Nivetha Raman"
+            placeholder="Jane Doe"
             required
           />
         </div>
