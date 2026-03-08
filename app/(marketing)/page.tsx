@@ -172,7 +172,7 @@ export default function MarketingHomePage() {
                   <div className="flex items-center gap-3 text-sm text-slate-300">
                     <Zap className="h-4 w-4 text-amber-300" />
                     <span className="text-gradient font-medium">
-                      Claude Sonnet 4 + GPT-4o powered tailoring
+                      Grok 4 Fast + GPT-4o powered tailoring
                     </span>
                   </div>
                   <div className="space-y-3 text-sm leading-6 text-slate-300">

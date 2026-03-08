@@ -1,17 +1,17 @@
 import type { ModelTier } from "@/lib/types";
 
 export interface ModelConfig {
-  provider: "anthropic" | "openai" | "xai";
+  provider: "openai" | "xai";
   modelId: string;
   label: string;
   maxTokens: number;
 }
 
 const MODELS = {
-  "claude-haiku-4-5": {
-    provider: "anthropic" as const,
-    modelId: "claude-haiku-4-5-20251001",
-    label: "Claude Haiku 4.5",
+  "grok-3-mini": {
+    provider: "xai" as const,
+    modelId: "grok-3-mini",
+    label: "Grok 3 Mini",
     maxTokens: 2200,
   },
   "gpt-4o-mini": {
@@ -20,22 +20,16 @@ const MODELS = {
     label: "GPT-4o mini",
     maxTokens: 2200,
   },
-  "claude-sonnet-4": {
-    provider: "anthropic" as const,
-    modelId: "claude-sonnet-4-20250514",
-    label: "Claude Sonnet 4",
+  "grok-4-fast": {
+    provider: "xai" as const,
+    modelId: "grok-4-fast-non-reasoning",
+    label: "Grok 4 Fast",
     maxTokens: 2800,
   },
   "gpt-4o": {
     provider: "openai" as const,
     modelId: "gpt-4o",
     label: "GPT-4o",
-    maxTokens: 2800,
-  },
-  "grok-4-fast": {
-    provider: "xai" as const,
-    modelId: "grok-4-fast-non-reasoning",
-    label: "Grok 4 Fast",
     maxTokens: 2800,
   },
 } as const;
@@ -45,15 +39,15 @@ const PLAN_MODEL_MAP: Record<
   { primary: ModelConfig; fallback: ModelConfig }
 > = {
   demo: {
-    primary: MODELS["claude-haiku-4-5"],
+    primary: MODELS["grok-3-mini"],
     fallback: MODELS["gpt-4o-mini"],
   },
   basic: {
     primary: MODELS["gpt-4o-mini"],
-    fallback: MODELS["claude-haiku-4-5"],
+    fallback: MODELS["grok-3-mini"],
   },
   premium: {
-    primary: MODELS["claude-sonnet-4"],
+    primary: MODELS["grok-4-fast"],
     fallback: MODELS["gpt-4o"],
   },
 };

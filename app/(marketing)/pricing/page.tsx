@@ -26,7 +26,7 @@ const faqs = [
   },
   {
     q: "Which AI models power the auto-fill?",
-    a: "Tracker auto-fills use fast affordable models (Claude Haiku / GPT-4o mini) for instant extraction. Premium tailoring uses Claude Sonnet 4 and GPT-4o for deeper rewrites.",
+    a: "Tracker auto-fills use affordable models (Grok 3 Mini / GPT-4o mini) for instant extraction. Premium tailoring uses Grok 4 Fast and GPT-4o for deeper rewrites.",
   },
   {
     q: "Is GST included in the listed price?",
@@ -86,7 +86,7 @@ export default function PricingPage() {
             <Card className="h-full shimmer">
               <CardHeader>
                 <Badge className="w-fit">Basic tier</Badge>
-                <CardTitle>GPT-4o mini + Claude Haiku 4.5</CardTitle>
+                <CardTitle>GPT-4o mini + Grok 3 Mini</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm leading-7 text-muted-foreground">
                 <div className="flex gap-3">
@@ -109,7 +109,7 @@ export default function PricingPage() {
             <Card className="h-full border-primary/40 shimmer">
               <CardHeader>
                 <Badge variant="success" className="w-fit">Premium tier</Badge>
-                <CardTitle className="text-gradient">Claude Sonnet 4 + GPT-4o</CardTitle>
+                <CardTitle className="text-gradient">Grok 4 Fast + GPT-4o</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm leading-7 text-muted-foreground">
                 <div className="flex gap-3">

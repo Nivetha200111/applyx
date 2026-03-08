@@ -1,4 +1,3 @@
-import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import type { ModelTier } from "@/lib/types";
 import {
@@ -8,7 +7,7 @@ import {
 } from "@/lib/ai/models";
 
 interface ModelTarget {
-  provider: "anthropic" | "openai" | "xai";
+  provider: "openai" | "xai";
   modelId: string;
   label: string;
 }
@@ -19,10 +18,6 @@ interface CompletionOptions {
   temperature?: number;
   modelTier: ModelTier;
 }
-
-const anthropicClient = process.env.ANTHROPIC_API_KEY
-  ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-  : null;
 
 const openAiClient = process.env.OPENAI_API_KEY
   ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
@@ -52,17 +47,6 @@ function getModelTargets(modelTier: ModelTier) {
       candidate.provider === target.provider && candidate.modelId === target.modelId
     )) === index
   ));
-}
-
-function getTextFromAnthropicResponse(
-  response: {
-    content: Array<{ type: string; text?: string }>;
-  },
-) {
-  return response.content
-    .map((block) => (block.type === "text" ? block.text ?? "" : ""))
-    .join("\n")
-    .trim();
 }
 
 function extractJsonCandidate(text: string) {
@@ -129,41 +113,14 @@ async function withRetry<T>(operation: () => Promise<T>) {
 }
 
 async function callProvider(target: ModelTarget, options: CompletionOptions) {
-  if (target.provider === "anthropic") {
-    if (!anthropicClient) {
-      throw new Error("ANTHROPIC_API_KEY is not configured.");
-    }
+  const client = target.provider === "xai" ? xAiClient : openAiClient;
+  const keyName = target.provider === "xai" ? "XAI_API_KEY" : "OPENAI_API_KEY";
 
-    const response = await anthropicClient.messages.create({
-      model: target.modelId,
-      max_tokens: options.maxTokens ?? 2200,
-      temperature: options.temperature ?? 0.2,
-      messages: [{ role: "user", content: options.prompt }],
-    });
-
-    return getTextFromAnthropicResponse(response);
+  if (!client) {
+    throw new Error(`${keyName} is not configured.`);
   }
 
-  if (target.provider === "openai") {
-    if (!openAiClient) {
-      throw new Error("OPENAI_API_KEY is not configured.");
-    }
-
-    const response = await openAiClient.chat.completions.create({
-      model: target.modelId,
-      temperature: options.temperature ?? 0.2,
-      max_tokens: options.maxTokens ?? 2200,
-      messages: [{ role: "user", content: options.prompt }],
-    });
-
-    return response.choices[0]?.message?.content?.trim() ?? "";
-  }
-
-  if (!xAiClient) {
-    throw new Error("XAI_API_KEY is not configured.");
-  }
-
-  const response = await xAiClient.chat.completions.create({
+  const response = await client.chat.completions.create({
     model: target.modelId,
     temperature: options.temperature ?? 0.2,
     max_tokens: options.maxTokens ?? 2200,
