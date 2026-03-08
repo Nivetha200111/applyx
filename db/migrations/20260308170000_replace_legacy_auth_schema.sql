@@ -1,3 +1,15 @@
+drop table if exists public.usage_log cascade;
+drop table if exists public.tailored_resumes cascade;
+drop table if exists public.job_descriptions cascade;
+drop table if exists public.master_resumes cascade;
+drop table if exists public.profiles cascade;
+drop table if exists public.verification cascade;
+drop table if exists public.account cascade;
+drop table if exists public.session cascade;
+drop table if exists public."user" cascade;
+
+drop function if exists public.set_updated_at_camelcase();
+
 create extension if not exists "pgcrypto";
 
 do $$

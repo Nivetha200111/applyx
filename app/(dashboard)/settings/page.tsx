@@ -1,4 +1,4 @@
-import { pricingTiers } from "@/lib/demo-data";
+import { pricingTiers } from "@/lib/plans";
 import { PricingCard } from "@/components/pricing-card";
 import {
   Card,
@@ -14,20 +14,23 @@ export default function SettingsPage() {
       <div className="space-y-3">
         <h1 className="text-3xl font-semibold">Account and billing</h1>
         <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
-          Razorpay subscriptions and plan enforcement land here in Step 8. The shell is
-          already structured around free, basic, and pro billing states.
+          Razorpay subscriptions and plan enforcement still need to be wired, but the
+          plan structure now separates free demos, Basic budget-model usage, and Premium
+          high-model usage.
         </p>
       </div>
       <Card>
         <CardHeader>
           <CardTitle>Current plan</CardTitle>
           <CardDescription>
-            Basic plan • Billing cycle started February 28, 2026 • 12 of 30 tailors used
+            Premium plan • Billing cycle started March 1, 2026 • 18 of 80 premium
+            tailors used
           </CardDescription>
         </CardHeader>
         <CardContent className="text-sm leading-7 text-muted-foreground">
-          Billing settings, invoice history, and Razorpay customer metadata will be wired
-          once the payment flow is implemented.
+          Premium routes to Claude Sonnet 4 first and falls back to GPT-4.1 when needed.
+          Basic stays on the lower-cost GPT-4.1 mini and Claude 3.5 Haiku pool to keep
+          pricing India-friendly.
         </CardContent>
       </Card>
       <div className="grid gap-6 lg:grid-cols-3">

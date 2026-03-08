@@ -69,11 +69,36 @@ export interface TailorResult {
   changes: TailorChange[];
 }
 
+export type PlanTier = "free" | "basic" | "premium";
+
+export type ModelTier = "demo" | "basic" | "premium";
+
+export interface PlanDefinition {
+  id: PlanTier;
+  name: string;
+  priceInr: number;
+  cadence: "one-time" | "month";
+  description: string;
+  includedDemos: number;
+  monthlyTailors: number;
+  masterResumeLimit: number;
+  modelTier: ModelTier;
+  primaryModel: string;
+  fallbackModel?: string;
+  features: string[];
+  ctaLabel: string;
+  href: string;
+  highlighted?: boolean;
+}
+
 export interface PricingTier {
+  id: PlanTier;
   name: string;
   price: string;
   cadence: string;
   description: string;
+  usage: string;
+  modelAccess: string;
   features: string[];
   ctaLabel: string;
   href: string;

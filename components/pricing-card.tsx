@@ -37,6 +37,13 @@ export function PricingCard({ tier }: PricingCardProps) {
         </div>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-3">
+        <div className="rounded-[22px] border border-border/70 bg-background p-4">
+          <div className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+            Included usage
+          </div>
+          <div className="mt-2 text-sm font-medium text-foreground">{tier.usage}</div>
+          <div className="mt-1 text-sm text-muted-foreground">{tier.modelAccess}</div>
+        </div>
         {tier.features.map((feature) => (
           <div key={feature} className="flex items-start gap-3 text-sm text-muted-foreground">
             <Check className="mt-0.5 h-4 w-4 text-primary" />

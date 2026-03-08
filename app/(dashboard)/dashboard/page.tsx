@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, FileText, Sparkles, TimerReset } from "lucide-react";
 import { tailoredResumeCards } from "@/lib/demo-data";
+import { getPlanById } from "@/lib/plans";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -33,6 +34,8 @@ const quickActions = [
   },
 ];
 
+const premiumPlan = getPlanById("premium");
+
 export default function DashboardPage() {
   return (
     <div className="space-y-8">
@@ -40,25 +43,27 @@ export default function DashboardPage() {
         <Card className="overflow-hidden bg-slate-950 text-slate-50">
           <CardHeader>
             <Badge variant="warning" className="w-fit">
-              Basic plan
+              Premium plan preview
             </Badge>
             <CardTitle className="text-3xl">Resume tailoring dashboard</CardTitle>
             <CardDescription className="text-slate-300">
-              Built to move from job description to ATS-ready resume without a manual
-              prompt-engineering loop.
+              Built to move from job description to ATS-ready resume with premium
+              rewriting quality and lower-cost fallback coverage.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-3">
             <div>
-              <div className="text-4xl font-semibold">12</div>
+              <div className="text-4xl font-semibold">18</div>
               <div className="text-sm text-slate-300">Tailors used this month</div>
             </div>
             <div>
-              <div className="text-4xl font-semibold">18</div>
+              <div className="text-4xl font-semibold">
+                {premiumPlan ? premiumPlan.monthlyTailors - 18 : 62}
+              </div>
               <div className="text-sm text-slate-300">Remaining this cycle</div>
             </div>
             <div>
-              <div className="text-4xl font-semibold">84</div>
+              <div className="text-4xl font-semibold">89</div>
               <div className="text-sm text-slate-300">Average current match score</div>
             </div>
           </CardContent>
@@ -72,11 +77,12 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="h-3 rounded-full bg-muted">
-              <div className="h-3 w-2/5 rounded-full bg-primary" />
+              <div className="h-3 w-[22.5%] rounded-full bg-primary" />
             </div>
             <p className="text-sm leading-6 text-muted-foreground">
-              12 of 30 tailored resumes used this month. Upgrade to Pro for unlimited
-              tailoring and bulk processing.
+              18 of {premiumPlan?.monthlyTailors ?? 80} premium tailored resumes used
+              this month. Basic uses the cheaper model pool, while Premium keeps Claude
+              Sonnet 4 first in line.
             </p>
             <Link className={cn(buttonVariants({ variant: "outline" }))} href="/settings">
               Manage billing

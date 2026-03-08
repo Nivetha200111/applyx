@@ -31,8 +31,8 @@ const steps = [
 
 const metrics = [
   { label: "Average turnaround", value: "<15 sec" },
-  { label: "Free plan included", value: "3 tailors" },
-  { label: "Built for India", value: "₹199/mo" },
+  { label: "Free plan included", value: "2 demos" },
+  { label: "Built for India", value: "₹149/mo" },
 ];
 
 export default function MarketingHomePage() {
@@ -180,8 +180,9 @@ export default function MarketingHomePage() {
             <CardTitle>Priced for India</CardTitle>
           </CardHeader>
           <CardContent className="text-sm leading-7 text-muted-foreground">
-            Monthly pricing starts at ₹199 so active applicants can tailor aggressively
-            without enterprise SaaS pricing overhead.
+            Pricing now starts at ₹149 for the budget model tier, while Premium unlocks
+            Claude Sonnet 4 for users who want stronger rewrites without paying
+            dollar-denominated SaaS rates.
           </CardContent>
         </Card>
       </section>

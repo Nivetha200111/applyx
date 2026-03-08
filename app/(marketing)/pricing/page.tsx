@@ -1,4 +1,4 @@
-import { pricingTiers } from "@/lib/demo-data";
+import { pricingTiers } from "@/lib/plans";
 import { PricingCard } from "@/components/pricing-card";
 
 export default function PricingPage() {
@@ -7,7 +7,8 @@ export default function PricingPage() {
       <div className="max-w-2xl space-y-4">
         <h1 className="text-4xl font-semibold sm:text-5xl">Simple pricing for active job searches</h1>
         <p className="text-lg leading-8 text-muted-foreground">
-          Start free, upgrade when you need higher volume, and stay aligned with India-first pricing instead of dollar-denominated subscriptions.
+          Start with 2 free demos, move to a low-cost model tier when volume matters,
+          and upgrade to premium models only when you want stronger rewrite quality.
         </p>
       </div>
       <div className="grid gap-6 lg:grid-cols-3">

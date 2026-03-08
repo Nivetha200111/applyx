@@ -1,4 +1,4 @@
-import type { ParsedResume, PricingTier, TailorResult } from "@/lib/types";
+import type { ParsedResume, TailorResult } from "@/lib/types";
 
 export const demoResume: ParsedResume = {
   personal: {
@@ -145,51 +145,6 @@ export const demoTailorResult: TailorResult = {
     },
   ],
 };
-
-export const pricingTiers: PricingTier[] = [
-  {
-    name: "Free",
-    price: "₹0",
-    cadence: "/month",
-    description: "For first-time users validating fit before they subscribe.",
-    features: [
-      "3 tailored resumes per month",
-      "1 master resume",
-      "Classic template export",
-    ],
-    ctaLabel: "Start Free",
-    href: "/signup",
-  },
-  {
-    name: "Basic",
-    price: "₹199",
-    cadence: "/month",
-    description: "For active job seekers sending consistent weekly applications.",
-    features: [
-      "30 tailored resumes per month",
-      "3 master resumes",
-      "PDF and DOCX export",
-      "ATS match score tracking",
-    ],
-    ctaLabel: "Choose Basic",
-    href: "/signup",
-    highlighted: true,
-  },
-  {
-    name: "Pro",
-    price: "₹499",
-    cadence: "/month",
-    description: "For power users running aggressive outbound application sprints.",
-    features: [
-      "Unlimited tailoring",
-      "Bulk tailoring queue",
-      "All templates",
-      "Priority generation speed",
-    ],
-    ctaLabel: "Go Pro",
-    href: "/signup",
-  },
-];
 
 export const tailoredResumeCards = [
   {
