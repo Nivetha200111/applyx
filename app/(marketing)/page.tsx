@@ -294,9 +294,9 @@ export default function MarketingHomePage() {
                   <CardTitle>Priced for India</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm leading-7 text-muted-foreground">
-                  Basic at ₹199/mo gets you GPT-4o mini and Claude Haiku for high-volume
-                  applications. Premium at ₹499/mo unlocks Claude Sonnet 4 and GPT-4o for
-                  the strongest possible rewrites.
+                  Basic at ₹199/mo gives you 40 monthly tailors with GPT-4o mini and
+                  Claude Haiku. Premium at ₹699/mo gives you 50 premium tailors with
+                  Claude Sonnet 4 and GPT-4o. Both launch prices are GST-inclusive.
                 </CardContent>
               </Card>
             </SpotlightCard>

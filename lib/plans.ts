@@ -29,18 +29,19 @@ export const planCatalog: PlanDefinition[] = [
     priceInr: 199,
     cadence: "month",
     description:
-      "Affordable high-volume tailoring for active job seekers sending weekly applications.",
+      "GST-inclusive launch pricing for active job seekers who need affordable weekly tailoring.",
     includedDemos: 0,
-    monthlyTailors: 30,
+    monthlyTailors: 40,
     masterResumeLimit: 3,
     modelTier: "basic",
     primaryModel: "GPT-4o mini",
     fallbackModel: "Claude Haiku 4.5",
     features: [
-      "30 tailored resumes per month",
+      "40 tailored resumes per month",
       "3 master resumes",
       "PDF and DOCX export",
       "ATS match score tracking",
+      "GST included",
       "Affordable AI (GPT-4o mini / Haiku)",
     ],
     ctaLabel: "Choose Basic",
@@ -50,23 +51,23 @@ export const planCatalog: PlanDefinition[] = [
   {
     id: "premium",
     name: "Premium",
-    priceInr: 499,
+    priceInr: 699,
     cadence: "month",
     description:
-      "Unlimited tailoring with premium AI models for the strongest possible rewrites.",
+      "GST-inclusive premium tier with Claude Sonnet 4 quality and a sustainable monthly cap.",
     includedDemos: 0,
-    monthlyTailors: 999999,
+    monthlyTailors: 50,
     masterResumeLimit: 10,
     modelTier: "premium",
     primaryModel: "Claude Sonnet 4",
     fallbackModel: "GPT-4o",
     features: [
-      "Unlimited tailored resumes",
+      "50 premium tailored resumes per month",
       "10 master resumes",
       "Premium AI (Claude Sonnet 4 / GPT-4o)",
       "Priority generation speed",
       "All templates",
-      "Bulk tailoring queue",
+      "GST included",
     ],
     ctaLabel: "Go Premium",
     href: "/signup",
@@ -82,9 +83,7 @@ export const pricingTiers: PricingTier[] = planCatalog.map((plan) => ({
   usage:
     plan.includedDemos > 0
       ? `${plan.includedDemos} live demo tailors`
-      : plan.monthlyTailors > 9999
-        ? "Unlimited tailored resumes"
-        : `${plan.monthlyTailors} tailored resumes / month`,
+      : `${plan.monthlyTailors} tailored resumes / month`,
   modelAccess: plan.fallbackModel
     ? `${plan.primaryModel} primary, ${plan.fallbackModel} fallback`
     : plan.primaryModel,

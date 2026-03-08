@@ -18,11 +18,15 @@ import { cn } from "@/lib/utils";
 const faqs = [
   {
     q: "What happens after my 2 free demos?",
-    a: "You can upgrade to Basic (₹199/mo) for 30 monthly tailors with GPT-4o mini, or Premium (₹499/mo) for unlimited tailoring with Claude Sonnet 4.",
+    a: "You can upgrade to Basic (₹199/mo) for 40 monthly tailors with GPT-4o mini, or Premium (₹699/mo) for 50 premium tailors with Claude Sonnet 4.",
   },
   {
     q: "Which AI models do I get?",
     a: "Free and Basic use affordable models (GPT-4o mini, Claude Haiku 4.5) for fast, cost-effective tailoring. Premium unlocks Claude Sonnet 4 and GPT-4o for the most nuanced rewrites.",
+  },
+  {
+    q: "Is GST included in the listed price?",
+    a: "Yes. The displayed launch pricing is GST-inclusive. Current India UPI checkout also avoids payment-gateway MDR, which helps keep the plans lower.",
   },
   {
     q: "Can I cancel anytime?",
