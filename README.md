@@ -67,6 +67,7 @@ To run it as a real product, you still need to provide:
 - `DATABASE_URL`
 - `ANTHROPIC_API_KEY`
 - `OPENAI_API_KEY`
+- `XAI_API_KEY`
 - `DODO_PAYMENTS_API_KEY`
 - `DODO_PAYMENTS_WEBHOOK_KEY`
 - `DODO_BASIC_PRODUCT_ID`

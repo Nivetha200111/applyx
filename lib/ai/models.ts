@@ -1,7 +1,7 @@
 import type { ModelTier } from "@/lib/types";
 
 export interface ModelConfig {
-  provider: "anthropic" | "openai";
+  provider: "anthropic" | "openai" | "xai";
   modelId: string;
   label: string;
   maxTokens: number;
@@ -30,6 +30,12 @@ const MODELS = {
     provider: "openai" as const,
     modelId: "gpt-4o",
     label: "GPT-4o",
+    maxTokens: 2800,
+  },
+  "grok-4-fast": {
+    provider: "xai" as const,
+    modelId: "grok-4-fast-non-reasoning",
+    label: "Grok 4 Fast",
     maxTokens: 2800,
   },
 } as const;
@@ -62,4 +68,8 @@ export function getPrimaryModelLabel(modelTier: ModelTier) {
 
 export function getFallbackModelLabel(modelTier: ModelTier) {
   return PLAN_MODEL_MAP[modelTier].fallback.label;
+}
+
+export function getEmergencyFallbackModel() {
+  return MODELS["grok-4-fast"];
 }
