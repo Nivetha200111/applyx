@@ -71,7 +71,8 @@ To run it as a real product, you still need to provide:
 - `DODO_PAYMENTS_WEBHOOK_KEY`
 - `DODO_BASIC_PRODUCT_ID`
 - `DODO_PREMIUM_PRODUCT_ID`
-- `MANUAL_UPI_PAYMENT_URL` or `MANUAL_INTERNATIONAL_PAYMENT_URL` if you want to bypass gateways
+- `MANUAL_UPI_ID` and `MANUAL_UPI_NAME` for an in-app UPI QR code
+- or `MANUAL_UPI_PAYMENT_URL` / `MANUAL_INTERNATIONAL_PAYMENT_URL` if you want direct payment links
 - `NEXT_PUBLIC_APP_URL`
 
 ## Manual Billing Operations
