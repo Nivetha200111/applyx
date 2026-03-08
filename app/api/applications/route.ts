@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { NextResponse } from "next/server";
 import { parseJdForTracker } from "@/lib/ai/parse-jd-tracker";
+import { isDeveloperAdminUser } from "@/lib/developer-access";
 import { getCurrentUser } from "@/lib/auth";
 import { withTransaction } from "@/lib/db";
 import {
@@ -86,7 +87,9 @@ export async function POST(request: Request) {
 
     // Check row limit
     const activeCount = await getActiveTrackedApplicationCount(currentUser.id);
-    if (activeCount >= plan.trackerRowLimit) {
+    const developerAdmin = isDeveloperAdminUser(currentUser);
+
+    if (!developerAdmin && activeCount >= plan.trackerRowLimit) {
       return NextResponse.json(
         { error: `You've reached the ${plan.name} plan limit of ${plan.trackerRowLimit} active applications. Upgrade or archive existing ones.` },
         { status: 403 },
@@ -112,7 +115,7 @@ export async function POST(request: Request) {
     if (usedAiParse) {
       const trackerParsesRemaining =
         plan.monthlyTrackerParses - currentUser.monthlyTrackerParsesUsed;
-      if (trackerParsesRemaining <= 0) {
+      if (!developerAdmin && trackerParsesRemaining <= 0) {
         return NextResponse.json(
           { error: `AI auto-fill limit reached for your ${plan.name} plan. You can still add rows manually.` },
           { status: 403 },
@@ -157,14 +160,14 @@ export async function POST(request: Request) {
       );
       const lockedActiveCount = parseInt(countResult.rows[0]?.count ?? "0", 10);
 
-      if (lockedActiveCount >= plan.trackerRowLimit) {
+      if (!developerAdmin && lockedActiveCount >= plan.trackerRowLimit) {
         throw new HttpError(
           403,
           `You've reached the ${plan.name} plan limit of ${plan.trackerRowLimit} active applications. Upgrade or archive existing ones.`,
         );
       }
 
-      if (usedAiParse) {
+      if (usedAiParse && !developerAdmin) {
         const usageResult = await client.query<{ id: string }>(
           `update public.users
            set monthly_tracker_parses_used = monthly_tracker_parses_used + 1,
@@ -207,7 +210,7 @@ export async function POST(request: Request) {
         ],
       );
 
-      if (usedAiParse) {
+      if (usedAiParse && !developerAdmin) {
         await client.query(
           `insert into public.usage_log (user_id, action, plan_tier, model_tier, metadata)
            values ($1, 'parse_tracker_jd', $2, 'demo', $3::jsonb)`,

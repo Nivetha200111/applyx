@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { NextResponse } from "next/server";
 import { parseJdForTracker } from "@/lib/ai/parse-jd-tracker";
+import { isDeveloperAdminUser } from "@/lib/developer-access";
 import { getCurrentUser } from "@/lib/auth";
 import { withTransaction } from "@/lib/db";
 import { refreshUserAccess } from "@/lib/data";
@@ -34,12 +35,13 @@ export async function POST(
 
     const currentUser = await refreshUserAccess(sessionUser);
     const plan = getPlanById(currentUser.plan);
+    const developerAdmin = isDeveloperAdminUser(currentUser);
     if (!plan) {
       return NextResponse.json({ error: "Invalid plan." }, { status: 400 });
     }
 
     const remaining = plan.monthlyTrackerParses - currentUser.monthlyTrackerParsesUsed;
-    if (remaining <= 0) {
+    if (!developerAdmin && remaining <= 0) {
       return NextResponse.json(
         { error: `AI auto-fill limit reached for your ${plan.name} plan.` },
         { status: 403 },
@@ -101,25 +103,27 @@ export async function POST(
         throw new HttpError(404, "Application not found.");
       }
 
-      const usageResult = await client.query<{ id: string }>(
-        `update public.users
-         set monthly_tracker_parses_used = monthly_tracker_parses_used + 1,
-             updated_at = timezone('utc', now())
-         where id = $1
-           and monthly_tracker_parses_used < $2
-         returning id`,
-        [currentUser.id, plan.monthlyTrackerParses],
-      );
+      if (!developerAdmin) {
+        const usageResult = await client.query<{ id: string }>(
+          `update public.users
+           set monthly_tracker_parses_used = monthly_tracker_parses_used + 1,
+               updated_at = timezone('utc', now())
+           where id = $1
+             and monthly_tracker_parses_used < $2
+           returning id`,
+          [currentUser.id, plan.monthlyTrackerParses],
+        );
 
-      if (usageResult.rowCount === 0) {
-        throw new HttpError(403, `AI auto-fill limit reached for your ${plan.name} plan.`);
+        if (usageResult.rowCount === 0) {
+          throw new HttpError(403, `AI auto-fill limit reached for your ${plan.name} plan.`);
+        }
+
+        await client.query(
+          `insert into public.usage_log (user_id, action, plan_tier, model_tier, metadata)
+           values ($1, 'parse_tracker_jd', $2, 'demo', $3::jsonb)`,
+          [currentUser.id, currentUser.plan, JSON.stringify({ company: parsed.company, role: parsed.title })],
+        );
       }
-
-      await client.query(
-        `insert into public.usage_log (user_id, action, plan_tier, model_tier, metadata)
-         values ($1, 'parse_tracker_jd', $2, 'demo', $3::jsonb)`,
-        [currentUser.id, currentUser.plan, JSON.stringify({ company: parsed.company, role: parsed.title })],
-      );
     });
 
     return NextResponse.json({ ok: true, parsed });

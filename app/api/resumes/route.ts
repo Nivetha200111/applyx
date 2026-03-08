@@ -2,6 +2,7 @@ import mammoth from "mammoth";
 import pdfParse from "pdf-parse";
 import { NextResponse } from "next/server";
 import { parseResumeWithAi } from "@/lib/ai/parse-resume";
+import { isDeveloperAdminUser } from "@/lib/developer-access";
 import { getCurrentUser } from "@/lib/auth";
 import { dbQuery, firstRow } from "@/lib/db";
 import { refreshUserAccess } from "@/lib/data";
@@ -71,7 +72,7 @@ export async function POST(request: Request) {
     );
     const currentCount = Number(firstRow(countResult)?.total ?? "0");
 
-    if (currentCount >= plan.masterResumeLimit) {
+    if (!isDeveloperAdminUser(user) && currentCount >= plan.masterResumeLimit) {
       return NextResponse.json(
         { error: "Resume limit reached for your current plan." },
         { status: 403 },

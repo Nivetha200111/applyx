@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
+import { isDeveloperAdminUser } from "@/lib/developer-access";
 import { getDodoClient } from "@/lib/dodo/client";
 
 export const runtime = "nodejs";
@@ -10,6 +11,13 @@ export async function POST() {
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
+
+    if (isDeveloperAdminUser(user)) {
+      return NextResponse.json(
+        { error: "Developer access does not use a billing portal." },
+        { status: 400 },
+      );
     }
 
     if (!user.billingCustomerId) {

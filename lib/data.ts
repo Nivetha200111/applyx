@@ -9,6 +9,7 @@ import type {
   UsageLogRecord,
 } from "@/lib/types";
 import { dbQuery, firstRow } from "@/lib/db";
+import { applyDeveloperAdminAccess, isDeveloperAdminUser } from "@/lib/developer-access";
 
 type UserRow = {
   id: string;
@@ -102,7 +103,7 @@ type PaymentRow = {
 };
 
 function mapUser(row: UserRow): AppUser {
-  return {
+  return applyDeveloperAdminAccess({
     id: row.id,
     fullName: row.full_name,
     email: row.email,
@@ -121,7 +122,7 @@ function mapUser(row: UserRow): AppUser {
     billingSubscriptionId: row.billing_subscription_id,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
-  };
+  });
 }
 
 function mapMasterResume(row: MasterResumeRow): MasterResumeRecord {
@@ -203,6 +204,10 @@ function mapPayment(row: PaymentRow): PaymentRecord {
 }
 
 export async function refreshUserAccess(user: AppUser) {
+  if (isDeveloperAdminUser(user)) {
+    return user;
+  }
+
   if (!user.billingCycleEnd || user.plan === "free") {
     return user;
   }

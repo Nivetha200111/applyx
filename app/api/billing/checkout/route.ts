@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { dbQuery } from "@/lib/db";
 import { getManualBillingReturnUrl, hasManualBillingConfig } from "@/lib/billing/config";
+import { isDeveloperAdminUser } from "@/lib/developer-access";
 import { getDodoClient, getDodoProductId, getDodoReturnUrl } from "@/lib/dodo/client";
 import { getPlanById } from "@/lib/plans";
 import { getSiteUrl } from "@/lib/site-url";
@@ -20,6 +21,13 @@ export async function POST(request: Request) {
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
+
+    if (isDeveloperAdminUser(user)) {
+      return NextResponse.json(
+        { error: "Developer access is already active on this account. Billing is disabled." },
+        { status: 400 },
+      );
     }
 
     const parsed = requestSchema.parse(await request.json());

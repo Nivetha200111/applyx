@@ -2,6 +2,7 @@ import { createHash, randomBytes } from "crypto";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { applyDeveloperAdminAccess } from "@/lib/developer-access";
 import type { AppUser } from "@/lib/types";
 import {
   dbQuery,
@@ -136,7 +137,7 @@ export async function createUserAccount(input: {
     [user.id, JSON.stringify({ source: "signup" })],
   );
 
-  return toAppUser(user);
+  return applyDeveloperAdminAccess(toAppUser(user));
 }
 
 export async function signInUser(input: {
@@ -167,7 +168,7 @@ export async function signInUser(input: {
     ],
   );
 
-  return toAppUser(user);
+  return applyDeveloperAdminAccess(toAppUser(user));
 }
 
 export async function signOutUser() {
@@ -226,7 +227,7 @@ export async function getCurrentUser() {
       return null;
     }
 
-    return toAppUser(user);
+    return applyDeveloperAdminAccess(toAppUser(user));
   } catch (error) {
     if (isDatabaseConnectionError(error)) {
       return null;
