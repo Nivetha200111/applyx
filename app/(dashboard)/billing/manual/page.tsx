@@ -117,30 +117,29 @@ export default async function ManualBillingPage({
                 href={upiPaymentUrl ?? "#"}
                 rel="noreferrer"
                 target="_blank"
-              >
+                >
                 Open UPI app
                 <ExternalLink className="h-4 w-4" />
               </a>
 
-              <a
+              <div
                 className={cn(
                   buttonVariants({ size: "lg", variant: "outline" }),
-                  "justify-between rounded-3xl",
-                  !config.internationalPaymentUrl && "pointer-events-none opacity-50",
+                  "pointer-events-none justify-between rounded-3xl opacity-60",
                 )}
-                href={config.internationalPaymentUrl ?? "#"}
-                rel="noreferrer"
-                target="_blank"
+                aria-disabled="true"
               >
-                Pay internationally
-                <ExternalLink className="h-4 w-4" />
-              </a>
+                International payments
+                <span className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                  Coming soon
+                </span>
+              </div>
             </div>
 
-            {!upiPaymentUrl && !config.internationalPaymentUrl ? (
+            {!upiPaymentUrl ? (
               <div className="rounded-3xl border border-amber-400/40 bg-amber-400/10 p-4 text-sm leading-7 text-amber-100">
-                No manual payment options are configured yet. Add `MANUAL_UPI_ID` or
-                `MANUAL_INTERNATIONAL_PAYMENT_URL` in Vercel to make this page usable.
+                No manual payment options are configured yet. Add `MANUAL_UPI_ID` in Vercel to
+                make this page usable.
               </div>
             ) : null}
 
