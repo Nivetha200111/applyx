@@ -22,7 +22,7 @@ export default async function MarketingLayout({
             </span>
             <div>
               <div className="font-semibold">ApplyX</div>
-              <div className="text-sm text-muted-foreground">AI Resume Tailoring</div>
+              <div className="text-sm text-muted-foreground">Resume tailoring + tracker</div>
             </div>
           </Link>
           <div className="flex items-center gap-3">
@@ -57,7 +57,7 @@ export default async function MarketingLayout({
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-muted-foreground sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div className="space-y-1">
             <p className="font-medium text-foreground">ApplyX</p>
-            <p>Built for Indian job seekers applying at scale.</p>
+            <p>Built for fast, focused job searches.</p>
           </div>
           <div className="flex items-center gap-6">
             <Link className="transition-colors duration-200 hover:text-foreground" href="/pricing">

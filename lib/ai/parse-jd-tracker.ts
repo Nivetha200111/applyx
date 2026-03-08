@@ -3,16 +3,16 @@ import { trackerParsedJdSchema } from "@/lib/ai/schemas";
 import type { TrackerParsedJD } from "@/lib/types";
 
 function buildTrackerJdParsePrompt(jdText: string) {
-  return `You are an expert job description parser for Indian job seekers. Extract structured data from the following job description.
+  return `You are an expert job description parser for job seekers. Extract structured data from the following job description.
 
 Rules:
 - Extract the job title, company name, and location precisely
 - Separate required vs preferred skills
-- Extract salary range if mentioned (Indian formats: "X-Y LPA", "X-Y CTC", "Rs X lakhs", "$X-$Y")
+- Extract salary range if mentioned using the most likely currency (examples: "$120k-$150k", "£70k-£90k", "€60k-€80k", "X-Y LPA")
 - Detect work mode: remote, hybrid, onsite, or unknown
 - Identify experience level requirements
 - Extract ATS-relevant keywords and industry terms
-- Detect source platform from URL patterns if any (linkedin, naukri, indeed, instahyre, etc.)
+- Detect source platform from URL patterns if any (linkedin, indeed, greenhouse, lever, wellfound, naukri, instahyre, etc.)
 - Return ONLY valid JSON, no markdown
 
 Return the data in this exact schema:
@@ -28,7 +28,7 @@ Return the data in this exact schema:
   "keywords": ["string"],
   "industryTerms": ["string"],
   "educationRequirement": "string (optional)",
-  "salaryRange": { "min": number, "max": number, "currency": "INR" } or null,
+  "salaryRange": { "min": number, "max": number, "currency": "USD|EUR|GBP|INR|..." } or null,
   "workMode": "remote" | "hybrid" | "onsite" | "unknown",
   "applicationDeadline": "string (optional, ISO date if found)" or null,
   "sourcePlatform": "string (optional)" or null

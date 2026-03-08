@@ -29,8 +29,8 @@ const faqs = [
     a: "Tracker auto-fills use affordable Grok models for instant extraction. Premium tailoring uses Grok 4 Fast and Grok 3 Mini for deeper rewrites, with OpenAI kept only as an emergency backup.",
   },
   {
-    q: "Is GST included in the listed price?",
-    a: "Yes. The displayed launch pricing is GST-inclusive. UPI checkout also avoids payment-gateway MDR.",
+    q: "Are taxes included in the listed price?",
+    a: "Yes. The displayed launch pricing is tax-inclusive where applicable during beta.",
   },
   {
     q: "Can I add applications without AI?",
@@ -51,12 +51,12 @@ export default function PricingPage() {
           as="h1"
           className="text-4xl font-semibold sm:text-5xl"
           delay={0.08}
-          text="Simple pricing for active job searches."
+          text="Simple pricing for serious job searches."
         />
         <AnimatedPanel delay={0.4} hover={false}>
           <p className="text-lg leading-8 text-muted-foreground">
-            Start with 2 free demos, move to affordable AI when volume matters,
-            and upgrade to premium models only when you want the strongest rewrites.
+            Start with 2 free demos, move to faster high-volume tailoring when
+            volume matters, and upgrade only when you want stronger rewrites.
           </p>
         </AnimatedPanel>
       </section>

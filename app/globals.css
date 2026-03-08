@@ -1,46 +1,46 @@
 :root {
-  --background: 52 43% 97%;
-  --foreground: 210 24% 14%;
+  --background: 42 38% 97%;
+  --foreground: 221 38% 14%;
   --card: 0 0% 100%;
-  --card-foreground: 210 24% 14%;
+  --card-foreground: 221 38% 14%;
   --popover: 0 0% 100%;
-  --popover-foreground: 210 24% 14%;
-  --primary: 152 63% 45%;
+  --popover-foreground: 221 38% 14%;
+  --primary: 158 63% 40%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 33 84% 92%;
-  --secondary-foreground: 210 24% 14%;
-  --muted: 45 20% 92%;
-  --muted-foreground: 215 14% 40%;
-  --accent: 32 91% 57%;
-  --accent-foreground: 210 24% 14%;
+  --secondary: 213 66% 95%;
+  --secondary-foreground: 221 38% 14%;
+  --muted: 42 24% 91%;
+  --muted-foreground: 220 14% 36%;
+  --accent: 42 96% 58%;
+  --accent-foreground: 221 38% 14%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
-  --border: 42 20% 84%;
-  --input: 42 20% 84%;
-  --ring: 152 63% 45%;
+  --border: 40 18% 82%;
+  --input: 40 18% 82%;
+  --ring: 158 63% 40%;
   --radius: 1.25rem;
 }
 
 .dark {
-  --background: 214 28% 8%;
-  --foreground: 48 38% 98%;
-  --card: 215 24% 12%;
-  --card-foreground: 48 38% 98%;
-  --popover: 215 24% 11%;
-  --popover-foreground: 48 38% 98%;
-  --primary: 154 66% 46%;
-  --primary-foreground: 210 40% 8%;
-  --secondary: 205 24% 18%;
-  --secondary-foreground: 48 34% 97%;
-  --muted: 214 20% 15%;
-  --muted-foreground: 214 18% 78%;
-  --accent: 32 91% 57%;
-  --accent-foreground: 210 40% 8%;
+  --background: 223 47% 8%;
+  --foreground: 42 40% 98%;
+  --card: 223 34% 12%;
+  --card-foreground: 42 40% 98%;
+  --popover: 223 34% 11%;
+  --popover-foreground: 42 40% 98%;
+  --primary: 160 67% 47%;
+  --primary-foreground: 223 47% 8%;
+  --secondary: 218 34% 18%;
+  --secondary-foreground: 42 34% 97%;
+  --muted: 221 24% 15%;
+  --muted-foreground: 214 18% 80%;
+  --accent: 43 95% 62%;
+  --accent-foreground: 223 47% 8%;
   --destructive: 0 72% 52%;
   --destructive-foreground: 0 0% 100%;
-  --border: 214 17% 22%;
-  --input: 214 17% 22%;
-  --ring: 154 66% 46%;
+  --border: 221 22% 22%;
+  --input: 221 22% 22%;
+  --ring: 160 67% 47%;
 }
 
 @tailwind base;
@@ -59,9 +59,10 @@
   body {
     @apply bg-background text-foreground;
     background-image:
-      radial-gradient(circle at top left, rgba(35, 204, 142, 0.14), transparent 28rem),
-      radial-gradient(circle at top right, rgba(251, 146, 60, 0.18), transparent 22rem),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0));
+      radial-gradient(circle at top left, rgba(14, 165, 233, 0.14), transparent 30rem),
+      radial-gradient(circle at top center, rgba(16, 185, 129, 0.16), transparent 28rem),
+      radial-gradient(circle at top right, rgba(250, 204, 21, 0.18), transparent 24rem),
+      linear-gradient(180deg, rgba(255, 251, 245, 0.92), rgba(255, 255, 255, 0.78));
     background-attachment: fixed;
     transition:
       background-color 220ms ease,
@@ -71,9 +72,10 @@
 
   .dark body {
     background-image:
-      radial-gradient(circle at top left, rgba(16, 185, 129, 0.18), transparent 24rem),
-      radial-gradient(circle at top right, rgba(249, 115, 22, 0.16), transparent 18rem),
-      linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.88));
+      radial-gradient(circle at top left, rgba(56, 189, 248, 0.16), transparent 24rem),
+      radial-gradient(circle at top center, rgba(16, 185, 129, 0.18), transparent 24rem),
+      radial-gradient(circle at top right, rgba(245, 158, 11, 0.16), transparent 20rem),
+      linear-gradient(180deg, rgba(8, 15, 33, 0.98), rgba(10, 18, 36, 0.92));
   }
 
   h1,
@@ -88,12 +90,12 @@
   }
 
   ::selection {
-    background: rgba(16, 185, 129, 0.28);
+    background: rgba(14, 165, 233, 0.22);
     color: hsl(var(--foreground));
   }
 
   .dark ::selection {
-    background: rgba(251, 191, 36, 0.3);
+    background: rgba(250, 204, 21, 0.32);
     color: hsl(var(--foreground));
   }
 }
@@ -103,7 +105,7 @@
     @apply relative overflow-hidden border border-border/70 bg-card/80 backdrop-blur-xl transition-all duration-300 motion-reduce:transition-none;
     isolation: isolate;
     box-shadow:
-      0 24px 70px -34px rgba(6, 78, 59, 0.22),
+      0 24px 70px -34px rgba(15, 23, 42, 0.18),
       inset 0 1px 0 rgba(255, 255, 255, 0.18);
   }
 
@@ -119,7 +121,7 @@
     height: 12rem;
     width: 12rem;
     border-radius: 9999px;
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.18), transparent 68%);
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.14), transparent 68%);
     opacity: 0.95;
     pointer-events: none;
     transition:
@@ -131,7 +133,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), transparent 42%, rgba(251, 146, 60, 0.08));
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), transparent 42%, rgba(250, 204, 21, 0.08));
     opacity: 0.85;
     pointer-events: none;
     transition: opacity 320ms ease;
@@ -140,7 +142,7 @@
   .surface:hover {
     transform: translateY(-6px);
     box-shadow:
-      0 30px 80px -36px rgba(6, 78, 59, 0.28),
+      0 30px 80px -36px rgba(15, 23, 42, 0.22),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
 
@@ -160,11 +162,11 @@
   }
 
   .dark .surface::before {
-    background: radial-gradient(circle, rgba(251, 146, 60, 0.14), transparent 68%);
+    background: radial-gradient(circle, rgba(250, 204, 21, 0.12), transparent 68%);
   }
 
   .dark .surface::after {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent 42%, rgba(16, 185, 129, 0.09));
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent 42%, rgba(14, 165, 233, 0.08));
   }
 
   .dark .surface:hover {
@@ -182,9 +184,9 @@
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(
       135deg,
-      hsl(var(--primary)) 0%,
-      hsl(var(--accent)) 50%,
-      hsl(var(--primary)) 100%
+      rgb(14 165 233) 0%,
+      hsl(var(--primary)) 45%,
+      hsl(var(--accent)) 100%
     );
     background-size: 200% auto;
     animation: gradient-shift 4s ease infinite;
@@ -205,7 +207,7 @@
     transition: opacity 400ms ease;
     background: radial-gradient(
       600px circle at var(--spot-x, 50%) var(--spot-y, 50%),
-      rgba(16, 185, 129, 0.12),
+      rgba(14, 165, 233, 0.11),
       transparent 40%
     );
     pointer-events: none;
@@ -227,15 +229,15 @@
   /* Animated grid background */
   .bg-grid {
     background-image:
-      linear-gradient(rgba(16, 185, 129, 0.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(16, 185, 129, 0.06) 1px, transparent 1px);
+      linear-gradient(rgba(14, 165, 233, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(16, 185, 129, 0.05) 1px, transparent 1px);
     background-size: 48px 48px;
     animation: grid-fade 2s ease forwards;
   }
 
   .dark .bg-grid {
     background-image:
-      linear-gradient(rgba(16, 185, 129, 0.04) 1px, transparent 1px),
+      linear-gradient(rgba(56, 189, 248, 0.04) 1px, transparent 1px),
       linear-gradient(90deg, rgba(16, 185, 129, 0.04) 1px, transparent 1px);
   }
 
@@ -248,6 +250,38 @@
   /* Score ring pulse */
   .score-ring-pulse {
     animation: ring-pulse 2s ease-in-out infinite;
+  }
+
+  .brand-panel {
+    @apply relative overflow-hidden border text-slate-50;
+    border-color: rgba(148, 163, 184, 0.2);
+    background:
+      radial-gradient(circle at top left, rgba(56, 189, 248, 0.16), transparent 34%),
+      radial-gradient(circle at top right, rgba(250, 204, 21, 0.14), transparent 30%),
+      linear-gradient(135deg, rgba(8, 15, 33, 0.98), rgba(11, 28, 48, 0.94) 58%, rgba(10, 76, 87, 0.88));
+    box-shadow:
+      0 28px 90px -42px rgba(8, 15, 33, 0.95),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .brand-panel::before {
+    content: "";
+    position: absolute;
+    inset: auto auto -3rem -3rem;
+    height: 10rem;
+    width: 10rem;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.22), transparent 72%);
+    filter: blur(10px);
+    pointer-events: none;
+  }
+
+  .brand-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 48%, rgba(250, 204, 21, 0.08));
+    pointer-events: none;
   }
 
   /* Shimmer sweep effect */

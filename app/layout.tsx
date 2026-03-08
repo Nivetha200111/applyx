@@ -17,34 +17,33 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://applyx.in"),
+  metadataBase: new URL("https://applyx.space"),
   title: {
     default: "ApplyX | Job Application Tracker + AI Resume Tailoring",
     template: "%s | ApplyX",
   },
   description:
-    "ApplyX is an AI-powered job application tracker for Indian job seekers. Track applications, auto-fill from JDs, tailor ATS resumes, and prep for interviews.",
+    "ApplyX helps job seekers tailor resumes, track applications, and stay organized in one workflow.",
   keywords: [
-    "job application tracker India",
-    "AI resume tailoring India",
+    "job application tracker",
+    "AI resume tailoring",
     "ATS resume builder",
-    "job tracker spreadsheet",
-    "resume tailoring SaaS",
+    "resume tailoring app",
+    "job tracker",
   ],
   openGraph: {
     title: "ApplyX | Job Application Tracker + AI Resume Tailoring",
     description:
-      "Track every application, paste JDs to auto-fill with AI, tailor ATS resumes, and access curated prep resources.",
-    url: "https://applyx.in",
+      "Tailor every resume, track every job, and keep your application workflow in one place.",
+    url: "https://applyx.space",
     siteName: "ApplyX",
-    locale: "en_IN",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "ApplyX | Job Application Tracker + AI Resume Tailoring",
     description:
-      "Replace your messy Excel tracker with AI-powered job application tracking built for India.",
+      "Replace your messy spreadsheet with one workflow for resume tailoring and job tracking.",
   },
 };
 

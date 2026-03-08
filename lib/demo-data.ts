@@ -5,7 +5,7 @@ export const demoResume: ParsedResume = {
     name: "Nivetha Raman",
     email: "nivetha.raman@example.com",
     phone: "+91 98765 43210",
-    location: "Chennai, India",
+    location: "Singapore",
     linkedin: "linkedin.com/in/nivetha-raman",
     github: "github.com/nivetharaman",
     portfolio: "nivetharaman.dev",
@@ -16,19 +16,19 @@ export const demoResume: ParsedResume = {
     {
       title: "Senior Frontend Engineer",
       company: "HireFlow Labs",
-      location: "Bengaluru, India",
+      location: "Remote",
       startDate: "Jul 2023",
       endDate: "Present",
       bullets: [
         "Led redesign of the candidate dashboard in Next.js and TypeScript, improving recruiter conversion from shortlist to interview by 24%.",
         "Built reusable analytics and experimentation components that reduced launch time for new features from 10 days to 3 days.",
-        "Partnered with design and growth teams to ship mobile-first experiences used by 180k monthly users across India and Southeast Asia.",
+        "Partnered with design and growth teams to ship mobile-first experiences used by 180k monthly users across Asia-Pacific markets.",
       ],
     },
     {
       title: "Software Engineer",
       company: "TalentBridge",
-      location: "Chennai, India",
+      location: "Singapore",
       startDate: "Jan 2021",
       endDate: "Jun 2023",
       bullets: [
@@ -95,7 +95,7 @@ export const demoTailorResult: TailorResult = {
         bullets: [
           "Drove redesign of a Next.js candidate dashboard aligned to recruiter workflow requirements, increasing shortlist-to-interview conversion by 24%.",
           "Built reusable analytics and experimentation modules that accelerated product launches from 10 days to 3 days across candidate lifecycle features.",
-          "Partnered with product, design, and growth teams to deliver mobile-first hiring experiences for 180k monthly users across India and Southeast Asia.",
+          "Partnered with product, design, and growth teams to deliver mobile-first hiring experiences for 180k monthly users across Asia-Pacific markets.",
         ],
       },
       {

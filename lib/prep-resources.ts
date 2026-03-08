@@ -21,7 +21,7 @@ export const prepResourceCatalog: PrepResource[] = [
   // General
   { label: "Tech Interview Handbook", url: "https://www.techinterviewhandbook.org/", category: "general" },
   { label: "Glassdoor Interview Reviews", url: "https://www.glassdoor.co.in/Interview/", category: "general" },
-  { label: "AmbitionBox (India)", url: "https://www.ambitionbox.com/", category: "general" },
+  { label: "AmbitionBox", url: "https://www.ambitionbox.com/", category: "general" },
   { label: "Levels.fyi", url: "https://www.levels.fyi/", category: "general" },
 ];
 

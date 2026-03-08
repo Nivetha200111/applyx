@@ -28,21 +28,21 @@ const steps = [
     description:
       "Add jobs to your tracker like a spreadsheet. Paste a JD and AI auto-fills company, role, skills, salary, and work mode instantly.",
     icon: ClipboardList,
-    gradient: "from-emerald-500/20 to-teal-500/20",
+    gradient: "from-sky-500/20 to-cyan-500/20",
   },
   {
     title: "Tailor your resume",
     description:
       "Generate ATS-optimized resumes tailored to each job description with match score tracking and one-click PDF/DOCX export.",
     icon: Sparkles,
-    gradient: "from-amber-500/20 to-orange-500/20",
+    gradient: "from-amber-400/22 to-orange-500/18",
   },
   {
     title: "Prep and land interviews",
     description:
       "Access curated prep resources — NeetCode, Striver's SDE Sheet, system design guides — linked directly from each tracked application.",
     icon: Upload,
-    gradient: "from-primary/20 to-emerald-500/20",
+    gradient: "from-primary/20 to-sky-500/20",
   },
 ];
 
@@ -62,7 +62,7 @@ export default function MarketingHomePage() {
         <div className="relative space-y-8">
           <AnimatedPanel delay={0} hover={false}>
             <Badge variant="warning" className="w-fit">
-              India-first job application tracker
+              Resume tailoring + job tracking in one flow
             </Badge>
           </AnimatedPanel>
 
@@ -71,13 +71,13 @@ export default function MarketingHomePage() {
               as="h1"
               className="max-w-3xl text-5xl font-semibold leading-tight sm:text-6xl"
               delay={0.1}
-              text="Track applications, tailor resumes, land interviews."
+              text="Tailor every resume. Track every job. In one place."
             />
             <AnimatedPanel delay={0.45} hover={false}>
               <p className="max-w-2xl text-lg leading-8 text-muted-foreground">
-                ApplyX replaces your messy Excel tracker with an AI-powered job
-                application board. Paste any JD to auto-fill, tailor ATS resumes, and
-                access curated prep resources — all in one place.
+                Upload your master resume once, paste any job description, and get an
+                ATS-ready tailored resume with the role automatically added to your
+                tracker.
               </p>
             </AnimatedPanel>
           </div>
@@ -88,7 +88,7 @@ export default function MarketingHomePage() {
                 className={cn(buttonVariants({ size: "lg" }), "gap-2 shimmer")}
                 href="/signup"
               >
-                Start Free
+                Try 2 Free Demos
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
@@ -101,9 +101,9 @@ export default function MarketingHomePage() {
           </AnimatedPanel>
 
           <AnimatedPanel delay={0.65} hover={false}>
-            <p className="text-sm leading-7 text-muted-foreground">
-              Free tier: 10 tracked applications, 5 AI auto-fills, 2 resume tailors.
-              Upgrade for unlimited tracking and more AI credits.
+              <p className="text-sm leading-7 text-muted-foreground">
+              Free tier: 10 tracked applications, 5 AI auto-fills, and 2 tailored
+              resume demos. Upgrade when you need more volume.
             </p>
           </AnimatedPanel>
 
@@ -168,11 +168,11 @@ export default function MarketingHomePage() {
                 </AnimatedPanel>
               </div>
               <AnimatedPanel delay={0.55}>
-                <div className="space-y-4 rounded-[28px] bg-slate-950 p-6 text-slate-50 shadow-[0_24px_70px_-34px_rgba(15,23,42,0.65)]">
+                <div className="brand-panel space-y-4 rounded-[28px] p-6">
                   <div className="flex items-center gap-3 text-sm text-slate-300">
                     <Zap className="h-4 w-4 text-amber-300" />
                     <span className="text-gradient font-medium">
-                      Grok 4 Fast + Grok 3 Mini powered tailoring
+                      Multi-model resume tailoring engine
                     </span>
                   </div>
                   <div className="space-y-3 text-sm leading-6 text-slate-300">
@@ -182,11 +182,11 @@ export default function MarketingHomePage() {
                     </div>
                     <div className="flex gap-3">
                       <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-300" />
-                      <span>Optimized for ATS-safe single-column templates and Indian job portals.</span>
+                      <span>Optimized for ATS-safe single-column templates and recruiter-friendly formatting.</span>
                     </div>
                     <div className="flex gap-3">
                       <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-300" />
-                      <span>Built for job seekers sending 50 to 100 applications per cycle.</span>
+                      <span>Built for high-volume application cycles without the manual mess.</span>
                     </div>
                   </div>
                 </div>
@@ -306,7 +306,7 @@ export default function MarketingHomePage() {
       {/* ─── CTA ─── */}
       <section>
         <AnimatedPanel>
-          <div className="relative overflow-hidden rounded-[32px] bg-slate-950 px-8 py-16 text-center text-slate-50 sm:px-16">
+          <div className="brand-panel rounded-[32px] px-8 py-16 text-center sm:px-16">
             <div
               aria-hidden
               className="glow-orb left-1/4 top-0 h-48 w-48 bg-primary/20"
@@ -321,11 +321,11 @@ export default function MarketingHomePage() {
                 as="h2"
                 className="mx-auto max-w-2xl justify-center text-3xl font-semibold sm:text-4xl"
                 delay={0.1}
-                text="Ready to ditch the messy Excel tracker?"
+                text="Ready to run your job search in one place?"
               />
               <p className="mx-auto max-w-xl text-lg leading-8 text-slate-300">
-                Track 10 applications free. Paste any JD, auto-fill with AI, tailor
-                resumes, and prep for interviews. No credit card required.
+                Start with 2 free demos, tailor your resume to a real job description,
+                and keep the whole application workflow organized from day one.
               </p>
               <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <Link
