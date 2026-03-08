@@ -12,7 +12,7 @@ const badgeVariants = cva(
         success:
           "bg-emerald-100 text-emerald-900 dark:border dark:border-emerald-300/30 dark:bg-emerald-300/16 dark:text-emerald-50",
         warning:
-          "bg-amber-100 text-amber-900 dark:border dark:border-amber-200/32 dark:bg-amber-200/18 dark:text-amber-50",
+          "bg-amber-100 text-amber-900 dark:border dark:border-amber-50/60 dark:bg-amber-200 dark:text-slate-950",
       },
     },
     defaultVariants: {

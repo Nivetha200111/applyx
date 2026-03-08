@@ -3,7 +3,12 @@ import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { AppUser } from "@/lib/types";
-import { dbQuery, firstRow } from "@/lib/db";
+import {
+  dbQuery,
+  firstRow,
+  isDatabaseConfigured,
+  isDatabaseConnectionError,
+} from "@/lib/db";
 
 const SESSION_COOKIE_NAME = "applyx_session";
 const SESSION_TTL_DAYS = 30;
@@ -163,7 +168,7 @@ export async function signInUser(input: {
 export async function signOutUser() {
   const token = cookies().get(SESSION_COOKIE_NAME)?.value;
 
-  if (token) {
+  if (token && isDatabaseConfigured()) {
     await dbQuery(
       "delete from public.sessions where session_token_hash = $1",
       [hashSessionToken(token)],
@@ -176,44 +181,52 @@ export async function signOutUser() {
 export async function getCurrentUser() {
   const token = cookies().get(SESSION_COOKIE_NAME)?.value;
 
-  if (!token) {
+  if (!token || !isDatabaseConfigured()) {
     return null;
   }
 
-  const result = await dbQuery<Omit<UserRow, "password_hash">>(
-    `select
-      u.id,
-      u.full_name,
-      u.email,
-      u.phone,
-      u.location,
-      u.plan,
-      u.billing_cycle_start,
-      u.billing_cycle_end,
-      u.demo_tailors_used,
-      u.monthly_tailors_used,
-      u.monthly_tailor_limit,
-      u.preferred_model_tier,
-      u.razorpay_customer_id,
-      u.razorpay_subscription_id,
-      u.created_at,
-      u.updated_at
-    from public.sessions s
-    join public.users u on u.id = s.user_id
-    where s.session_token_hash = $1
-      and s.expires_at > timezone('utc', now())
-    limit 1`,
-    [hashSessionToken(token)],
-  );
+  try {
+    const result = await dbQuery<Omit<UserRow, "password_hash">>(
+      `select
+        u.id,
+        u.full_name,
+        u.email,
+        u.phone,
+        u.location,
+        u.plan,
+        u.billing_cycle_start,
+        u.billing_cycle_end,
+        u.demo_tailors_used,
+        u.monthly_tailors_used,
+        u.monthly_tailor_limit,
+        u.preferred_model_tier,
+        u.razorpay_customer_id,
+        u.razorpay_subscription_id,
+        u.created_at,
+        u.updated_at
+      from public.sessions s
+      join public.users u on u.id = s.user_id
+      where s.session_token_hash = $1
+        and s.expires_at > timezone('utc', now())
+      limit 1`,
+      [hashSessionToken(token)],
+    );
 
-  const user = firstRow(result);
+    const user = firstRow(result);
 
-  if (!user) {
-    cookies().delete(SESSION_COOKIE_NAME);
-    return null;
+    if (!user) {
+      cookies().delete(SESSION_COOKIE_NAME);
+      return null;
+    }
+
+    return toAppUser(user);
+  } catch (error) {
+    if (isDatabaseConnectionError(error)) {
+      return null;
+    }
+
+    throw error;
   }
-
-  return toAppUser(user);
 }
 
 export async function requireUser(nextPath = "/dashboard") {
