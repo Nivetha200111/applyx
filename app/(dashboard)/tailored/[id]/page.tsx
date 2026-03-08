@@ -58,7 +58,7 @@ export default async function TailoredResumeDetailPage({
           <TemplatePicker selected={tailored.templateUsed} />
           <ChangesDiff changes={tailored.changes} />
         </div>
-        <ResumePreview resume={tailored.tailoredData} />
+        <ResumePreview resume={tailored.tailoredData} template={tailored.templateUsed} />
       </div>
     </div>
   );

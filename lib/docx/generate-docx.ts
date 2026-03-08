@@ -5,9 +5,45 @@ import {
   Paragraph,
   TextRun,
 } from "docx";
-import type { ParsedResume } from "@/lib/types";
+import type { ParsedResume, ResumeTemplate } from "@/lib/types";
 
-export async function generateResumeDocxBuffer(resume: ParsedResume) {
+function addBulletParagraphs(items: string[] = []) {
+  return items.map(
+    (item) =>
+      new Paragraph({
+        text: item,
+        bullet: { level: 0 },
+      }),
+  );
+}
+
+function addSkillParagraph(label: string, values: string[] = []) {
+  if (!values.length) {
+    return null;
+  }
+
+  return new Paragraph({
+    children: [
+      new TextRun({ text: `${label}: `, bold: true }),
+      new TextRun(values.join(", ")),
+    ],
+  });
+}
+
+export async function generateResumeDocxBuffer(
+  resume: ParsedResume,
+  _templateUsed: ResumeTemplate = "classic",
+) {
+  void _templateUsed;
+
+  const skillParagraphs = [
+    addSkillParagraph("Technical", resume.skills.technical),
+    addSkillParagraph("Tools", resume.skills.tools),
+    addSkillParagraph("Languages", resume.skills.languages ?? []),
+    addSkillParagraph("Certifications", resume.skills.certifications ?? []),
+    addSkillParagraph("Soft Skills", resume.skills.soft ?? []),
+  ].filter(Boolean) as Paragraph[];
+
   const doc = new Document({
     sections: [
       {
@@ -29,6 +65,23 @@ export async function generateResumeDocxBuffer(resume: ParsedResume) {
               ),
             ],
           }),
+          ...(
+            [resume.personal.linkedin, resume.personal.github, resume.personal.portfolio]
+              .filter(Boolean)
+              .length
+              ? [
+                  new Paragraph({
+                    text: [
+                      resume.personal.linkedin,
+                      resume.personal.github,
+                      resume.personal.portfolio,
+                    ]
+                      .filter(Boolean)
+                      .join(" | "),
+                  }),
+                ]
+              : []
+          ),
           ...(resume.summary
             ? [
                 new Paragraph({
@@ -48,32 +101,63 @@ export async function generateResumeDocxBuffer(resume: ParsedResume) {
               heading: HeadingLevel.HEADING_2,
             }),
             new Paragraph([job.location, `${job.startDate} - ${job.endDate}`].filter(Boolean).join(" | ")),
-            ...job.bullets.map(
-              (bullet) =>
-                new Paragraph({
-                  text: bullet,
-                  bullet: { level: 0 },
-                }),
-            ),
+            ...addBulletParagraphs(job.bullets),
           ]),
+          ...(resume.projects?.length
+            ? [
+                new Paragraph({
+                  text: "Projects",
+                  heading: HeadingLevel.HEADING_1,
+                }),
+                ...resume.projects.flatMap((project) => [
+                  new Paragraph({
+                    text: `${project.name} | ${project.techStack.join(", ")}`,
+                    heading: HeadingLevel.HEADING_2,
+                  }),
+                  new Paragraph([project.description, project.link].filter(Boolean).join(" | ")),
+                  ...addBulletParagraphs(project.bullets),
+                ]),
+              ]
+            : []),
           new Paragraph({
             text: "Education",
             heading: HeadingLevel.HEADING_1,
           }),
-          ...resume.education.map(
-            (item) =>
-              new Paragraph(
-                [item.degree, item.institution, item.year, item.gpa]
-                  .filter(Boolean)
-                  .join(" | "),
-              ),
-          ),
+          ...resume.education.flatMap((item) => [
+            new Paragraph({
+              text: item.degree,
+              heading: HeadingLevel.HEADING_2,
+            }),
+            new Paragraph(
+              [item.institution, item.year, item.gpa]
+                .filter(Boolean)
+                .join(" | "),
+            ),
+            ...addBulletParagraphs(item.highlights),
+          ]),
           new Paragraph({
             text: "Skills",
             heading: HeadingLevel.HEADING_1,
           }),
-          new Paragraph(`Technical: ${resume.skills.technical.join(", ")}`),
-          new Paragraph(`Tools: ${resume.skills.tools.join(", ")}`),
+          ...skillParagraphs,
+          ...(resume.achievements?.length
+            ? [
+                new Paragraph({
+                  text: "Achievements",
+                  heading: HeadingLevel.HEADING_1,
+                }),
+                ...addBulletParagraphs(resume.achievements),
+              ]
+            : []),
+          ...(resume.publications?.length
+            ? [
+                new Paragraph({
+                  text: "Publications",
+                  heading: HeadingLevel.HEADING_1,
+                }),
+                ...addBulletParagraphs(resume.publications),
+              ]
+            : []),
         ],
       },
     ],

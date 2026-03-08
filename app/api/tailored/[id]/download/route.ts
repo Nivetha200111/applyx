@@ -31,8 +31,8 @@ export async function GET(
 
     const buffer =
       format === "pdf"
-        ? await generateResumePdfBuffer(tailored.tailoredData)
-        : await generateResumeDocxBuffer(tailored.tailoredData);
+        ? await generateResumePdfBuffer(tailored.tailoredData, tailored.templateUsed)
+        : await generateResumeDocxBuffer(tailored.tailoredData, tailored.templateUsed);
 
     await dbQuery(
       `insert into public.usage_log (user_id, action, plan_tier, model_tier, metadata)
