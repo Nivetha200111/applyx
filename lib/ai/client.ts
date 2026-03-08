@@ -69,6 +69,27 @@ function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === "object" && error !== null && "message" in error) {
+    const message = (error as { message?: unknown }).message;
+    return typeof message === "string" ? message : "";
+  }
+
+  return "";
+}
+
+function isNonRetriableProviderError(error: unknown) {
+  const message = getErrorMessage(error);
+
+  return /credit balance is too low|insufficient credits|billing|quota|invalid[_ ]request/i.test(
+    message,
+  );
+}
+
 async function withRetry<T>(operation: () => Promise<T>) {
   let lastError: unknown;
 
@@ -77,6 +98,10 @@ async function withRetry<T>(operation: () => Promise<T>) {
       return await operation();
     } catch (error) {
       lastError = error;
+      if (isNonRetriableProviderError(error)) {
+        throw error;
+      }
+
       if (attempt < 2) {
         await wait(400 * 2 ** attempt);
       }
@@ -133,7 +158,14 @@ export async function completeJson<T>(
     }
 
     usedPrimary = fallback;
-    rawText = await withRetry(() => callProvider(fallback, options));
+
+    try {
+      rawText = await withRetry(() => callProvider(fallback, options));
+    } catch {
+      throw new Error(
+        `AI generation failed on ${primary.label} and ${fallback.label}. Check provider credits and API keys.`,
+      );
+    }
   }
 
   const parsed = options.validate(JSON.parse(extractJsonCandidate(rawText)));
