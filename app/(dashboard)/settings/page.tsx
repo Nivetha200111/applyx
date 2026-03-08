@@ -9,21 +9,25 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { requireUser } from "@/lib/auth";
+import { hasManualBillingConfig } from "@/lib/billing/config";
 import { getPaymentsForUser, refreshUserAccess } from "@/lib/data";
+import { hasDodoBillingConfig } from "@/lib/dodo/client";
 import { planCatalog, pricingTiers } from "@/lib/plans";
 
 export default async function SettingsPage() {
   const sessionUser = await requireUser("/settings");
   const user = await refreshUserAccess(sessionUser);
   const payments = await getPaymentsForUser(user.id, 6);
+  const hasDodo = hasDodoBillingConfig();
+  const hasManual = hasManualBillingConfig();
 
   return (
     <div className="space-y-8">
       <div className="space-y-3">
         <h1 className="text-3xl font-semibold">Account and billing</h1>
         <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
-          Upgrade between Free, Basic, and Premium, and manage secure hosted checkout
-          through Dodo Payments.
+          Upgrade between Free, Basic, and Premium. The app uses Dodo when configured
+          and falls back to manual billing links when gateway onboarding is blocked.
         </p>
       </div>
 
@@ -36,7 +40,9 @@ export default async function SettingsPage() {
             {user.billingCycleEnd
               ? `Renews / expires ${new Date(user.billingCycleEnd).toLocaleDateString("en-IN")}`
               : "No active paid cycle"}
-            {user.billingCustomerId ? <BillingPortalButton /> : null}
+            {user.billingProvider === "dodo" && user.billingCustomerId ? (
+              <BillingPortalButton />
+            ) : null}
           </CardDescription>
         </CardHeader>
         <CardContent className="text-sm leading-7 text-muted-foreground">
@@ -62,7 +68,12 @@ export default async function SettingsPage() {
               <CardHeader>
                 <CardTitle>{plan.name} checkout</CardTitle>
                 <CardDescription>
-                  Secure Dodo checkout for{" "}
+                  {hasDodo
+                    ? "Secure Dodo checkout"
+                    : hasManual
+                      ? "Manual payment links"
+                      : "Billing setup required"}{" "}
+                  for{" "}
                   {plan.monthlyTailors > 9999 ? "unlimited" : plan.monthlyTailors} monthly tailors
                   at ₹{plan.priceInr}.
                 </CardDescription>
@@ -83,7 +94,7 @@ export default async function SettingsPage() {
         <CardHeader>
           <CardTitle>Recent payments</CardTitle>
           <CardDescription>
-            Recent Dodo Payments checkout activity appears here after webhook sync.
+            Recent billing activity appears here after sync or manual approval.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

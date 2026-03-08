@@ -1,9 +1,12 @@
+import { randomUUID } from "crypto";
 import { z } from "zod";
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { dbQuery } from "@/lib/db";
+import { getManualBillingReturnUrl, hasManualBillingConfig } from "@/lib/billing/config";
 import { getDodoClient, getDodoProductId, getDodoReturnUrl } from "@/lib/dodo/client";
 import { getPlanById } from "@/lib/plans";
+import { getSiteUrl } from "@/lib/site-url";
 
 export const runtime = "nodejs";
 
@@ -26,38 +29,86 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid plan." }, { status: 400 });
     }
 
-    const dodo = getDodoClient();
-    const checkoutSession = await dodo.checkoutSessions.create({
-      product_cart: [
-        {
-          product_id: getDodoProductId(parsed.planId),
-          quantity: 1,
+    try {
+      const dodo = getDodoClient();
+      const checkoutSession = await dodo.checkoutSessions.create({
+        product_cart: [
+          {
+            product_id: getDodoProductId(parsed.planId),
+            quantity: 1,
+          },
+        ],
+        customer: {
+          email: user.email,
+          name: user.fullName ?? undefined,
         },
-      ],
-      customer: {
-        email: user.email,
-        name: user.fullName ?? undefined,
-      },
-      metadata: {
-        applyx_plan_id: plan.id,
-        applyx_user_email: user.email,
-        applyx_user_id: user.id,
-      },
-      return_url: getDodoReturnUrl(parsed.planId),
-      feature_flags: {
-        redirect_immediately: true,
-      },
-      customization: {
-        theme: "dark",
-      },
-    });
+        metadata: {
+          applyx_plan_id: plan.id,
+          applyx_user_email: user.email,
+          applyx_user_id: user.id,
+        },
+        return_url: getDodoReturnUrl(parsed.planId),
+        feature_flags: {
+          redirect_immediately: true,
+        },
+        customization: {
+          theme: "dark",
+        },
+      });
 
-    if (!checkoutSession.checkout_url) {
-      return NextResponse.json(
-        { error: "Dodo Payments did not return a checkout URL." },
-        { status: 502 },
+      if (!checkoutSession.checkout_url) {
+        return NextResponse.json(
+          { error: "Dodo Payments did not return a checkout URL." },
+          { status: 502 },
+        );
+      }
+
+      await dbQuery(
+        `insert into public.payments (
+          user_id,
+          plan_tier,
+          amount_inr,
+          currency,
+          status,
+          billing_provider,
+          provider_checkout_id,
+          payment_metadata
+        ) values ($1, $2, $3, $4, 'pending', 'dodo', $5, $6::jsonb)
+        on conflict (provider_checkout_id) do update
+        set
+          plan_tier = excluded.plan_tier,
+          amount_inr = excluded.amount_inr,
+          currency = excluded.currency,
+          billing_provider = excluded.billing_provider,
+          payment_metadata = excluded.payment_metadata,
+          updated_at = timezone('utc', now())`,
+        [
+          user.id,
+          parsed.planId,
+          plan.priceInr,
+          "INR",
+          checkoutSession.session_id,
+          JSON.stringify({
+            checkoutUrl: checkoutSession.checkout_url,
+            planId: plan.id,
+          }),
+        ],
       );
+
+      return NextResponse.json({
+        ok: true,
+        checkoutUrl: checkoutSession.checkout_url,
+        sessionId: checkoutSession.session_id,
+        mode: "dodo",
+      });
+    } catch (error) {
+      if (!hasManualBillingConfig()) {
+        throw error;
+      }
     }
+
+    const manualPaymentId = `manual_${randomUUID()}`;
+    const checkoutUrl = getManualBillingReturnUrl(manualPaymentId);
 
     await dbQuery(
       `insert into public.payments (
@@ -69,32 +120,26 @@ export async function POST(request: Request) {
         billing_provider,
         provider_checkout_id,
         payment_metadata
-      ) values ($1, $2, $3, $4, 'pending', 'dodo', $5, $6::jsonb)
-      on conflict (provider_checkout_id) do update
-      set
-        plan_tier = excluded.plan_tier,
-        amount_inr = excluded.amount_inr,
-        currency = excluded.currency,
-        billing_provider = excluded.billing_provider,
-        payment_metadata = excluded.payment_metadata,
-        updated_at = timezone('utc', now())`,
+      ) values ($1, $2, $3, $4, 'pending', 'manual', $5, $6::jsonb)`,
       [
         user.id,
         parsed.planId,
         plan.priceInr,
         "INR",
-        checkoutSession.session_id,
+        manualPaymentId,
         JSON.stringify({
-          checkoutUrl: checkoutSession.checkout_url,
+          fallbackFrom: "gateway_unavailable",
           planId: plan.id,
+          returnUrl: `${getSiteUrl()}/settings`,
         }),
       ],
     );
 
     return NextResponse.json({
       ok: true,
-      checkoutUrl: checkoutSession.checkout_url,
-      sessionId: checkoutSession.session_id,
+      checkoutUrl,
+      sessionId: manualPaymentId,
+      mode: "manual",
     });
   } catch (error) {
     return NextResponse.json(

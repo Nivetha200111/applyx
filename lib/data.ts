@@ -339,6 +339,18 @@ export async function getPaymentsForUser(userId: string, limit = 10) {
   return result.rows.map(mapPayment);
 }
 
+export async function getPaymentForUserByCheckoutId(userId: string, checkoutId: string) {
+  const result = await dbQuery<PaymentRow>(
+    `select * from public.payments
+     where user_id = $1 and provider_checkout_id = $2
+     limit 1`,
+    [userId, checkoutId],
+  );
+
+  const row = firstRow(result);
+  return row ? mapPayment(row) : null;
+}
+
 export async function getDashboardSnapshot(user: AppUser) {
   const currentUser = await refreshUserAccess(user);
   const [resumes, tailoredResumes, usageLog] = await Promise.all([

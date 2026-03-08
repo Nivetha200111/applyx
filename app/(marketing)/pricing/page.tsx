@@ -26,7 +26,7 @@ const faqs = [
   },
   {
     q: "Can I cancel anytime?",
-    a: "Yes. Paid plans run through secure Dodo hosted checkout, and active subscribers can manage billing from the customer portal.",
+    a: "Yes. Paid plans can run through hosted checkout when configured, and the fallback manual billing flow can be stopped at the next cycle without automatic renewal.",
   },
   {
     q: "Why is pricing in rupees?",

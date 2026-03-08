@@ -10,6 +10,14 @@ const planEnvMap: Record<PaidPlanTier, string> = {
   premium: "DODO_PREMIUM_PRODUCT_ID",
 };
 
+export function hasDodoBillingConfig() {
+  if (!process.env.DODO_PAYMENTS_API_KEY?.trim()) {
+    return false;
+  }
+
+  return Object.values(planEnvMap).every((envName) => Boolean(process.env[envName]?.trim()));
+}
+
 export function getDodoEnvironment(): DodoEnvironment {
   return process.env.DODO_ENVIRONMENT?.trim() === "test_mode" ? "test_mode" : "live_mode";
 }

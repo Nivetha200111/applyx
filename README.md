@@ -1,6 +1,6 @@
 # ApplyX v2
 
-ApplyX v2 is an India-first AI resume tailoring platform built with Next.js 14, TypeScript, Tailwind CSS, PostgreSQL, Anthropic, OpenAI fallback, and Dodo Payments. Users create an account, upload one master resume, paste any job description, and receive an ATS-optimized tailored resume in PDF or DOCX format.
+ApplyX v2 is an India-first AI resume tailoring platform built with Next.js 14, TypeScript, Tailwind CSS, PostgreSQL, Anthropic, OpenAI fallback, and a billing layer that prefers Dodo Payments but can fall back to manual payment links. Users create an account, upload one master resume, paste any job description, and receive an ATS-optimized tailored resume in PDF or DOCX format.
 
 ## Stack
 
@@ -10,7 +10,8 @@ ApplyX v2 is an India-first AI resume tailoring platform built with Next.js 14, 
 - PostgreSQL-backed auth, session, resume, tailoring, usage, and payment records
 - Provider-neutral PostgreSQL schema targeting Neon or any standard PostgreSQL host
 - Anthropic Claude with OpenAI fallback
-- Dodo Payments for hosted checkout and subscriptions
+- Dodo Payments for hosted checkout when available
+- Manual UPI / international payment link fallback with founder approval scripts
 
 ## Local Setup
 
@@ -58,6 +59,7 @@ The current build now includes:
 - JD analysis and AI tailoring with plan-based model selection
 - PDF and DOCX download generation
 - Dodo hosted checkout, customer portal, and signed webhook routes
+- Manual billing fallback page, transaction submission flow, and approval scripts
 - Free, Basic, and Premium usage enforcement
 
 To run it as a real product, you still need to provide:
@@ -69,4 +71,16 @@ To run it as a real product, you still need to provide:
 - `DODO_PAYMENTS_WEBHOOK_KEY`
 - `DODO_BASIC_PRODUCT_ID`
 - `DODO_PREMIUM_PRODUCT_ID`
+- `MANUAL_UPI_PAYMENT_URL` or `MANUAL_INTERNATIONAL_PAYMENT_URL` if you want to bypass gateways
 - `NEXT_PUBLIC_APP_URL`
+
+## Manual Billing Operations
+
+If gateway onboarding is blocked, the app can still monetize with manual billing:
+
+```bash
+npm run billing:list
+npm run billing:approve -- <payment-id-or-checkout-id>
+```
+
+Users pay via the configured manual links, submit a transaction reference in the app, and you approve the payment to activate their plan for 30 days.

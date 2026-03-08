@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint --dir app --dir components --dir lib"
+    "lint": "next lint --dir app --dir components --dir lib",
+    "billing:list": "node scripts/billing-list.mjs",
+    "billing:approve": "node scripts/billing-approve.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.30.0",
