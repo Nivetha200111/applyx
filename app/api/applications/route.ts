@@ -106,7 +106,8 @@ export async function POST(request: Request) {
     let parsedJdData: unknown = null;
     let prepResources: unknown[] = [];
     let sourcePlatform: string | null = null;
-    const usedAiParse = Boolean(payload.rawJdText);
+    const rawJdText = payload.rawJdText?.trim() ?? "";
+    const usedAiParse = rawJdText.length > 0;
 
     if (usedAiParse) {
       const trackerParsesRemaining =
@@ -118,7 +119,7 @@ export async function POST(request: Request) {
         );
       }
 
-      const { parsed } = await parseJdForTracker(payload.rawJdText);
+      const { parsed } = await parseJdForTracker(rawJdText);
 
       companyName = companyName || parsed.company || "";
       roleTitle = roleTitle || parsed.title || "";
@@ -200,7 +201,7 @@ export async function POST(request: Request) {
         [
           currentUser.id, companyName, roleTitle, location, workMode,
           salaryMin, salaryMax, salaryCurrency, payload.status, payload.sourceUrl || null,
-          sourcePlatform, payload.rawJdText || null, parsedJdData ? JSON.stringify(parsedJdData) : null,
+          sourcePlatform, rawJdText || null, parsedJdData ? JSON.stringify(parsedJdData) : null,
           requiredSkills, preferredSkills, experienceRequired,
           payload.notes || null, JSON.stringify(prepResources),
         ],
