@@ -1,3 +1,4 @@
+import { BillingPortalButton } from "@/components/billing/billing-portal-button";
 import { CheckoutButton } from "@/components/billing/checkout-button";
 import { PricingCard } from "@/components/pricing-card";
 import {
@@ -21,20 +22,21 @@ export default async function SettingsPage() {
       <div className="space-y-3">
         <h1 className="text-3xl font-semibold">Account and billing</h1>
         <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
-          Upgrade between Free, Basic, and Premium, and track successful Razorpay
-          payments here.
+          Upgrade between Free, Basic, and Premium, and manage secure hosted checkout
+          through Dodo Payments.
         </p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>Current plan</CardTitle>
-          <CardDescription>
+          <CardDescription className="flex flex-wrap items-center gap-3">
             {user.plan[0].toUpperCase()}
             {user.plan.slice(1)} plan •{" "}
             {user.billingCycleEnd
               ? `Renews / expires ${new Date(user.billingCycleEnd).toLocaleDateString("en-IN")}`
               : "No active paid cycle"}
+            {user.billingCustomerId ? <BillingPortalButton /> : null}
           </CardDescription>
         </CardHeader>
         <CardContent className="text-sm leading-7 text-muted-foreground">
@@ -60,7 +62,9 @@ export default async function SettingsPage() {
               <CardHeader>
                 <CardTitle>{plan.name} checkout</CardTitle>
                 <CardDescription>
-                  Activate {plan.monthlyTailors > 9999 ? "unlimited" : plan.monthlyTailors} monthly tailors for ₹{plan.priceInr}.
+                  Secure Dodo checkout for{" "}
+                  {plan.monthlyTailors > 9999 ? "unlimited" : plan.monthlyTailors} monthly tailors
+                  at ₹{plan.priceInr}.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -79,7 +83,7 @@ export default async function SettingsPage() {
         <CardHeader>
           <CardTitle>Recent payments</CardTitle>
           <CardDescription>
-            Successful and pending orders from Razorpay appear here.
+            Recent Dodo Payments checkout activity appears here after webhook sync.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

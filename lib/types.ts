@@ -125,14 +125,15 @@ export interface AppUser {
   phone: string | null;
   location: string | null;
   plan: PlanTier;
+  billingProvider: string;
   billingCycleStart: string;
   billingCycleEnd: string | null;
   demoTailorsUsed: number;
   monthlyTailorsUsed: number;
   monthlyTailorLimit: number;
   preferredModelTier: ModelTier;
-  razorpayCustomerId: string | null;
-  razorpaySubscriptionId: string | null;
+  billingCustomerId: string | null;
+  billingSubscriptionId: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -211,10 +212,15 @@ export interface PaymentRecord {
   planTier: PlanTier;
   amountInr: number;
   currency: string;
-  status: "pending" | "paid" | "failed";
-  razorpayOrderId: string;
-  razorpayPaymentId: string | null;
-  razorpaySignature: string | null;
+  status: "pending" | "paid" | "failed" | "cancelled" | "refunded";
+  billingProvider: string;
+  providerCheckoutId: string | null;
+  providerPaymentId: string | null;
+  providerSubscriptionId: string | null;
+  providerCustomerId: string | null;
+  providerSignature: string | null;
+  providerEventType: string | null;
+  paymentMetadata: Record<string, string> | null;
   createdAt: string;
   updatedAt: string;
   paidAt: string | null;

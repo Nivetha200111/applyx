@@ -20,14 +20,15 @@ type UserRow = {
   phone: string | null;
   location: string | null;
   plan: AppUser["plan"];
+  billing_provider: string;
   billing_cycle_start: string;
   billing_cycle_end: string | null;
   demo_tailors_used: number;
   monthly_tailors_used: number;
   monthly_tailor_limit: number;
   preferred_model_tier: AppUser["preferredModelTier"];
-  razorpay_customer_id: string | null;
-  razorpay_subscription_id: string | null;
+  billing_customer_id: string | null;
+  billing_subscription_id: string | null;
   created_at: string;
   updated_at: string;
   password_hash: string;
@@ -41,14 +42,15 @@ function toAppUser(row: Omit<UserRow, "password_hash">): AppUser {
     phone: row.phone,
     location: row.location,
     plan: row.plan,
+    billingProvider: row.billing_provider,
     billingCycleStart: row.billing_cycle_start,
     billingCycleEnd: row.billing_cycle_end,
     demoTailorsUsed: row.demo_tailors_used,
     monthlyTailorsUsed: row.monthly_tailors_used,
     monthlyTailorLimit: row.monthly_tailor_limit,
     preferredModelTier: row.preferred_model_tier,
-    razorpayCustomerId: row.razorpay_customer_id,
-    razorpaySubscriptionId: row.razorpay_subscription_id,
+    billingCustomerId: row.billing_customer_id,
+    billingSubscriptionId: row.billing_subscription_id,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -112,9 +114,10 @@ export async function createUserAccount(input: {
       email,
       password_hash,
       plan,
+      billing_provider,
       preferred_model_tier,
       monthly_tailor_limit
-    ) values ($1, $2, $3, 'free', 'demo', 0)
+    ) values ($1, $2, $3, 'free', 'dodo', 'demo', 0)
     returning *`,
     [input.fullName, input.email.toLowerCase(), passwordHash],
   );
@@ -194,14 +197,15 @@ export async function getCurrentUser() {
         u.phone,
         u.location,
         u.plan,
+        u.billing_provider,
         u.billing_cycle_start,
         u.billing_cycle_end,
         u.demo_tailors_used,
         u.monthly_tailors_used,
         u.monthly_tailor_limit,
         u.preferred_model_tier,
-        u.razorpay_customer_id,
-        u.razorpay_subscription_id,
+        u.billing_customer_id,
+        u.billing_subscription_id,
         u.created_at,
         u.updated_at
       from public.sessions s

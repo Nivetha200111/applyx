@@ -26,11 +26,11 @@ const faqs = [
   },
   {
     q: "Can I cancel anytime?",
-    a: "Yes. Plans are month-to-month via Razorpay. Cancel before your cycle ends and you won't be charged again.",
+    a: "Yes. Paid plans run through secure Dodo hosted checkout, and active subscribers can manage billing from the customer portal.",
   },
   {
     q: "Why is pricing in rupees?",
-    a: "ApplyX is built for Indian job seekers. We use Razorpay and INR pricing so you never pay inflated dollar-denominated SaaS rates.",
+    a: "ApplyX is built for Indian job seekers. We price in INR so you never pay inflated dollar-denominated SaaS rates for a local job search workflow.",
   },
 ];
 

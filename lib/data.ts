@@ -15,14 +15,15 @@ type UserRow = {
   phone: string | null;
   location: string | null;
   plan: AppUser["plan"];
+  billing_provider: string;
   billing_cycle_start: string;
   billing_cycle_end: string | null;
   demo_tailors_used: number;
   monthly_tailors_used: number;
   monthly_tailor_limit: number;
   preferred_model_tier: AppUser["preferredModelTier"];
-  razorpay_customer_id: string | null;
-  razorpay_subscription_id: string | null;
+  billing_customer_id: string | null;
+  billing_subscription_id: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -84,9 +85,14 @@ type PaymentRow = {
   amount_inr: number;
   currency: string;
   status: PaymentRecord["status"];
-  razorpay_order_id: string;
-  razorpay_payment_id: string | null;
-  razorpay_signature: string | null;
+  billing_provider: string;
+  provider_checkout_id: string | null;
+  provider_payment_id: string | null;
+  provider_subscription_id: string | null;
+  provider_customer_id: string | null;
+  provider_signature: string | null;
+  provider_event_type: string | null;
+  payment_metadata: PaymentRecord["paymentMetadata"];
   created_at: string;
   updated_at: string;
   paid_at: string | null;
@@ -100,14 +106,15 @@ function mapUser(row: UserRow): AppUser {
     phone: row.phone,
     location: row.location,
     plan: row.plan,
+    billingProvider: row.billing_provider,
     billingCycleStart: row.billing_cycle_start,
     billingCycleEnd: row.billing_cycle_end,
     demoTailorsUsed: row.demo_tailors_used,
     monthlyTailorsUsed: row.monthly_tailors_used,
     monthlyTailorLimit: row.monthly_tailor_limit,
     preferredModelTier: row.preferred_model_tier,
-    razorpayCustomerId: row.razorpay_customer_id,
-    razorpaySubscriptionId: row.razorpay_subscription_id,
+    billingCustomerId: row.billing_customer_id,
+    billingSubscriptionId: row.billing_subscription_id,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -177,9 +184,14 @@ function mapPayment(row: PaymentRow): PaymentRecord {
     amountInr: row.amount_inr,
     currency: row.currency,
     status: row.status,
-    razorpayOrderId: row.razorpay_order_id,
-    razorpayPaymentId: row.razorpay_payment_id,
-    razorpaySignature: row.razorpay_signature,
+    billingProvider: row.billing_provider,
+    providerCheckoutId: row.provider_checkout_id,
+    providerPaymentId: row.provider_payment_id,
+    providerSubscriptionId: row.provider_subscription_id,
+    providerCustomerId: row.provider_customer_id,
+    providerSignature: row.provider_signature,
+    providerEventType: row.provider_event_type,
+    paymentMetadata: row.payment_metadata,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     paidAt: row.paid_at,
@@ -199,6 +211,7 @@ export async function refreshUserAccess(user: AppUser) {
     `update public.users
      set
        plan = 'free',
+       billing_provider = 'dodo',
        billing_cycle_start = timezone('utc', now()),
        billing_cycle_end = null,
        monthly_tailors_used = 0,

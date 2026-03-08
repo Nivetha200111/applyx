@@ -69,15 +69,15 @@ create table if not exists public.users (
   phone text,
   location text,
   plan public.plan_tier not null default 'free',
-  billing_provider text not null default 'razorpay',
+  billing_provider text not null default 'dodo',
   billing_cycle_start timestamptz not null default timezone('utc', now()),
   billing_cycle_end timestamptz,
   demo_tailors_used integer not null default 0 check (demo_tailors_used >= 0),
   monthly_tailors_used integer not null default 0 check (monthly_tailors_used >= 0),
   monthly_tailor_limit integer not null default 0 check (monthly_tailor_limit >= 0),
   preferred_model_tier public.model_tier not null default 'demo',
-  razorpay_customer_id text,
-  razorpay_subscription_id text,
+  billing_customer_id text,
+  billing_subscription_id text,
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now())
 );
@@ -160,10 +160,15 @@ create table if not exists public.payments (
   plan_tier public.plan_tier not null,
   amount_inr integer not null check (amount_inr >= 0),
   currency text not null default 'INR',
-  status text not null default 'pending' check (status in ('pending', 'paid', 'failed', 'refunded')),
-  razorpay_order_id text not null unique,
-  razorpay_payment_id text,
-  razorpay_signature text,
+  status text not null default 'pending' check (status in ('pending', 'paid', 'failed', 'cancelled', 'refunded')),
+  billing_provider text not null default 'dodo',
+  provider_checkout_id text unique,
+  provider_payment_id text unique,
+  provider_subscription_id text,
+  provider_customer_id text,
+  provider_signature text,
+  provider_event_type text,
+  payment_metadata jsonb,
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now()),
   paid_at timestamptz
@@ -183,7 +188,8 @@ create index if not exists tailored_resumes_user_id_idx on public.tailored_resum
 create index if not exists tailored_resumes_plan_model_idx on public.tailored_resumes (plan_tier, model_tier, created_at desc);
 create index if not exists usage_log_user_id_idx on public.usage_log (user_id, created_at desc);
 create index if not exists payments_user_id_idx on public.payments (user_id, created_at desc);
-create index if not exists payments_order_id_idx on public.payments (razorpay_order_id);
+create index if not exists payments_checkout_id_idx on public.payments (provider_checkout_id);
+create index if not exists payments_subscription_id_idx on public.payments (provider_subscription_id, created_at desc);
 
 -- Triggers
 
