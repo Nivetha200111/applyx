@@ -74,7 +74,12 @@ export function TailorForm({
           });
 
           const payload = (await response.json().catch(() => null)) as
-            | { error?: string; tailoredResumeId?: string }
+            | {
+                error?: string;
+                tailoredResumeId?: string;
+                trackerSyncStatus?: "created" | "updated" | "skipped";
+                trackerMessage?: string | null;
+              }
             | null;
 
           if (!response.ok || !payload?.tailoredResumeId) {
@@ -82,7 +87,7 @@ export function TailorForm({
             return;
           }
 
-          toast.success("Tailored resume generated.");
+          toast.success(payload.trackerMessage ?? "Tailored resume generated.");
           router.push(`/tailored/${payload.tailoredResumeId}`);
           router.refresh();
         });

@@ -6,7 +6,8 @@ import { getCurrentUser } from "@/lib/auth";
 import { dbQuery, firstRow, withTransaction } from "@/lib/db";
 import { getRemainingTailors, refreshUserAccess } from "@/lib/data";
 import { getPlanById } from "@/lib/plans";
-import type { ParsedResume, ResumeTemplate } from "@/lib/types";
+import { suggestPrepResources } from "@/lib/prep-resources";
+import type { ParsedJD, ParsedResume, ResumeTemplate } from "@/lib/types";
 
 export const runtime = "nodejs";
 
@@ -22,6 +23,183 @@ type ResumeRow = {
   user_id: string;
   parsed_data: ParsedResume;
 };
+
+type TrackerSyncResult = {
+  status: "created" | "updated" | "skipped";
+  applicationId: string | null;
+  message: string | null;
+};
+
+async function syncTailoredResumeToTracker(params: {
+  userId: string;
+  tailoredResumeId: string;
+  sourceUrl: string | null;
+  jobDescription: string;
+  parsedJd: ParsedJD;
+  trackerRowLimit: number;
+  planName: string;
+}) {
+  const companyName = params.parsedJd.company?.trim() ?? "";
+  const roleTitle = params.parsedJd.title?.trim() ?? "";
+  const location = params.parsedJd.location?.trim() || null;
+  const requiredSkills = params.parsedJd.requiredSkills ?? [];
+  const preferredSkills = params.parsedJd.preferredSkills ?? [];
+  const experienceRequired = params.parsedJd.requiredExperience?.trim() || null;
+  const prepResources = suggestPrepResources(requiredSkills);
+  const parsedJdJson = JSON.stringify(params.parsedJd);
+  const prepResourcesJson = JSON.stringify(prepResources);
+
+  try {
+    return await withTransaction<TrackerSyncResult>(async (client) => {
+      let existingId: string | null = null;
+
+      if (params.sourceUrl) {
+        const existingBySource = await client.query<{ id: string }>(
+          `select id
+           from public.tracked_applications
+           where user_id = $1
+             and is_archived = false
+             and source_url = $2
+           order by updated_at desc
+           limit 1`,
+          [params.userId, params.sourceUrl],
+        );
+
+        existingId = existingBySource.rows[0]?.id ?? null;
+      }
+
+      if (!existingId && companyName && roleTitle) {
+        const existingByRole = await client.query<{ id: string }>(
+          `select id
+           from public.tracked_applications
+           where user_id = $1
+             and is_archived = false
+             and lower(company_name) = lower($2)
+             and lower(role_title) = lower($3)
+           order by updated_at desc
+           limit 1`,
+          [params.userId, companyName, roleTitle],
+        );
+
+        existingId = existingByRole.rows[0]?.id ?? null;
+      }
+
+      if (existingId) {
+        await client.query(
+          `update public.tracked_applications
+           set
+             company_name = case when nullif($2, '') is not null then $2 else company_name end,
+             role_title = case when nullif($3, '') is not null then $3 else role_title end,
+             location = coalesce($4, location),
+             source_url = coalesce($5, source_url),
+             raw_jd_text = case when nullif($6, '') is not null then $6 else raw_jd_text end,
+             parsed_jd_data = $7::jsonb,
+             required_skills = case when cardinality($8::text[]) > 0 then $8::text[] else required_skills end,
+             preferred_skills = case when cardinality($9::text[]) > 0 then $9::text[] else preferred_skills end,
+             experience_required = coalesce($10, experience_required),
+             prep_resources = case when jsonb_array_length($11::jsonb) > 0 then $11::jsonb else prep_resources end,
+             tailored_resume_id = $12,
+             status = case when status = 'bookmarked' then 'applying'::application_status else status end,
+             last_activity_at = timezone('utc', now()),
+             updated_at = timezone('utc', now())
+           where id = $1`,
+          [
+            existingId,
+            companyName,
+            roleTitle,
+            location,
+            params.sourceUrl,
+            params.jobDescription,
+            parsedJdJson,
+            requiredSkills,
+            preferredSkills,
+            experienceRequired,
+            prepResourcesJson,
+            params.tailoredResumeId,
+          ],
+        );
+
+        return {
+          status: "updated",
+          applicationId: existingId,
+          message: "Linked this tailored resume to your existing tracker entry.",
+        };
+      }
+
+      const activeCountResult = await client.query<{ count: string }>(
+        `select count(*)::text as count
+         from public.tracked_applications
+         where user_id = $1 and is_archived = false`,
+        [params.userId],
+      );
+      const activeCount = Number(activeCountResult.rows[0]?.count ?? "0");
+
+      if (activeCount >= params.trackerRowLimit) {
+        return {
+          status: "skipped",
+          applicationId: null,
+          message: `Tracker not updated because your ${params.planName} plan has reached its active application limit.`,
+        };
+      }
+
+      const insertResult = await client.query<{ id: string }>(
+        `insert into public.tracked_applications (
+          user_id,
+          company_name,
+          role_title,
+          location,
+          work_mode,
+          status,
+          source_url,
+          raw_jd_text,
+          parsed_jd_data,
+          required_skills,
+          preferred_skills,
+          experience_required,
+          tailored_resume_id,
+          prep_resources,
+          last_activity_at
+        ) values (
+          $1, $2, $3, $4, 'unknown'::work_mode, 'applying'::application_status,
+          $5, $6, $7::jsonb, $8::text[], $9::text[], $10, $11, $12::jsonb, timezone('utc', now())
+        )
+        returning id`,
+        [
+          params.userId,
+          companyName,
+          roleTitle,
+          location,
+          params.sourceUrl,
+          params.jobDescription,
+          parsedJdJson,
+          requiredSkills,
+          preferredSkills,
+          experienceRequired,
+          params.tailoredResumeId,
+          prepResourcesJson,
+        ],
+      );
+
+      return {
+        status: "created",
+        applicationId: insertResult.rows[0]?.id ?? null,
+        message: "Added this tailored resume to your job tracker.",
+      };
+    });
+  } catch (error) {
+    console.error(
+      `[Tracker sync] Failed for tailored resume ${params.tailoredResumeId}: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`,
+    );
+
+    return {
+      status: "skipped",
+      applicationId: null,
+      message: "Tailored resume created, but tracker sync failed.",
+    } satisfies TrackerSyncResult;
+  }
+}
 
 export async function POST(request: Request) {
   const startedAt = Date.now();
@@ -72,7 +250,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid plan configuration." }, { status: 400 });
     }
 
-    const created = await withTransaction(async (client) => {
+    const tailoredResumeId = await withTransaction(async (client) => {
       const jdResult = await client.query<{ id: string }>(
         `insert into public.job_descriptions (
           user_id,
@@ -167,12 +345,29 @@ export async function POST(request: Request) {
         ],
       );
 
-      return tailoredResultInsert.rows[0]?.id;
+      return tailoredResultInsert.rows[0]?.id ?? null;
+    });
+
+    if (!tailoredResumeId) {
+      return NextResponse.json({ error: "Unable to save tailored resume." }, { status: 500 });
+    }
+
+    const trackerSync = await syncTailoredResumeToTracker({
+      userId: currentUser.id,
+      tailoredResumeId,
+      sourceUrl: payload.sourceUrl || null,
+      jobDescription: payload.jobDescription,
+      parsedJd,
+      trackerRowLimit: plan.trackerRowLimit,
+      planName: plan.name,
     });
 
     return NextResponse.json({
       ok: true,
-      tailoredResumeId: created,
+      tailoredResumeId,
+      trackerSyncStatus: trackerSync.status,
+      trackerApplicationId: trackerSync.applicationId,
+      trackerMessage: trackerSync.message,
     });
   } catch (error) {
     return NextResponse.json(
