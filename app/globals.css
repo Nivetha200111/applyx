@@ -23,17 +23,17 @@
 
 .dark {
   --background: 214 28% 8%;
-  --foreground: 48 36% 96%;
+  --foreground: 48 38% 98%;
   --card: 215 24% 12%;
-  --card-foreground: 48 36% 96%;
+  --card-foreground: 48 38% 98%;
   --popover: 215 24% 11%;
-  --popover-foreground: 48 36% 96%;
+  --popover-foreground: 48 38% 98%;
   --primary: 154 66% 46%;
   --primary-foreground: 210 40% 8%;
   --secondary: 205 24% 18%;
-  --secondary-foreground: 48 36% 96%;
+  --secondary-foreground: 48 34% 97%;
   --muted: 214 20% 15%;
-  --muted-foreground: 215 16% 70%;
+  --muted-foreground: 214 18% 78%;
   --accent: 32 91% 57%;
   --accent-foreground: 210 40% 8%;
   --destructive: 0 72% 52%;
@@ -85,6 +85,16 @@
 
   p {
     @apply text-pretty;
+  }
+
+  ::selection {
+    background: rgba(16, 185, 129, 0.28);
+    color: hsl(var(--foreground));
+  }
+
+  .dark ::selection {
+    background: rgba(251, 191, 36, 0.3);
+    color: hsl(var(--foreground));
   }
 }
 
