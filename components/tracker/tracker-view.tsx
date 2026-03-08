@@ -176,9 +176,9 @@ export function TrackerView({
       <TrackerStats stats={trackerStats} />
 
       {/* Toolbar */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-1 items-center gap-2">
-          <div className="relative max-w-xs flex-1">
+      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="relative w-full max-w-xl flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               className="pl-9"
@@ -192,8 +192,8 @@ export function TrackerView({
             Search
           </Button>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-3 xl:justify-end">
+          <span className="rounded-full border border-border/70 bg-card/70 px-3 py-1 text-xs font-medium text-muted-foreground">
             {trackerParsesRemaining} AI auto-fills left
           </span>
           <Button
@@ -228,7 +228,7 @@ export function TrackerView({
 
       {/* Table */}
       <div className="overflow-x-auto rounded-[28px] border border-border/70 bg-card/80 backdrop-blur-xl shadow-glow shadow-black/5 dark:shadow-[0_32px_88px_-42px_rgba(2,6,23,0.98)]">
-        <table className="w-full text-sm">
+        <table className="min-w-[980px] w-full text-sm">
           <thead>
             <tr className="border-b border-border/70 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
               <th className="w-8 px-3 py-3" />
@@ -360,6 +360,7 @@ function ApplicationRow({
         </td>
         <td className="px-3 py-3">
           <InlineEditCell
+            className="max-w-[15rem] whitespace-normal break-words leading-6"
             onSave={(v) => onUpdate(app.id, "companyName", v)}
             value={app.companyName}
           />
@@ -376,6 +377,7 @@ function ApplicationRow({
         </td>
         <td className="px-3 py-3">
           <InlineEditCell
+            className="max-w-[16rem] whitespace-normal break-words leading-6"
             onSave={(v) => onUpdate(app.id, "roleTitle", v)}
             value={app.roleTitle}
           />
@@ -392,7 +394,7 @@ function ApplicationRow({
             value={app.priority}
           />
         </td>
-        <td className="px-3 py-3 text-muted-foreground">
+        <td className="max-w-[11rem] px-3 py-3 text-muted-foreground">
           {app.location || "—"}
           {app.workMode !== "unknown" ? (
             <span className={cn(
@@ -410,14 +412,14 @@ function ApplicationRow({
         </td>
         <td className="px-3 py-3 text-muted-foreground">
           {app.appliedAt
-            ? new Date(app.appliedAt).toLocaleDateString("en-IN", {
+            ? new Date(app.appliedAt).toLocaleDateString(undefined, {
                 day: "numeric",
                 month: "short",
               })
             : "—"}
         </td>
         <td className="px-3 py-3">
-          <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+          <div className="flex items-center gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
             <button
               className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               onClick={() => onArchive(app.id)}
@@ -451,9 +453,11 @@ function ApplicationRow({
 function InlineEditCell({
   value,
   onSave,
+  className,
 }: {
   value: string;
   onSave: (value: string) => void;
+  className?: string;
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
@@ -462,7 +466,10 @@ function InlineEditCell({
     return (
       <input
         autoFocus
-        className="w-full rounded-lg border border-primary/40 bg-transparent px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-primary"
+        className={cn(
+          "w-full rounded-lg border border-primary/40 bg-transparent px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-primary",
+          className,
+        )}
         onBlur={() => {
           setEditing(false);
           if (draft !== value) onSave(draft);
@@ -485,7 +492,10 @@ function InlineEditCell({
 
   return (
     <span
-      className="cursor-text rounded-lg px-1 py-0.5 transition-colors hover:bg-muted"
+      className={cn(
+        "inline-block cursor-text rounded-lg px-1 py-0.5 transition-colors hover:bg-muted",
+        className,
+      )}
       onClick={() => {
         setDraft(value);
         setEditing(true);

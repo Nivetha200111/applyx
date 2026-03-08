@@ -69,7 +69,7 @@ export function DashboardSidebar({
           </span>
           <div>
             <div className="font-semibold">ApplyX</div>
-            <div className="text-sm text-muted-foreground">Resume tailoring engine</div>
+            <div className="text-sm text-muted-foreground">Resume tailoring + tracker</div>
           </div>
         </Link>
         {userName ? (
