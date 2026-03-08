@@ -8,14 +8,15 @@ import type { PlanTier } from "@/lib/types";
 interface CheckoutButtonProps {
   planId: Exclude<PlanTier, "free">;
   label: string;
+  disabled?: boolean;
 }
 
-export function CheckoutButton({ planId, label }: CheckoutButtonProps) {
+export function CheckoutButton({ planId, label, disabled = false }: CheckoutButtonProps) {
   const [isPending, startTransition] = useTransition();
 
   return (
     <Button
-      disabled={isPending}
+      disabled={disabled || isPending}
       onClick={() =>
         startTransition(async () => {
           const checkoutResponse = await fetch("/api/billing/checkout", {

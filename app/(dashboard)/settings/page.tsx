@@ -30,7 +30,11 @@ export default async function SettingsPage() {
         <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
           {developerAdmin
             ? "Developer access is active on this account. Premium features are unlocked and billing is bypassed."
-            : "Upgrade between Free, Basic, and Premium. The app uses Dodo when configured and falls back to manual billing links when gateway onboarding is blocked."}
+            : hasDodo
+              ? "Upgrade between Free, Basic, and Premium using secure hosted checkout."
+              : hasManual
+                ? "UPI checkout is live during beta. After payment, submit the transaction reference and access will be activated after verification."
+                : "Billing is not configured yet for this deployment."}
         </p>
       </div>
 
@@ -85,12 +89,12 @@ export default async function SettingsPage() {
             .map((plan) => (
               <Card key={plan.id}>
                 <CardHeader>
-                  <CardTitle>{plan.name} checkout</CardTitle>
+                  <CardTitle>{plan.name} payment</CardTitle>
                   <CardDescription>
                     {hasDodo
                       ? "Secure Dodo checkout"
                       : hasManual
-                        ? "Manual payment links"
+                        ? "UPI payment flow"
                         : "Billing setup required"}{" "}
                     for{" "}
                     {plan.monthlyTailors > 9999 ? "unlimited" : plan.monthlyTailors} monthly tailors
@@ -99,8 +103,17 @@ export default async function SettingsPage() {
                 </CardHeader>
                 <CardContent>
                   <CheckoutButton
+                    disabled={!hasDodo && !hasManual}
                     label={
-                      user.plan === plan.id ? `Renew ${plan.name}` : `Upgrade to ${plan.name}`
+                      hasDodo
+                        ? user.plan === plan.id
+                          ? `Renew ${plan.name}`
+                          : `Upgrade to ${plan.name}`
+                        : hasManual
+                          ? user.plan === plan.id
+                            ? `Renew ${plan.name} via UPI`
+                            : `Pay via UPI for ${plan.name}`
+                          : "Billing unavailable"
                     }
                     planId={plan.id as "basic" | "premium"}
                   />
@@ -114,7 +127,7 @@ export default async function SettingsPage() {
         <CardHeader>
           <CardTitle>Recent payments</CardTitle>
           <CardDescription>
-            Recent billing activity appears here after sync or manual approval.
+            Recent billing activity appears here after checkout or payment verification.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

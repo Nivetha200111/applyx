@@ -47,7 +47,7 @@ export function ManualPaymentForm({ paymentId }: ManualPaymentFormProps) {
             return;
           }
 
-          toast.success("Payment reference submitted. Approve it from your admin flow.");
+          toast.success("Payment reference submitted. We’ll verify it and activate the plan shortly.");
           setNotes("");
           router.refresh();
         });

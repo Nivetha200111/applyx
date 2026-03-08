@@ -59,12 +59,12 @@ export default async function ManualBillingPage({
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
       <div className="space-y-3">
         <Badge variant="warning" className="w-fit">
-          Manual billing fallback
+          UPI checkout beta
         </Badge>
         <h1 className="text-3xl font-semibold">Complete payment and submit the reference</h1>
         <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
-          Gateway onboarding is bypassed for now. Pay using one of your configured links,
-          then submit the transaction reference so the subscription can be approved.
+          Pay the exact plan amount using the QR code or UPI app, then submit the
+          transaction reference so we can verify it and activate your plan.
         </p>
       </div>
 
@@ -138,8 +138,7 @@ export default async function ManualBillingPage({
 
             {!upiPaymentUrl ? (
               <div className="rounded-3xl border border-amber-400/40 bg-amber-400/10 p-4 text-sm leading-7 text-amber-100">
-                No manual payment options are configured yet. Add `MANUAL_UPI_ID` in Vercel to
-                make this page usable.
+                UPI payment is not configured for this deployment yet.
               </div>
             ) : null}
 
@@ -151,7 +150,7 @@ export default async function ManualBillingPage({
           <CardHeader>
             <CardTitle>How approval works</CardTitle>
             <CardDescription>
-              Manual billing is operationally simple and works without provider KYC.
+              This beta flow keeps checkout usable while gateway setup is still in progress.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-sm leading-7 text-muted-foreground">
@@ -162,8 +161,7 @@ export default async function ManualBillingPage({
               2. Copy the UTR / receipt / transaction ID and submit it here.
             </p>
             <p>
-              3. Approve the payment from your founder admin flow, and the user&apos;s plan is
-              activated for 30 days.
+              3. After verification, your plan is activated for 30 days.
             </p>
             <div className="rounded-3xl border border-border/70 bg-card/60 p-4">
               <div className="flex items-center gap-2 font-medium text-foreground">
