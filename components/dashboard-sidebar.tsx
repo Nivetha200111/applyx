@@ -9,6 +9,7 @@ import {
   Settings,
   Sparkles,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -44,7 +45,7 @@ export function DashboardSidebar() {
 
   return (
     <>
-      <aside className="hidden w-72 shrink-0 border-r border-border/70 bg-white/60 px-6 py-8 backdrop-blur-xl lg:block">
+      <aside className="hidden w-72 shrink-0 border-r border-border/70 bg-card/70 px-6 py-8 backdrop-blur-xl lg:block">
         <Link className="inline-flex items-center gap-3" href="/">
           <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/15 text-lg font-semibold text-primary">
             A
@@ -54,6 +55,9 @@ export function DashboardSidebar() {
             <div className="text-sm text-muted-foreground">Resume tailoring engine</div>
           </div>
         </Link>
+        <div className="mt-6">
+          <ThemeToggle />
+        </div>
         <nav className="mt-10 space-y-2">
           {navItems.map((item) => {
             const isActive =
@@ -64,8 +68,8 @@ export function DashboardSidebar() {
               <Link
                 key={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-white hover:text-foreground",
-                  isActive && "bg-white text-foreground shadow-sm",
+                  "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-muted-foreground transition-all duration-200 hover:-translate-y-0.5 hover:bg-card hover:text-foreground",
+                  isActive && "bg-card text-foreground shadow-sm",
                 )}
                 href={item.href}
               >
@@ -76,13 +80,13 @@ export function DashboardSidebar() {
           })}
         </nav>
         <div className="mt-10 rounded-[24px] border border-primary/20 bg-primary/10 p-4">
-          <div className="text-sm font-semibold text-primary">Basic plan</div>
+          <div className="text-sm font-semibold text-primary">Premium preview</div>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            12 of 30 tailors used this billing cycle.
+            Dark mode, motion, and premium-tailoring previews are active in this demo.
           </p>
         </div>
       </aside>
-      <nav className="sticky top-0 z-30 flex gap-2 overflow-x-auto border-b border-border/70 bg-background/95 px-4 py-3 backdrop-blur lg:hidden">
+      <nav className="sticky top-0 z-30 flex items-center gap-2 overflow-x-auto border-b border-border/70 bg-background/95 px-4 py-3 backdrop-blur lg:hidden">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive =
@@ -95,7 +99,7 @@ export function DashboardSidebar() {
                 "flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors",
                 isActive
                   ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-white/80 text-muted-foreground",
+                  : "border-border bg-card/85 text-muted-foreground",
               )}
               href={item.href}
             >
@@ -104,6 +108,9 @@ export function DashboardSidebar() {
             </Link>
           );
         })}
+        <div className="ml-auto shrink-0">
+          <ThemeToggle />
+        </div>
       </nav>
     </>
   );

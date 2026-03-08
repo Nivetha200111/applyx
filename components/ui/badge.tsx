@@ -8,9 +8,9 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default: "bg-secondary text-secondary-foreground",
-        outline: "border border-border bg-white/80 text-foreground",
-        success: "bg-emerald-100 text-emerald-900",
-        warning: "bg-amber-100 text-amber-900",
+        outline: "border border-border bg-card/80 text-foreground",
+        success: "bg-emerald-100 text-emerald-900 dark:bg-emerald-500/15 dark:text-emerald-100",
+        warning: "bg-amber-100 text-amber-900 dark:bg-amber-500/18 dark:text-amber-100",
       },
     },
     defaultVariants: {

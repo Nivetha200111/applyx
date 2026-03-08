@@ -27,7 +27,7 @@ export function TemplatePicker({ selected = "classic" }: TemplatePickerProps) {
           <div
             key={template.id}
             className={cn(
-              "rounded-[24px] border border-border/70 bg-white/80 p-4",
+              "rounded-[24px] border border-border/70 bg-card/80 p-4 transition-all duration-200 hover:-translate-y-1",
               selected === template.id && "border-primary/60 bg-primary/5",
             )}
           >

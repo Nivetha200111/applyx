@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, FileText, Sparkles, TimerReset } from "lucide-react";
 import { tailoredResumeCards } from "@/lib/demo-data";
 import { getPlanById } from "@/lib/plans";
+import { AnimatedPanel } from "@/components/ui/animated-panel";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -40,81 +41,87 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <Card className="overflow-hidden bg-slate-950 text-slate-50">
-          <CardHeader>
-            <Badge variant="warning" className="w-fit">
-              Premium plan preview
-            </Badge>
-            <CardTitle className="text-3xl">Resume tailoring dashboard</CardTitle>
-            <CardDescription className="text-slate-300">
-              Built to move from job description to ATS-ready resume with premium
-              rewriting quality and lower-cost fallback coverage.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-3">
-            <div>
-              <div className="text-4xl font-semibold">18</div>
-              <div className="text-sm text-slate-300">Tailors used this month</div>
-            </div>
-            <div>
-              <div className="text-4xl font-semibold">
-                {premiumPlan ? premiumPlan.monthlyTailors - 18 : 62}
+        <AnimatedPanel>
+          <Card className="overflow-hidden bg-slate-950 text-slate-50">
+            <CardHeader>
+              <Badge variant="warning" className="w-fit">
+                Premium plan preview
+              </Badge>
+              <CardTitle className="text-3xl">Resume tailoring dashboard</CardTitle>
+              <CardDescription className="text-slate-300">
+                Built to move from job description to ATS-ready resume with premium
+                rewriting quality and lower-cost fallback coverage.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4 sm:grid-cols-3">
+              <div>
+                <div className="text-4xl font-semibold">18</div>
+                <div className="text-sm text-slate-300">Tailors used this month</div>
               </div>
-              <div className="text-sm text-slate-300">Remaining this cycle</div>
-            </div>
-            <div>
-              <div className="text-4xl font-semibold">89</div>
-              <div className="text-sm text-slate-300">Average current match score</div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Usage meter</CardTitle>
-            <CardDescription>
-              Tailors reset on your next billing cycle starting March 28, 2026.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="h-3 rounded-full bg-muted">
-              <div className="h-3 w-[22.5%] rounded-full bg-primary" />
-            </div>
-            <p className="text-sm leading-6 text-muted-foreground">
-              18 of {premiumPlan?.monthlyTailors ?? 80} premium tailored resumes used
-              this month. Basic uses the cheaper model pool, while Premium keeps Claude
-              Sonnet 4 first in line.
-            </p>
-            <Link className={cn(buttonVariants({ variant: "outline" }))} href="/settings">
-              Manage billing
-            </Link>
-          </CardContent>
-        </Card>
+              <div>
+                <div className="text-4xl font-semibold">
+                  {premiumPlan ? premiumPlan.monthlyTailors - 18 : 62}
+                </div>
+                <div className="text-sm text-slate-300">Remaining this cycle</div>
+              </div>
+              <div>
+                <div className="text-4xl font-semibold">89</div>
+                <div className="text-sm text-slate-300">Average current match score</div>
+              </div>
+            </CardContent>
+          </Card>
+        </AnimatedPanel>
+        <AnimatedPanel delay={0.08}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Usage meter</CardTitle>
+              <CardDescription>
+                Tailors reset on your next billing cycle starting March 28, 2026.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="h-3 rounded-full bg-muted">
+                <div className="h-3 w-[22.5%] rounded-full bg-primary" />
+              </div>
+              <p className="text-sm leading-6 text-muted-foreground">
+                18 of {premiumPlan?.monthlyTailors ?? 80} premium tailored resumes used
+                this month. Basic uses the cheaper model pool, while Premium keeps Claude
+                Sonnet 4 first in line.
+              </p>
+              <Link className={cn(buttonVariants({ variant: "outline" }))} href="/settings">
+                Manage billing
+              </Link>
+            </CardContent>
+          </Card>
+        </AnimatedPanel>
       </section>
 
       <section className="grid gap-6 lg:grid-cols-3">
-        {quickActions.map((action) => {
+        {quickActions.map((action, index) => {
           const Icon = action.icon;
           return (
-            <Card key={action.title}>
-              <CardHeader>
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                  <Icon className="h-5 w-5" />
-                </div>
-                <CardTitle>{action.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm leading-7 text-muted-foreground">
-                  {action.description}
-                </p>
-                <Link
-                  className={cn(buttonVariants({ variant: "ghost" }), "px-0")}
-                  href={action.href}
-                >
-                  Open
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </CardContent>
-            </Card>
+            <AnimatedPanel key={action.title} delay={0.06 * index}>
+              <Card>
+                <CardHeader>
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <CardTitle>{action.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm leading-7 text-muted-foreground">
+                    {action.description}
+                  </p>
+                  <Link
+                    className={cn(buttonVariants({ variant: "ghost" }), "px-0")}
+                    href={action.href}
+                  >
+                    Open
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </CardContent>
+              </Card>
+            </AnimatedPanel>
           );
         })}
       </section>
@@ -132,28 +139,30 @@ export default function DashboardPage() {
           </Link>
         </div>
         <div className="grid gap-4">
-          {tailoredResumeCards.map((item) => (
-            <Card key={item.id}>
-              <CardContent className="flex flex-col gap-4 pt-6 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <div className="font-semibold">
-                    {item.company} • {item.role}
+          {tailoredResumeCards.map((item, index) => (
+            <AnimatedPanel key={item.id} delay={0.04 * index}>
+              <Card>
+                <CardContent className="flex flex-col gap-4 pt-6 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <div className="font-semibold">
+                      {item.company} • {item.role}
+                    </div>
+                    <div className="mt-1 text-sm text-muted-foreground">
+                      {item.template} template • Generated {item.createdAt}
+                    </div>
                   </div>
-                  <div className="mt-1 text-sm text-muted-foreground">
-                    {item.template} template • Generated {item.createdAt}
+                  <div className="flex items-center gap-4">
+                    <Badge variant="success">{item.matchScore} match</Badge>
+                    <Link
+                      className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+                      href={`/tailored/${item.id}`}
+                    >
+                      Open
+                    </Link>
                   </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <Badge variant="success">{item.matchScore} match</Badge>
-                  <Link
-                    className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
-                    href={`/tailored/${item.id}`}
-                  >
-                    Open
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </AnimatedPanel>
           ))}
         </div>
       </section>

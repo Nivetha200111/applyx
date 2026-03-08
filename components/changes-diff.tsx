@@ -32,7 +32,7 @@ export function ChangesDiff({ changes }: ChangesDiffProps) {
         {changes.map((change) => (
           <div
             key={`${change.type}-${change.section}-${change.description}`}
-            className="rounded-[24px] border border-border/70 bg-white/70 p-4"
+            className="rounded-[24px] border border-border/70 bg-card/80 p-4 transition-all duration-200 hover:-translate-y-1"
           >
             <div className="flex items-center gap-3">
               <Badge variant={variantByType[change.type]}>{change.type}</Badge>

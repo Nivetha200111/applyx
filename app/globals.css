@@ -21,6 +21,28 @@
   --radius: 1.25rem;
 }
 
+.dark {
+  --background: 214 28% 8%;
+  --foreground: 48 36% 96%;
+  --card: 215 24% 12%;
+  --card-foreground: 48 36% 96%;
+  --popover: 215 24% 11%;
+  --popover-foreground: 48 36% 96%;
+  --primary: 154 66% 46%;
+  --primary-foreground: 210 40% 8%;
+  --secondary: 205 24% 18%;
+  --secondary-foreground: 48 36% 96%;
+  --muted: 214 20% 15%;
+  --muted-foreground: 215 16% 70%;
+  --accent: 32 91% 57%;
+  --accent-foreground: 210 40% 8%;
+  --destructive: 0 72% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 17% 22%;
+  --input: 214 17% 22%;
+  --ring: 154 66% 46%;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -40,6 +62,18 @@
       radial-gradient(circle at top left, rgba(35, 204, 142, 0.14), transparent 28rem),
       radial-gradient(circle at top right, rgba(251, 146, 60, 0.18), transparent 22rem),
       linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0));
+    background-attachment: fixed;
+    transition:
+      background-color 220ms ease,
+      color 220ms ease,
+      background-image 220ms ease;
+  }
+
+  .dark body {
+    background-image:
+      radial-gradient(circle at top left, rgba(16, 185, 129, 0.18), transparent 24rem),
+      radial-gradient(circle at top right, rgba(249, 115, 22, 0.16), transparent 18rem),
+      linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.88));
   }
 
   h1,
@@ -56,10 +90,93 @@
 
 @layer utilities {
   .surface {
-    @apply border border-border/70 bg-white/80 backdrop-blur-xl;
+    @apply relative overflow-hidden border border-border/70 bg-card/80 backdrop-blur-xl transition-all duration-300 motion-reduce:transition-none;
+    isolation: isolate;
+    box-shadow:
+      0 24px 70px -34px rgba(6, 78, 59, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  }
+
+  .surface > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .surface::before {
+    content: "";
+    position: absolute;
+    inset: auto -20% 50% auto;
+    height: 12rem;
+    width: 12rem;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.18), transparent 68%);
+    opacity: 0.95;
+    pointer-events: none;
+    transition:
+      transform 320ms ease,
+      opacity 320ms ease;
+  }
+
+  .surface::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), transparent 42%, rgba(251, 146, 60, 0.08));
+    opacity: 0.85;
+    pointer-events: none;
+    transition: opacity 320ms ease;
+  }
+
+  .surface:hover {
+    transform: translateY(-6px);
+    box-shadow:
+      0 30px 80px -36px rgba(6, 78, 59, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .surface:hover::before {
+    transform: translate3d(-14px, 12px, 0) scale(1.04);
+    opacity: 1;
+  }
+
+  .surface:hover::after {
+    opacity: 1;
+  }
+
+  .dark .surface {
+    box-shadow:
+      0 28px 90px -44px rgba(2, 6, 23, 0.92),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .dark .surface::before {
+    background: radial-gradient(circle, rgba(251, 146, 60, 0.14), transparent 68%);
+  }
+
+  .dark .surface::after {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent 42%, rgba(16, 185, 129, 0.09));
+  }
+
+  .dark .surface:hover {
+    box-shadow:
+      0 30px 90px -44px rgba(2, 6, 23, 1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
 
   .page-shell {
     @apply min-h-screen;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .surface,
+  .surface::before,
+  .surface::after,
+  body {
+    transition: none;
+  }
+
+  .surface:hover {
+    transform: none;
   }
 }

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Sparkles, Zap } from "lucide-react";
+import { AnimatedPanel } from "@/components/ui/animated-panel";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -70,68 +71,73 @@ export default function MarketingHomePage() {
             tailoring flow immediately without creating an account.
           </p>
           <div className="grid gap-4 sm:grid-cols-3">
-            {metrics.map((metric) => (
-              <div
+            {metrics.map((metric, index) => (
+              <AnimatedPanel
                 key={metric.label}
-                className="rounded-[26px] border border-border/70 bg-white/80 p-5"
+                delay={0.06 * index}
+                hover={false}
               >
-                <div className="text-2xl font-semibold">{metric.value}</div>
-                <div className="mt-2 text-sm text-muted-foreground">{metric.label}</div>
-              </div>
+                <div className="surface rounded-[26px] p-5">
+                  <div className="text-2xl font-semibold">{metric.value}</div>
+                  <div className="mt-2 text-sm text-muted-foreground">{metric.label}</div>
+                </div>
+              </AnimatedPanel>
             ))}
           </div>
         </div>
-        <Card className="overflow-hidden">
-          <CardHeader>
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <CardTitle>Tailoring snapshot</CardTitle>
-                <CardDescription>
-                  Match score jumps before the recruiter even opens the file.
-                </CardDescription>
-              </div>
-              <Sparkles className="h-6 w-6 text-primary" />
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-[24px] border border-border/70 bg-background p-5">
-                <div className="text-sm text-muted-foreground">Before</div>
-                <div className="mt-2 text-4xl font-semibold">61</div>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  Generic summary, buried skills, and missing ATS keywords.
-                </p>
-              </div>
-              <div className="rounded-[24px] border border-primary/30 bg-primary/10 p-5">
-                <div className="text-sm text-primary">After</div>
-                <div className="mt-2 text-4xl font-semibold">87</div>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  Tailored summary, reordered bullets, and JD-aligned skill prioritization.
-                </p>
-              </div>
-            </div>
-            <div className="space-y-4 rounded-[28px] bg-slate-950 p-6 text-slate-50">
-              <div className="flex items-center gap-3 text-sm text-slate-300">
-                <Zap className="h-4 w-4 text-amber-300" />
-                Claude-powered tailoring with OpenAI fallback
-              </div>
-              <div className="space-y-3 text-sm leading-6 text-slate-300">
-                <div className="flex gap-3">
-                  <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-300" />
-                  <span>Preserves authentic experience while mirroring JD language.</span>
+        <AnimatedPanel delay={0.14}>
+          <Card className="overflow-hidden">
+            <CardHeader>
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <CardTitle>Tailoring snapshot</CardTitle>
+                  <CardDescription>
+                    Match score jumps before the recruiter even opens the file.
+                  </CardDescription>
                 </div>
-                <div className="flex gap-3">
-                  <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-300" />
-                  <span>Optimized for ATS-safe single-column templates and Indian job portals.</span>
+                <Sparkles className="h-6 w-6 text-primary" />
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="rounded-[24px] border border-border/70 bg-background/80 p-5 transition-transform duration-300 hover:-translate-y-1">
+                  <div className="text-sm text-muted-foreground">Before</div>
+                  <div className="mt-2 text-4xl font-semibold">61</div>
+                  <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                    Generic summary, buried skills, and missing ATS keywords.
+                  </p>
                 </div>
-                <div className="flex gap-3">
-                  <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-300" />
-                  <span>Built for job seekers sending 50 to 100 applications per cycle.</span>
+                <div className="rounded-[24px] border border-primary/30 bg-primary/10 p-5 transition-transform duration-300 hover:-translate-y-1">
+                  <div className="text-sm text-primary">After</div>
+                  <div className="mt-2 text-4xl font-semibold">87</div>
+                  <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                    Tailored summary, reordered bullets, and JD-aligned skill prioritization.
+                  </p>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+              <div className="space-y-4 rounded-[28px] bg-slate-950 p-6 text-slate-50 shadow-[0_24px_70px_-34px_rgba(15,23,42,0.65)]">
+                <div className="flex items-center gap-3 text-sm text-slate-300">
+                  <Zap className="h-4 w-4 text-amber-300" />
+                  Claude-powered tailoring with OpenAI fallback
+                </div>
+                <div className="space-y-3 text-sm leading-6 text-slate-300">
+                  <div className="flex gap-3">
+                    <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-300" />
+                    <span>Preserves authentic experience while mirroring JD language.</span>
+                  </div>
+                  <div className="flex gap-3">
+                    <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-300" />
+                    <span>Optimized for ATS-safe single-column templates and Indian job portals.</span>
+                  </div>
+                  <div className="flex gap-3">
+                    <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-300" />
+                    <span>Built for job seekers sending 50 to 100 applications per cycle.</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </AnimatedPanel>
       </section>
 
       <section className="space-y-8">
@@ -143,48 +149,56 @@ export default function MarketingHomePage() {
         </div>
         <div className="grid gap-6 lg:grid-cols-3">
           {steps.map((step, index) => (
-            <Card key={step.title}>
-              <CardHeader>
-                <Badge className="w-fit">{`0${index + 1}`}</Badge>
-                <CardTitle>{step.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm leading-7 text-muted-foreground">{step.description}</p>
-              </CardContent>
-            </Card>
+            <AnimatedPanel key={step.title} delay={0.08 * index}>
+              <Card>
+                <CardHeader>
+                  <Badge className="w-fit">{`0${index + 1}`}</Badge>
+                  <CardTitle>{step.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm leading-7 text-muted-foreground">{step.description}</p>
+                </CardContent>
+              </Card>
+            </AnimatedPanel>
           ))}
         </div>
       </section>
 
       <section className="grid gap-6 lg:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle>One-click, not a chatbot</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm leading-7 text-muted-foreground">
-            The interface is built around upload, paste, tailor, and download so users do
-            not waste time prompt-engineering every application.
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>ATS match score visibility</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm leading-7 text-muted-foreground">
-            Every tailored version shows score uplift and a clear audit trail of rewritten
-            bullets, reordered sections, and inserted keywords.
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Priced for India</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm leading-7 text-muted-foreground">
-            Pricing now starts at ₹149 for the budget model tier, while Premium unlocks
-            Claude Sonnet 4 for users who want stronger rewrites without paying
-            dollar-denominated SaaS rates.
-          </CardContent>
-        </Card>
+        <AnimatedPanel delay={0.04}>
+          <Card>
+            <CardHeader>
+              <CardTitle>One-click, not a chatbot</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm leading-7 text-muted-foreground">
+              The interface is built around upload, paste, tailor, and download so users do
+              not waste time prompt-engineering every application.
+            </CardContent>
+          </Card>
+        </AnimatedPanel>
+        <AnimatedPanel delay={0.1}>
+          <Card>
+            <CardHeader>
+              <CardTitle>ATS match score visibility</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm leading-7 text-muted-foreground">
+              Every tailored version shows score uplift and a clear audit trail of rewritten
+              bullets, reordered sections, and inserted keywords.
+            </CardContent>
+          </Card>
+        </AnimatedPanel>
+        <AnimatedPanel delay={0.16}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Priced for India</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm leading-7 text-muted-foreground">
+              Pricing now starts at ₹149 for the budget model tier, while Premium unlocks
+              Claude Sonnet 4 for users who want stronger rewrites without paying
+              dollar-denominated SaaS rates.
+            </CardContent>
+          </Card>
+        </AnimatedPanel>
       </section>
     </div>
   );

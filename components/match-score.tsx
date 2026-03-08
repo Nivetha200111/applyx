@@ -7,7 +7,7 @@ interface MatchScoreProps {
 
 function ScoreRing({ label, score }: { label: string; score: number }) {
   return (
-    <div className="flex flex-col items-center gap-4 rounded-[28px] border border-border/70 bg-white/80 p-5">
+    <div className="flex flex-col items-center gap-4 rounded-[28px] border border-border/70 bg-card/80 p-5 transition-all duration-200 hover:-translate-y-1">
       <div
         className="grid h-28 w-28 place-items-center rounded-full"
         style={{

@@ -35,7 +35,7 @@ export default function HistoryPage() {
           {applicationHistory.map((entry) => (
             <div
               key={`${entry.company}-${entry.role}`}
-              className="flex flex-col gap-3 rounded-[24px] border border-border/70 bg-white/80 p-4 md:flex-row md:items-center md:justify-between"
+              className="flex flex-col gap-3 rounded-[24px] border border-border/70 bg-card/80 p-4 transition-all duration-200 hover:-translate-y-1 md:flex-row md:items-center md:justify-between"
             >
               <div>
                 <div className="font-semibold">
