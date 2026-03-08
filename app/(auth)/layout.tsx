@@ -1,10 +1,18 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth";
 
-export default function AuthLayout({
+export default async function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getCurrentUser();
+
+  if (user) {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="grid min-h-screen lg:grid-cols-[0.9fr_1.1fr]">
       <div className="hidden border-r border-border/70 bg-slate-950 px-10 py-12 text-slate-100 lg:flex lg:flex-col lg:justify-between">
@@ -23,8 +31,8 @@ export default function AuthLayout({
           </div>
         </div>
         <p className="max-w-sm text-sm leading-7 text-slate-400">
-          Free plan includes 3 tailored resumes every month. Upgrade only when your
-          application volume demands it.
+          Start with 2 free demos, then upgrade when you want more volume or better
+          model quality.
         </p>
       </div>
       <div className="flex items-center justify-center px-4 py-12 sm:px-6">

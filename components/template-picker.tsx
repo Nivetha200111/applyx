@@ -19,7 +19,7 @@ export function TemplatePicker({ selected = "classic" }: TemplatePickerProps) {
       <CardHeader>
         <CardTitle>Templates</CardTitle>
         <CardDescription>
-          Three ATS-safe templates are scaffolded for the generation step.
+          Choose the ATS-safe template used for export generation.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4 md:grid-cols-3">

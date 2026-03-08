@@ -17,7 +17,7 @@ export function ResumePreview({ resume }: ResumePreviewProps) {
       <CardHeader>
         <CardTitle>Resume Preview</CardTitle>
         <CardDescription>
-          Initial scaffold for the single-column ATS-safe document layout.
+          Single-column ATS-safe document preview for the generated resume.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-8">

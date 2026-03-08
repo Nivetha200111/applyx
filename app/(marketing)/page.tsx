@@ -55,8 +55,8 @@ export default function MarketingHomePage() {
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link className={cn(buttonVariants({ size: "lg" }), "gap-2")} href="/dashboard">
-              Open Demo Dashboard
+            <Link className={cn(buttonVariants({ size: "lg" }), "gap-2")} href="/signup">
+              Start Free
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
@@ -67,8 +67,8 @@ export default function MarketingHomePage() {
             </Link>
           </div>
           <p className="text-sm leading-7 text-muted-foreground">
-            This build is running as a public demo, so you can inspect the dashboard and
-            tailoring flow immediately without creating an account.
+            Create an account, upload one master resume, and move straight into
+            real tailoring and paid plan upgrades.
           </p>
           <div className="grid gap-4 sm:grid-cols-3">
             {metrics.map((metric, index) => (

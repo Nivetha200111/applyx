@@ -20,7 +20,7 @@ export const planCatalog: PlanDefinition[] = [
       "Preview ATS score uplift before paying",
     ],
     ctaLabel: "Try 2 Free Demos",
-    href: "/dashboard",
+    href: "/signup",
   },
   {
     id: "basic",
@@ -42,7 +42,7 @@ export const planCatalog: PlanDefinition[] = [
       "ATS match score tracking",
     ],
     ctaLabel: "Choose Basic",
-    href: "/dashboard",
+    href: "/signup",
     highlighted: true,
   },
   {
@@ -65,7 +65,7 @@ export const planCatalog: PlanDefinition[] = [
       "All templates with priority generation",
     ],
     ctaLabel: "Go Premium",
-    href: "/dashboard",
+    href: "/signup",
   },
 ];
 

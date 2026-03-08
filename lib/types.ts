@@ -73,6 +73,19 @@ export type PlanTier = "free" | "basic" | "premium";
 
 export type ModelTier = "demo" | "basic" | "premium";
 
+export type ResumeTemplate = "classic" | "modern" | "minimal";
+
+export type UsageAction =
+  | "demo"
+  | "parse_resume"
+  | "parse_job_description"
+  | "tailor_resume"
+  | "generate_pdf"
+  | "generate_docx"
+  | "download"
+  | "login"
+  | "purchase";
+
 export interface PlanDefinition {
   id: PlanTier;
   name: string;
@@ -103,4 +116,106 @@ export interface PricingTier {
   ctaLabel: string;
   href: string;
   highlighted?: boolean;
+}
+
+export interface AppUser {
+  id: string;
+  fullName: string | null;
+  email: string;
+  phone: string | null;
+  location: string | null;
+  plan: PlanTier;
+  billingCycleStart: string;
+  billingCycleEnd: string | null;
+  demoTailorsUsed: number;
+  monthlyTailorsUsed: number;
+  monthlyTailorLimit: number;
+  preferredModelTier: ModelTier;
+  razorpayCustomerId: string | null;
+  razorpaySubscriptionId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SessionRecord {
+  id: string;
+  userId: string;
+  expiresAt: string;
+}
+
+export interface MasterResumeRecord {
+  id: string;
+  userId: string;
+  fileName: string;
+  fileUrl: string | null;
+  fileKind: "pdf" | "docx";
+  parsedData: ParsedResume;
+  rawText: string | null;
+  storageProvider: string;
+  isPrimary: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface JobDescriptionRecord {
+  id: string;
+  userId: string;
+  companyName: string | null;
+  jobTitle: string | null;
+  rawText: string;
+  parsedData: ParsedJD | null;
+  sourceUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TailoredResumeRecord {
+  id: string;
+  userId: string;
+  masterResumeId: string | null;
+  jobDescriptionId: string | null;
+  tailoredData: ParsedResume;
+  changes: TailorChange[];
+  planTier: PlanTier;
+  modelTier: ModelTier;
+  primaryModel: string;
+  fallbackModel: string | null;
+  matchScoreBefore: number | null;
+  matchScoreAfter: number | null;
+  templateUsed: ResumeTemplate;
+  pdfUrl: string | null;
+  docxUrl: string | null;
+  storageProvider: string;
+  generationLatencyMs: number | null;
+  isDemo: boolean;
+  createdAt: string;
+  updatedAt: string;
+  companyName?: string | null;
+  jobTitle?: string | null;
+}
+
+export interface UsageLogRecord {
+  id: string;
+  userId: string;
+  action: UsageAction;
+  planTier: PlanTier;
+  modelTier: ModelTier;
+  requestCount: number;
+  metadata: Record<string, unknown> | null;
+  createdAt: string;
+}
+
+export interface PaymentRecord {
+  id: string;
+  userId: string;
+  planTier: PlanTier;
+  amountInr: number;
+  currency: string;
+  status: "pending" | "paid" | "failed";
+  razorpayOrderId: string;
+  razorpayPaymentId: string | null;
+  razorpaySignature: string | null;
+  createdAt: string;
+  updatedAt: string;
+  paidAt: string | null;
 }

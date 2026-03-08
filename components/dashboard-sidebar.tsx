@@ -9,6 +9,7 @@ import {
   Settings,
   Sparkles,
 } from "lucide-react";
+import { LogoutButton } from "@/components/logout-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
@@ -40,7 +41,17 @@ const navItems = [
   },
 ];
 
-export function DashboardSidebar() {
+interface DashboardSidebarProps {
+  userName?: string | null;
+  planLabel: string;
+  usageLabel: string;
+}
+
+export function DashboardSidebar({
+  userName,
+  planLabel,
+  usageLabel,
+}: DashboardSidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -55,6 +66,14 @@ export function DashboardSidebar() {
             <div className="text-sm text-muted-foreground">Resume tailoring engine</div>
           </div>
         </Link>
+        {userName ? (
+          <div className="mt-6 rounded-[24px] border border-border/70 bg-background/65 p-4">
+            <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+              Signed in as
+            </div>
+            <div className="mt-2 font-semibold">{userName}</div>
+          </div>
+        ) : null}
         <div className="mt-6">
           <ThemeToggle />
         </div>
@@ -80,10 +99,13 @@ export function DashboardSidebar() {
           })}
         </nav>
         <div className="mt-10 rounded-[24px] border border-primary/20 bg-primary/10 p-4">
-          <div className="text-sm font-semibold text-primary">Premium preview</div>
+          <div className="text-sm font-semibold text-primary">{planLabel}</div>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Dark mode, motion, and premium-tailoring previews are active in this demo.
+            {usageLabel}
           </p>
+        </div>
+        <div className="mt-4">
+          <LogoutButton />
         </div>
       </aside>
       <nav className="sticky top-0 z-30 flex items-center gap-2 overflow-x-auto border-b border-border/70 bg-background/95 px-4 py-3 backdrop-blur lg:hidden">
