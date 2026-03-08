@@ -49,7 +49,9 @@ export default async function DashboardPage() {
                 <div className="text-sm text-slate-300">Tailors used</div>
               </div>
               <div>
-                <div className="text-4xl font-semibold">{snapshot.remainingTailors}</div>
+                <div className="text-4xl font-semibold">
+                  {snapshot.remainingTailors > 9999 ? "∞" : snapshot.remainingTailors}
+                </div>
                 <div className="text-sm text-slate-300">Remaining</div>
               </div>
               <div>

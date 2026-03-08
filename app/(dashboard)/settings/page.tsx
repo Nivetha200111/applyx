@@ -39,10 +39,10 @@ export default async function SettingsPage() {
         </CardHeader>
         <CardContent className="text-sm leading-7 text-muted-foreground">
           {user.plan === "premium"
-            ? "Premium routes to Claude Sonnet 4 first and falls back to GPT-4.1."
+            ? "Premium routes to Claude Sonnet 4 first and falls back to GPT-4o."
             : user.plan === "basic"
-              ? "Basic routes to GPT-4.1 mini first and falls back to Claude 3.5 Haiku."
-              : "Free gives you 2 live demos before you need to upgrade."}
+              ? "Basic routes to GPT-4o mini first and falls back to Claude Haiku 4.5."
+              : "Free gives you 2 live demos using Haiku / GPT-4o mini before you need to upgrade."}
         </CardContent>
       </Card>
 
@@ -60,7 +60,7 @@ export default async function SettingsPage() {
               <CardHeader>
                 <CardTitle>{plan.name} checkout</CardTitle>
                 <CardDescription>
-                  Activate {plan.monthlyTailors} monthly tailors for ₹{plan.priceInr}.
+                  Activate {plan.monthlyTailors > 9999 ? "unlimited" : plan.monthlyTailors} monthly tailors for ₹{plan.priceInr}.
                 </CardDescription>
               </CardHeader>
               <CardContent>

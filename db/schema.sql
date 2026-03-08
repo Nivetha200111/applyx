@@ -1,12 +1,13 @@
+-- ApplyX database schema for Neon PostgreSQL
+-- Run this against your Neon database to initialize all tables.
+
 create extension if not exists "pgcrypto";
+
+-- Enums
 
 do $$
 begin
-  if not exists (
-    select 1
-    from pg_type
-    where typname = 'plan_tier'
-  ) then
+  if not exists (select 1 from pg_type where typname = 'plan_tier') then
     create type public.plan_tier as enum ('free', 'basic', 'premium');
   end if;
 end
@@ -14,11 +15,7 @@ $$;
 
 do $$
 begin
-  if not exists (
-    select 1
-    from pg_type
-    where typname = 'model_tier'
-  ) then
+  if not exists (select 1 from pg_type where typname = 'model_tier') then
     create type public.model_tier as enum ('demo', 'basic', 'premium');
   end if;
 end
@@ -26,11 +23,7 @@ $$;
 
 do $$
 begin
-  if not exists (
-    select 1
-    from pg_type
-    where typname = 'resume_template'
-  ) then
+  if not exists (select 1 from pg_type where typname = 'resume_template') then
     create type public.resume_template as enum ('classic', 'modern', 'minimal');
   end if;
 end
@@ -38,11 +31,7 @@ $$;
 
 do $$
 begin
-  if not exists (
-    select 1
-    from pg_type
-    where typname = 'usage_action'
-  ) then
+  if not exists (select 1 from pg_type where typname = 'usage_action') then
     create type public.usage_action as enum (
       'demo',
       'parse_resume',
@@ -58,6 +47,8 @@ begin
 end
 $$;
 
+-- Helper trigger function
+
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
@@ -67,6 +58,8 @@ begin
   return new;
 end;
 $$;
+
+-- Core tables
 
 create table if not exists public.users (
   id uuid primary key default gen_random_uuid(),
@@ -131,10 +124,10 @@ create table if not exists public.tailored_resumes (
   master_resume_id uuid references public.master_resumes(id) on delete set null,
   job_description_id uuid references public.job_descriptions(id) on delete set null,
   tailored_data jsonb not null,
-  changes jsonb not null default '[]'::jsonb,
+  changes jsonb,
   plan_tier public.plan_tier not null default 'free',
   model_tier public.model_tier not null default 'demo',
-  primary_model text not null default 'gpt-4.1-mini',
+  primary_model text not null default 'gpt-4o-mini',
   fallback_model text,
   match_score_before integer check (match_score_before between 0 and 100),
   match_score_after integer check (match_score_after between 0 and 100),
@@ -153,7 +146,7 @@ create table if not exists public.tailored_resumes (
 create table if not exists public.usage_log (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
-  action public.usage_action not null,
+  action text not null,
   plan_tier public.plan_tier not null default 'free',
   model_tier public.model_tier not null default 'demo',
   request_count integer not null default 1 check (request_count > 0),
@@ -165,19 +158,23 @@ create table if not exists public.payments (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
   plan_tier public.plan_tier not null,
-  amount_inr integer not null check (amount_inr > 0),
+  amount_inr integer not null check (amount_inr >= 0),
   currency text not null default 'INR',
-  status text not null default 'pending' check (status in ('pending', 'paid', 'failed')),
+  status text not null default 'pending' check (status in ('pending', 'paid', 'failed', 'refunded')),
   razorpay_order_id text not null unique,
-  razorpay_payment_id text unique,
+  razorpay_payment_id text,
   razorpay_signature text,
-  paid_at timestamptz,
   created_at timestamptz not null default timezone('utc', now()),
-  updated_at timestamptz not null default timezone('utc', now())
+  updated_at timestamptz not null default timezone('utc', now()),
+  paid_at timestamptz
 );
 
+-- Indexes
+
 create index if not exists users_plan_idx on public.users (plan);
-create index if not exists sessions_user_id_idx on public.sessions (user_id, expires_at desc);
+create index if not exists sessions_user_id_idx on public.sessions (user_id);
+create index if not exists sessions_token_hash_idx on public.sessions (session_token_hash);
+create index if not exists sessions_expires_at_idx on public.sessions (expires_at);
 create index if not exists master_resumes_user_id_idx on public.master_resumes (user_id, created_at desc);
 create unique index if not exists master_resumes_primary_idx on public.master_resumes (user_id)
 where is_primary;
@@ -186,6 +183,9 @@ create index if not exists tailored_resumes_user_id_idx on public.tailored_resum
 create index if not exists tailored_resumes_plan_model_idx on public.tailored_resumes (plan_tier, model_tier, created_at desc);
 create index if not exists usage_log_user_id_idx on public.usage_log (user_id, created_at desc);
 create index if not exists payments_user_id_idx on public.payments (user_id, created_at desc);
+create index if not exists payments_order_id_idx on public.payments (razorpay_order_id);
+
+-- Triggers
 
 drop trigger if exists set_users_updated_at on public.users;
 create trigger set_users_updated_at

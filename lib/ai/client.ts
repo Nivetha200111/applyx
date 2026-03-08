@@ -1,11 +1,10 @@
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import type { ModelTier } from "@/lib/types";
-
-type Provider = "anthropic" | "openai";
+import { getModelsForTier, type ModelConfig } from "@/lib/ai/models";
 
 interface ModelTarget {
-  provider: Provider;
+  provider: "anthropic" | "openai";
   modelId: string;
   label: string;
 }
@@ -25,34 +24,17 @@ const openAiClient = process.env.OPENAI_API_KEY
   ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   : null;
 
-function getModelTargets(modelTier: ModelTier): [ModelTarget, ModelTarget | null] {
-  if (modelTier === "premium") {
-    return [
-      {
-        provider: "anthropic",
-        modelId: "claude-sonnet-4-20250514",
-        label: "Claude Sonnet 4",
-      },
-      {
-        provider: "openai",
-        modelId: "gpt-4.1",
-        label: "OpenAI GPT-4.1",
-      },
-    ];
-  }
+function toTarget(config: ModelConfig): ModelTarget {
+  return {
+    provider: config.provider,
+    modelId: config.modelId,
+    label: config.label,
+  };
+}
 
-  return [
-    {
-      provider: "openai",
-      modelId: "gpt-4.1-mini",
-      label: "OpenAI GPT-4.1 mini",
-    },
-    {
-      provider: "anthropic",
-      modelId: "claude-3-5-haiku-latest",
-      label: "Claude 3.5 Haiku",
-    },
-  ];
+function getModelTargets(modelTier: ModelTier): [ModelTarget, ModelTarget | null] {
+  const { primary, fallback } = getModelsForTier(modelTier);
+  return [toTarget(primary), toTarget(fallback)];
 }
 
 function getTextFromAnthropicResponse(

@@ -7,17 +7,18 @@ export const planCatalog: PlanDefinition[] = [
     priceInr: 0,
     cadence: "one-time",
     description:
-      "A lightweight try-before-you-buy tier for job seekers who want to validate the flow first.",
+      "Try before you buy. Get 2 free demo tailors to see the ATS score uplift for yourself.",
     includedDemos: 2,
     monthlyTailors: 0,
     masterResumeLimit: 1,
     modelTier: "demo",
-    primaryModel: "OpenAI GPT-4.1 mini",
-    fallbackModel: "Claude 3.5 Haiku",
+    primaryModel: "Claude Haiku 4.5",
+    fallbackModel: "GPT-4o mini",
     features: [
       "2 live demo tailors",
       "1 master resume",
-      "Preview ATS score uplift before paying",
+      "Basic AI (Haiku / GPT-4o mini)",
+      "Preview ATS score uplift",
     ],
     ctaLabel: "Try 2 Free Demos",
     href: "/signup",
@@ -25,21 +26,22 @@ export const planCatalog: PlanDefinition[] = [
   {
     id: "basic",
     name: "Basic",
-    priceInr: 149,
+    priceInr: 199,
     cadence: "month",
     description:
-      "Low-cost ATS tailoring for active job seekers who care about volume and affordability.",
+      "Affordable high-volume tailoring for active job seekers sending weekly applications.",
     includedDemos: 0,
-    monthlyTailors: 40,
-    masterResumeLimit: 2,
+    monthlyTailors: 30,
+    masterResumeLimit: 3,
     modelTier: "basic",
-    primaryModel: "OpenAI GPT-4.1 mini",
-    fallbackModel: "Claude 3.5 Haiku",
+    primaryModel: "GPT-4o mini",
+    fallbackModel: "Claude Haiku 4.5",
     features: [
-      "40 tailored resumes per month",
-      "2 master resumes",
+      "30 tailored resumes per month",
+      "3 master resumes",
       "PDF and DOCX export",
       "ATS match score tracking",
+      "Affordable AI (GPT-4o mini / Haiku)",
     ],
     ctaLabel: "Choose Basic",
     href: "/signup",
@@ -48,21 +50,23 @@ export const planCatalog: PlanDefinition[] = [
   {
     id: "premium",
     name: "Premium",
-    priceInr: 399,
+    priceInr: 499,
     cadence: "month",
     description:
-      "Higher-quality rewrites and stronger reasoning for applicants targeting their best-fit roles.",
+      "Unlimited tailoring with premium AI models for the strongest possible rewrites.",
     includedDemos: 0,
-    monthlyTailors: 80,
-    masterResumeLimit: 5,
+    monthlyTailors: 999999,
+    masterResumeLimit: 10,
     modelTier: "premium",
     primaryModel: "Claude Sonnet 4",
-    fallbackModel: "OpenAI GPT-4.1",
+    fallbackModel: "GPT-4o",
     features: [
-      "80 premium tailored resumes per month",
-      "5 master resumes",
+      "Unlimited tailored resumes",
+      "10 master resumes",
+      "Premium AI (Claude Sonnet 4 / GPT-4o)",
+      "Priority generation speed",
+      "All templates",
       "Bulk tailoring queue",
-      "All templates with priority generation",
     ],
     ctaLabel: "Go Premium",
     href: "/signup",
@@ -78,7 +82,9 @@ export const pricingTiers: PricingTier[] = planCatalog.map((plan) => ({
   usage:
     plan.includedDemos > 0
       ? `${plan.includedDemos} live demo tailors`
-      : `${plan.monthlyTailors} tailored resumes / month`,
+      : plan.monthlyTailors > 9999
+        ? "Unlimited tailored resumes"
+        : `${plan.monthlyTailors} tailored resumes / month`,
   modelAccess: plan.fallbackModel
     ? `${plan.primaryModel} primary, ${plan.fallbackModel} fallback`
     : plan.primaryModel,
@@ -90,4 +96,8 @@ export const pricingTiers: PricingTier[] = planCatalog.map((plan) => ({
 
 export function getPlanById(planId: PlanTier) {
   return planCatalog.find((plan) => plan.id === planId);
+}
+
+export function isUnlimitedPlan(monthlyTailorLimit: number) {
+  return monthlyTailorLimit > 9999;
 }

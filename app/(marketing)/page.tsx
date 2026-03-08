@@ -33,7 +33,7 @@ const steps = [
 const metrics = [
   { label: "Average turnaround", value: "<15 sec" },
   { label: "Free plan included", value: "2 demos" },
-  { label: "Built for India", value: "₹149/mo" },
+  { label: "Built for India", value: "₹199/mo" },
 ];
 
 export default function MarketingHomePage() {
@@ -193,9 +193,9 @@ export default function MarketingHomePage() {
               <CardTitle>Priced for India</CardTitle>
             </CardHeader>
             <CardContent className="text-sm leading-7 text-muted-foreground">
-              Pricing now starts at ₹149 for the budget model tier, while Premium unlocks
-              Claude Sonnet 4 for users who want stronger rewrites without paying
-              dollar-denominated SaaS rates.
+              Basic at ₹199/mo gets you GPT-4o mini and Claude Haiku for high-volume
+              applications. Premium at ₹499/mo unlocks Claude Sonnet 4 and GPT-4o for
+              the strongest possible rewrites.
             </CardContent>
           </Card>
         </AnimatedPanel>

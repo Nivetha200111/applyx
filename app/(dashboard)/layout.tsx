@@ -1,6 +1,7 @@
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { requireUser } from "@/lib/auth";
 import { getRemainingTailors, refreshUserAccess } from "@/lib/data";
+import { isUnlimitedPlan } from "@/lib/plans";
 
 export default async function DashboardLayout({
   children,
@@ -8,6 +9,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const user = await refreshUserAccess(await requireUser("/dashboard"));
+  const remaining = getRemainingTailors(user);
 
   return (
     <div className="min-h-screen lg:flex">
@@ -15,8 +17,10 @@ export default async function DashboardLayout({
         planLabel={`${user.plan[0].toUpperCase()}${user.plan.slice(1)} plan`}
         usageLabel={
           user.plan === "free"
-            ? `${getRemainingTailors(user)} free demos remaining.`
-            : `${getRemainingTailors(user)} of ${user.monthlyTailorLimit} tailors remaining this billing cycle.`
+            ? `${remaining} free demos remaining.`
+            : isUnlimitedPlan(user.monthlyTailorLimit)
+              ? `Unlimited tailors. ${user.monthlyTailorsUsed} used this cycle.`
+              : `${remaining} of ${user.monthlyTailorLimit} tailors remaining this billing cycle.`
         }
         userName={user.fullName}
       />

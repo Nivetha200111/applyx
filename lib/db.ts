@@ -1,4 +1,4 @@
-import { Pool, type PoolClient, type QueryResult, type QueryResultRow } from "pg";
+import { Pool, type PoolClient, type QueryResult, type QueryResultRow } from "@neondatabase/serverless";
 
 const globalForDb = globalThis as typeof globalThis & {
   __applyxPool?: Pool;
@@ -18,10 +18,6 @@ function createPool() {
   return new Pool({
     connectionString,
     max: 10,
-    ssl:
-      connectionString.includes("localhost") || connectionString.includes("127.0.0.1")
-        ? false
-        : { rejectUnauthorized: false },
   });
 }
 
