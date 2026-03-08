@@ -1,0 +1,137 @@
+import { z } from "zod";
+import { NextResponse } from "next/server";
+import { getCurrentUser } from "@/lib/auth";
+import { dbQuery } from "@/lib/db";
+
+export const runtime = "nodejs";
+
+const updateSchema = z.object({
+  companyName: z.string().max(200).optional(),
+  roleTitle: z.string().max(200).optional(),
+  status: z
+    .enum([
+      "bookmarked", "applying", "applied", "screening",
+      "interviewing", "offer", "accepted", "rejected",
+      "withdrawn", "ghosted",
+    ])
+    .optional(),
+  priority: z.number().min(0).max(5).optional(),
+  location: z.string().max(200).nullable().optional(),
+  workMode: z.enum(["remote", "hybrid", "onsite", "unknown"]).optional(),
+  salaryMin: z.number().nullable().optional(),
+  salaryMax: z.number().nullable().optional(),
+  notes: z.string().max(5000).nullable().optional(),
+  appliedAt: z.string().nullable().optional(),
+  deadlineAt: z.string().nullable().optional(),
+  followUpAt: z.string().nullable().optional(),
+  contactName: z.string().max(200).nullable().optional(),
+  contactEmail: z.string().max(200).nullable().optional(),
+  sourceUrl: z.string().max(2000).nullable().optional(),
+  sourcePlatform: z.string().max(100).nullable().optional(),
+  isArchived: z.boolean().optional(),
+});
+
+const fieldMap: Record<string, string> = {
+  companyName: "company_name",
+  roleTitle: "role_title",
+  status: "status",
+  priority: "priority",
+  location: "location",
+  workMode: "work_mode",
+  salaryMin: "salary_min",
+  salaryMax: "salary_max",
+  notes: "notes",
+  appliedAt: "applied_at",
+  deadlineAt: "deadline_at",
+  followUpAt: "follow_up_at",
+  contactName: "contact_name",
+  contactEmail: "contact_email",
+  sourceUrl: "source_url",
+  sourcePlatform: "source_platform",
+  isArchived: "is_archived",
+};
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const sessionUser = await getCurrentUser();
+    if (!sessionUser) {
+      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
+
+    const payload = updateSchema.parse(await request.json());
+    const setClauses: string[] = [];
+    const values: unknown[] = [];
+    let paramIndex = 1;
+
+    for (const [key, value] of Object.entries(payload)) {
+      if (value === undefined) continue;
+      const col = fieldMap[key];
+      if (!col) continue;
+
+      if (col === "status") {
+        setClauses.push(`${col} = $${paramIndex}::application_status`);
+      } else if (col === "work_mode") {
+        setClauses.push(`${col} = $${paramIndex}::work_mode`);
+      } else {
+        setClauses.push(`${col} = $${paramIndex}`);
+      }
+      values.push(value);
+      paramIndex++;
+    }
+
+    if (setClauses.length === 0) {
+      return NextResponse.json({ error: "No fields to update." }, { status: 400 });
+    }
+
+    const result = await dbQuery(
+      `update public.tracked_applications
+       set ${setClauses.join(", ")}
+       where id = $${paramIndex} and user_id = $${paramIndex + 1}
+       returning id`,
+      [...values, params.id, sessionUser.id],
+    );
+
+    if (result.rowCount === 0) {
+      return NextResponse.json({ error: "Application not found." }, { status: 404 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Update failed." },
+      { status: 400 },
+    );
+  }
+}
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const sessionUser = await getCurrentUser();
+    if (!sessionUser) {
+      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
+
+    const result = await dbQuery(
+      `delete from public.tracked_applications
+       where id = $1 and user_id = $2`,
+      [params.id, sessionUser.id],
+    );
+
+    if (result.rowCount === 0) {
+      return NextResponse.json({ error: "Application not found." }, { status: 404 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Delete failed." },
+      { status: 400 },
+    );
+  }
+}

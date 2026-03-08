@@ -134,7 +134,7 @@ export function TailorForm({
         >
           {templateOptions.map((template) => (
             <option key={template} value={template}>
-              {template}
+              {template[0].toUpperCase()}{template.slice(1)}
             </option>
           ))}
         </select>

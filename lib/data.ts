@@ -1,9 +1,11 @@
 import type {
   AppUser,
+  ApplicationStatus,
   JobDescriptionRecord,
   MasterResumeRecord,
   PaymentRecord,
   TailoredResumeRecord,
+  TrackedApplicationRecord,
   UsageLogRecord,
 } from "@/lib/types";
 import { dbQuery, firstRow } from "@/lib/db";
@@ -21,6 +23,7 @@ type UserRow = {
   demo_tailors_used: number;
   monthly_tailors_used: number;
   monthly_tailor_limit: number;
+  monthly_tracker_parses_used: number;
   preferred_model_tier: AppUser["preferredModelTier"];
   billing_customer_id: string | null;
   billing_subscription_id: string | null;
@@ -112,6 +115,7 @@ function mapUser(row: UserRow): AppUser {
     demoTailorsUsed: row.demo_tailors_used,
     monthlyTailorsUsed: row.monthly_tailors_used,
     monthlyTailorLimit: row.monthly_tailor_limit,
+    monthlyTrackerParsesUsed: row.monthly_tracker_parses_used,
     preferredModelTier: row.preferred_model_tier,
     billingCustomerId: row.billing_customer_id,
     billingSubscriptionId: row.billing_subscription_id,
@@ -216,6 +220,7 @@ export async function refreshUserAccess(user: AppUser) {
        billing_cycle_end = null,
        monthly_tailors_used = 0,
        monthly_tailor_limit = 0,
+       monthly_tracker_parses_used = 0,
        preferred_model_tier = 'demo',
        updated_at = timezone('utc', now())
      where id = $1
@@ -351,12 +356,197 @@ export async function getPaymentForUserByCheckoutId(userId: string, checkoutId: 
   return row ? mapPayment(row) : null;
 }
 
+// ── Tracked applications ──
+
+type TrackedApplicationRow = {
+  id: string;
+  user_id: string;
+  company_name: string;
+  role_title: string;
+  location: string | null;
+  work_mode: TrackedApplicationRecord["workMode"];
+  salary_min: number | null;
+  salary_max: number | null;
+  salary_currency: string;
+  status: TrackedApplicationRecord["status"];
+  priority: number;
+  source_url: string | null;
+  source_platform: string | null;
+  raw_jd_text: string | null;
+  parsed_jd_data: TrackedApplicationRecord["parsedJdData"];
+  required_skills: string[];
+  preferred_skills: string[];
+  experience_required: string | null;
+  applied_at: string | null;
+  deadline_at: string | null;
+  follow_up_at: string | null;
+  last_activity_at: string | null;
+  notes: string | null;
+  contact_name: string | null;
+  contact_email: string | null;
+  tailored_resume_id: string | null;
+  prep_resources: TrackedApplicationRecord["prepResources"];
+  is_archived: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+function mapTrackedApplication(row: TrackedApplicationRow): TrackedApplicationRecord {
+  return {
+    id: row.id,
+    userId: row.user_id,
+    companyName: row.company_name,
+    roleTitle: row.role_title,
+    location: row.location,
+    workMode: row.work_mode,
+    salaryMin: row.salary_min,
+    salaryMax: row.salary_max,
+    salaryCurrency: row.salary_currency,
+    status: row.status,
+    priority: row.priority,
+    sourceUrl: row.source_url,
+    sourcePlatform: row.source_platform,
+    rawJdText: row.raw_jd_text,
+    parsedJdData: row.parsed_jd_data,
+    requiredSkills: row.required_skills ?? [],
+    preferredSkills: row.preferred_skills ?? [],
+    experienceRequired: row.experience_required,
+    appliedAt: row.applied_at,
+    deadlineAt: row.deadline_at,
+    followUpAt: row.follow_up_at,
+    lastActivityAt: row.last_activity_at,
+    notes: row.notes,
+    contactName: row.contact_name,
+    contactEmail: row.contact_email,
+    tailoredResumeId: row.tailored_resume_id,
+    prepResources: row.prep_resources ?? [],
+    isArchived: row.is_archived,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+export async function getTrackedApplicationsForUser(
+  userId: string,
+  options?: {
+    status?: ApplicationStatus[];
+    archived?: boolean;
+    search?: string;
+    sort?: string;
+    order?: "asc" | "desc";
+    limit?: number;
+    offset?: number;
+  },
+): Promise<{ applications: TrackedApplicationRecord[]; total: number }> {
+  const conditions: string[] = ["user_id = $1"];
+  const params: unknown[] = [userId];
+  let paramIndex = 2;
+
+  const archived = options?.archived ?? false;
+  conditions.push(`is_archived = $${paramIndex}`);
+  params.push(archived);
+  paramIndex++;
+
+  if (options?.status && options.status.length > 0) {
+    conditions.push(`status = ANY($${paramIndex}::application_status[])`);
+    params.push(options.status);
+    paramIndex++;
+  }
+
+  if (options?.search) {
+    conditions.push(`(company_name ilike $${paramIndex} or role_title ilike $${paramIndex})`);
+    params.push(`%${options.search}%`);
+    paramIndex++;
+  }
+
+  const where = conditions.join(" and ");
+  const allowedSorts = ["created_at", "updated_at", "company_name", "role_title", "status", "priority", "applied_at"];
+  const sortCol = allowedSorts.includes(options?.sort ?? "") ? options!.sort! : "created_at";
+  const sortDir = options?.order === "asc" ? "asc" : "desc";
+  const limit = Math.min(options?.limit ?? 50, 200);
+  const offset = options?.offset ?? 0;
+
+  const [dataResult, countResult] = await Promise.all([
+    dbQuery<TrackedApplicationRow>(
+      `select * from public.tracked_applications
+       where ${where}
+       order by ${sortCol} ${sortDir}
+       limit $${paramIndex} offset $${paramIndex + 1}`,
+      [...params, limit, offset],
+    ),
+    dbQuery<{ count: string }>(
+      `select count(*)::text as count from public.tracked_applications where ${where}`,
+      params,
+    ),
+  ]);
+
+  return {
+    applications: dataResult.rows.map(mapTrackedApplication),
+    total: parseInt(countResult.rows[0]?.count ?? "0", 10),
+  };
+}
+
+export async function getTrackedApplicationForUser(
+  userId: string,
+  applicationId: string,
+): Promise<TrackedApplicationRecord | null> {
+  const result = await dbQuery<TrackedApplicationRow>(
+    `select * from public.tracked_applications
+     where user_id = $1 and id = $2
+     limit 1`,
+    [userId, applicationId],
+  );
+  const row = firstRow(result);
+  return row ? mapTrackedApplication(row) : null;
+}
+
+export async function getActiveTrackedApplicationCount(userId: string): Promise<number> {
+  const result = await dbQuery<{ count: string }>(
+    `select count(*)::text as count
+     from public.tracked_applications
+     where user_id = $1 and is_archived = false`,
+    [userId],
+  );
+  return parseInt(result.rows[0]?.count ?? "0", 10);
+}
+
+export async function getTrackerStatsForUser(userId: string) {
+  const result = await dbQuery<{
+    total: string;
+    status: string;
+    status_count: string;
+  }>(
+    `select
+       (select count(*)::text from public.tracked_applications where user_id = $1 and is_archived = false) as total,
+       status::text,
+       count(*)::text as status_count
+     from public.tracked_applications
+     where user_id = $1 and is_archived = false
+     group by status`,
+    [userId],
+  );
+
+  const byStatus: Record<string, number> = {};
+  let total = 0;
+  for (const row of result.rows) {
+    total = parseInt(row.total, 10);
+    byStatus[row.status] = parseInt(row.status_count, 10);
+  }
+
+  const applied = (byStatus.applied ?? 0) + (byStatus.screening ?? 0) + (byStatus.interviewing ?? 0) + (byStatus.offer ?? 0) + (byStatus.accepted ?? 0) + (byStatus.rejected ?? 0) + (byStatus.ghosted ?? 0);
+  const responded = (byStatus.screening ?? 0) + (byStatus.interviewing ?? 0) + (byStatus.offer ?? 0) + (byStatus.accepted ?? 0);
+  const responseRate = applied > 0 ? Math.round((responded / applied) * 100) : 0;
+
+  return { total, byStatus, responseRate };
+}
+
 export async function getDashboardSnapshot(user: AppUser) {
   const currentUser = await refreshUserAccess(user);
-  const [resumes, tailoredResumes, usageLog] = await Promise.all([
+  const [resumes, tailoredResumes, usageLog, trackerStats] = await Promise.all([
     getMasterResumesForUser(currentUser.id),
     getTailoredResumesForUser(currentUser.id),
     getUsageLogForUser(currentUser.id, 6),
+    getTrackerStatsForUser(currentUser.id),
   ]);
 
   return {
@@ -364,6 +554,7 @@ export async function getDashboardSnapshot(user: AppUser) {
     resumes,
     tailoredResumes,
     usageLog,
+    trackerStats,
     remainingTailors: getRemainingTailors(currentUser),
   };
 }

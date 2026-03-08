@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, FileText, History, Sparkles } from "lucide-react";
+import { ArrowRight, ClipboardList, FileText, History, Sparkles } from "lucide-react";
 import { AnimatedPanel } from "@/components/ui/animated-panel";
 import { UploadResumeForm } from "@/components/dashboard/upload-resume-form";
 import { TailorForm } from "@/components/dashboard/tailor-form";
@@ -24,40 +24,74 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <AnimatedPanel>
-          <Card className="overflow-hidden bg-slate-950 text-slate-50">
+      {/* Tracker summary card - primary CTA */}
+      <AnimatedPanel>
+        <Link href="/tracker" className="block">
+          <Card className="overflow-hidden bg-slate-950 text-slate-50 transition-transform duration-200 hover:-translate-y-1">
             <CardHeader>
               <Badge variant="warning" className="w-fit">
                 {snapshot.currentUser.plan === "free"
                   ? "Free demo access"
                   : `${plan?.name ?? "Active"} plan`}
               </Badge>
-              <CardTitle className="text-3xl">Resume tailoring workbench</CardTitle>
+              <CardTitle className="text-3xl">Job Application Tracker</CardTitle>
               <CardDescription className="text-slate-300">
-                Upload one master resume, paste a job description, and generate an
-                ATS-ready tailored version with tracked usage.
+                Track every application, paste JDs to auto-fill with AI, and prep for
+                interviews — all in one sheet.
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-4 sm:grid-cols-3">
+            <CardContent className="grid gap-4 sm:grid-cols-4">
+              <div>
+                <div className="text-4xl font-semibold">{snapshot.trackerStats.total}</div>
+                <div className="text-sm text-slate-300">Tracked</div>
+              </div>
               <div>
                 <div className="text-4xl font-semibold">
-                  {snapshot.currentUser.plan === "free"
-                    ? snapshot.currentUser.demoTailorsUsed
-                    : snapshot.currentUser.monthlyTailorsUsed}
+                  {(snapshot.trackerStats.byStatus.applied ?? 0) +
+                    (snapshot.trackerStats.byStatus.screening ?? 0) +
+                    (snapshot.trackerStats.byStatus.interviewing ?? 0)}
                 </div>
-                <div className="text-sm text-slate-300">Tailors used</div>
+                <div className="text-sm text-slate-300">In progress</div>
+              </div>
+              <div>
+                <div className="text-4xl font-semibold">{snapshot.trackerStats.responseRate}%</div>
+                <div className="text-sm text-slate-300">Response rate</div>
               </div>
               <div>
                 <div className="text-4xl font-semibold">
                   {snapshot.remainingTailors > 9999 ? "∞" : snapshot.remainingTailors}
                 </div>
-                <div className="text-sm text-slate-300">Remaining</div>
+                <div className="text-sm text-slate-300">Tailors left</div>
               </div>
-              <div>
-                <div className="text-4xl font-semibold">{snapshot.resumes.length}</div>
-                <div className="text-sm text-slate-300">Master resumes</div>
-              </div>
+            </CardContent>
+          </Card>
+        </Link>
+      </AnimatedPanel>
+
+      <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <AnimatedPanel delay={0.04}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick actions</CardTitle>
+              <CardDescription>
+                {snapshot.resumes.length} of {plan?.masterResumeLimit ?? 1} resume slots used.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Link
+                className={cn(buttonVariants(), "w-full gap-2 shimmer")}
+                href="/tracker"
+              >
+                <ClipboardList className="h-4 w-4" />
+                Open Tracker
+              </Link>
+              <Link
+                className={cn(buttonVariants({ variant: "outline" }), "w-full gap-2")}
+                href="/resumes"
+              >
+                <FileText className="h-4 w-4" />
+                Manage Resumes
+              </Link>
             </CardContent>
           </Card>
         </AnimatedPanel>
@@ -115,16 +149,17 @@ export default async function DashboardPage() {
           <Card>
             <CardHeader>
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                <FileText className="h-5 w-5" />
+                <ClipboardList className="h-5 w-5" />
               </div>
-              <CardTitle>Resume library</CardTitle>
+              <CardTitle>Application Tracker</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm leading-7 text-muted-foreground">
-                Review parsed master resumes, primary designation, and raw extracted data.
+                Track applications like a spreadsheet. Paste JDs, auto-fill with AI,
+                sort, filter, and prep for interviews.
               </p>
-              <Link className={cn(buttonVariants({ variant: "ghost" }), "px-0")} href="/resumes">
-                Open resumes
+              <Link className={cn(buttonVariants({ variant: "ghost" }), "px-0")} href="/tracker">
+                Open tracker
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </CardContent>
@@ -137,11 +172,11 @@ export default async function DashboardPage() {
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                 <Sparkles className="h-5 w-5" />
               </div>
-              <CardTitle>Tailored outputs</CardTitle>
+              <CardTitle>AI Resume Tailoring</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm leading-7 text-muted-foreground">
-                Compare match scores and open generated versions for download.
+                Generate ATS-optimized resumes for specific jobs with match score uplift.
               </p>
               <Link className={cn(buttonVariants({ variant: "ghost" }), "px-0")} href="/tailored">
                 Open tailored resumes
@@ -157,11 +192,11 @@ export default async function DashboardPage() {
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                 <History className="h-5 w-5" />
               </div>
-              <CardTitle>Usage history</CardTitle>
+              <CardTitle>Activity & History</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm leading-7 text-muted-foreground">
-                Track resume parsing, tailoring actions, and billing events.
+                Track resume parsing, tailoring, and billing activity.
               </p>
               <Link className={cn(buttonVariants({ variant: "ghost" }), "px-0")} href="/history">
                 Open activity
@@ -212,7 +247,7 @@ export default async function DashboardPage() {
                     </div>
                     <div className="flex items-center gap-4">
                       <Badge variant="success">
-                        {item.matchScoreAfter ?? 0} match
+                        {item.matchScoreAfter ?? 0}% match
                       </Badge>
                       <Link
                         className={cn(buttonVariants({ variant: "outline", size: "sm" }))}

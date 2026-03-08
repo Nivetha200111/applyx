@@ -66,6 +66,20 @@ export const parsedJdSchema = z.object({
   educationRequirement: z.string().optional(),
 });
 
+export const trackerParsedJdSchema = parsedJdSchema.extend({
+  salaryRange: z
+    .object({
+      min: z.number(),
+      max: z.number(),
+      currency: z.string().default("INR"),
+    })
+    .nullable()
+    .optional(),
+  workMode: z.enum(["remote", "hybrid", "onsite", "unknown"]).optional(),
+  applicationDeadline: z.string().nullable().optional(),
+  sourcePlatform: z.string().nullable().optional(),
+});
+
 export const tailorChangeSchema = z.object({
   type: z.enum(["rewrite", "reorder", "add", "remove"]),
   section: z.string(),

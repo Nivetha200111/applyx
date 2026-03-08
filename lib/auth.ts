@@ -26,6 +26,7 @@ type UserRow = {
   demo_tailors_used: number;
   monthly_tailors_used: number;
   monthly_tailor_limit: number;
+  monthly_tracker_parses_used: number;
   preferred_model_tier: AppUser["preferredModelTier"];
   billing_customer_id: string | null;
   billing_subscription_id: string | null;
@@ -48,6 +49,7 @@ function toAppUser(row: Omit<UserRow, "password_hash">): AppUser {
     demoTailorsUsed: row.demo_tailors_used,
     monthlyTailorsUsed: row.monthly_tailors_used,
     monthlyTailorLimit: row.monthly_tailor_limit,
+    monthlyTrackerParsesUsed: row.monthly_tracker_parses_used,
     preferredModelTier: row.preferred_model_tier,
     billingCustomerId: row.billing_customer_id,
     billingSubscriptionId: row.billing_subscription_id,
@@ -203,6 +205,7 @@ export async function getCurrentUser() {
         u.demo_tailors_used,
         u.monthly_tailors_used,
         u.monthly_tailor_limit,
+        u.monthly_tracker_parses_used,
         u.preferred_model_tier,
         u.billing_customer_id,
         u.billing_subscription_id,

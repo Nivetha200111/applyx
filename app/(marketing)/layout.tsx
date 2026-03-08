@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MobileNav } from "@/components/mobile-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { buttonVariants } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth";
@@ -14,7 +15,7 @@ export default async function MarketingLayout({
   return (
     <div className="page-shell">
       <header className="sticky top-0 z-30 border-b border-border/40 bg-background/60 backdrop-blur-2xl transition-all duration-300">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-5 sm:px-6 lg:px-8">
+        <div className="relative mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-5 sm:px-6 lg:px-8">
           <Link className="inline-flex items-center gap-3 transition-transform duration-200 hover:scale-[1.02]" href="/">
             <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/15 text-lg font-semibold text-primary shadow-sm">
               A
@@ -25,7 +26,9 @@ export default async function MarketingLayout({
             </div>
           </Link>
           <div className="flex items-center gap-3">
-            <ThemeToggle />
+            <div className="hidden md:block">
+              <ThemeToggle />
+            </div>
             <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
               <Link className="transition-colors duration-200 hover:text-foreground" href="/pricing">
                 Pricing
@@ -45,14 +48,18 @@ export default async function MarketingLayout({
                 </>
               )}
             </nav>
+            <MobileNav isLoggedIn={!!user} />
           </div>
         </div>
       </header>
       <main>{children}</main>
       <footer className="border-t border-border/40 bg-background/55 backdrop-blur-xl">
-        <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-8 text-sm text-muted-foreground sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-          <p>Built for Indian job seekers applying at scale.</p>
-          <div className="flex gap-4">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-muted-foreground sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+          <div className="space-y-1">
+            <p className="font-medium text-foreground">ApplyX</p>
+            <p>Built for Indian job seekers applying at scale.</p>
+          </div>
+          <div className="flex items-center gap-6">
             <Link className="transition-colors duration-200 hover:text-foreground" href="/pricing">
               Pricing
             </Link>

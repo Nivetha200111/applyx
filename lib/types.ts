@@ -84,7 +84,8 @@ export type UsageAction =
   | "generate_docx"
   | "download"
   | "login"
-  | "purchase";
+  | "purchase"
+  | "parse_tracker_jd";
 
 export interface PlanDefinition {
   id: PlanTier;
@@ -95,6 +96,8 @@ export interface PlanDefinition {
   includedDemos: number;
   monthlyTailors: number;
   masterResumeLimit: number;
+  monthlyTrackerParses: number;
+  trackerRowLimit: number;
   modelTier: ModelTier;
   primaryModel: string;
   fallbackModel?: string;
@@ -131,6 +134,7 @@ export interface AppUser {
   demoTailorsUsed: number;
   monthlyTailorsUsed: number;
   monthlyTailorLimit: number;
+  monthlyTrackerParsesUsed: number;
   preferredModelTier: ModelTier;
   billingCustomerId: string | null;
   billingSubscriptionId: string | null;
@@ -204,6 +208,66 @@ export interface UsageLogRecord {
   requestCount: number;
   metadata: Record<string, unknown> | null;
   createdAt: string;
+}
+
+export type ApplicationStatus =
+  | "bookmarked"
+  | "applying"
+  | "applied"
+  | "screening"
+  | "interviewing"
+  | "offer"
+  | "accepted"
+  | "rejected"
+  | "withdrawn"
+  | "ghosted";
+
+export type WorkMode = "remote" | "hybrid" | "onsite" | "unknown";
+
+export interface PrepResource {
+  label: string;
+  url: string;
+  category: "dsa" | "system-design" | "behavioral" | "company-specific" | "general";
+}
+
+export interface TrackedApplicationRecord {
+  id: string;
+  userId: string;
+  companyName: string;
+  roleTitle: string;
+  location: string | null;
+  workMode: WorkMode;
+  salaryMin: number | null;
+  salaryMax: number | null;
+  salaryCurrency: string;
+  status: ApplicationStatus;
+  priority: number;
+  sourceUrl: string | null;
+  sourcePlatform: string | null;
+  rawJdText: string | null;
+  parsedJdData: ParsedJD | null;
+  requiredSkills: string[];
+  preferredSkills: string[];
+  experienceRequired: string | null;
+  appliedAt: string | null;
+  deadlineAt: string | null;
+  followUpAt: string | null;
+  lastActivityAt: string | null;
+  notes: string | null;
+  contactName: string | null;
+  contactEmail: string | null;
+  tailoredResumeId: string | null;
+  prepResources: PrepResource[];
+  isArchived: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TrackerParsedJD extends ParsedJD {
+  salaryRange?: { min: number; max: number; currency: string } | null;
+  workMode?: WorkMode;
+  applicationDeadline?: string | null;
+  sourcePlatform?: string | null;
 }
 
 export interface PaymentRecord {

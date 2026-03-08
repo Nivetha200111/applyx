@@ -27,7 +27,7 @@ export default async function TailoredResumeDetailPage({
       <div className="space-y-3">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-3xl font-semibold">Tailored resume detail</h1>
-          <Badge variant="success">{tailored.matchScoreAfter ?? 0} match</Badge>
+          <Badge variant="success">{tailored.matchScoreAfter ?? 0}% match</Badge>
         </div>
         <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
           {tailored.jobTitle ?? "Untitled role"} • {tailored.companyName ?? "Company"} •{" "}

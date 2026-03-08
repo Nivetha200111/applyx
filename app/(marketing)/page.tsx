@@ -2,7 +2,7 @@ import Link from "next/link";
 import {
   ArrowRight,
   CheckCircle2,
-  FileText,
+  ClipboardList,
   Sparkles,
   Upload,
   Zap,
@@ -24,24 +24,24 @@ import { cn } from "@/lib/utils";
 
 const steps = [
   {
-    title: "Upload once",
+    title: "Track every application",
     description:
-      "Drop in your master resume and let ApplyX parse it into structured data you can reuse across every application.",
-    icon: Upload,
+      "Add jobs to your tracker like a spreadsheet. Paste a JD and AI auto-fills company, role, skills, salary, and work mode instantly.",
+    icon: ClipboardList,
     gradient: "from-emerald-500/20 to-teal-500/20",
   },
   {
-    title: "Paste any JD",
+    title: "Tailor your resume",
     description:
-      "Paste a LinkedIn, Naukri, or Instahyre job description and extract ATS-critical keywords in seconds.",
-    icon: FileText,
+      "Generate ATS-optimized resumes tailored to each job description with match score tracking and one-click PDF/DOCX export.",
+    icon: Sparkles,
     gradient: "from-amber-500/20 to-orange-500/20",
   },
   {
-    title: "Download tailored resume",
+    title: "Prep and land interviews",
     description:
-      "Generate a clean ATS-safe PDF or DOCX with higher relevance, better ordering, and a measurable match score uplift.",
-    icon: Sparkles,
+      "Access curated prep resources — NeetCode, Striver's SDE Sheet, system design guides — linked directly from each tracked application.",
+    icon: Upload,
     gradient: "from-primary/20 to-emerald-500/20",
   },
 ];
@@ -62,7 +62,7 @@ export default function MarketingHomePage() {
         <div className="relative space-y-8">
           <AnimatedPanel delay={0} hover={false}>
             <Badge variant="warning" className="w-fit">
-              India-first ATS resume tailoring
+              India-first job application tracker
             </Badge>
           </AnimatedPanel>
 
@@ -71,13 +71,13 @@ export default function MarketingHomePage() {
               as="h1"
               className="max-w-3xl text-5xl font-semibold leading-tight sm:text-6xl"
               delay={0.1}
-              text="Tailor every resume to the job description in one click."
+              text="Track applications, tailor resumes, land interviews."
             />
             <AnimatedPanel delay={0.45} hover={false}>
               <p className="max-w-2xl text-lg leading-8 text-muted-foreground">
-                ApplyX turns one master resume into ATS-optimized, job-specific resumes
-                for LinkedIn, Naukri, Instahyre, and direct company applications without
-                prompt engineering or manual formatting.
+                ApplyX replaces your messy Excel tracker with an AI-powered job
+                application board. Paste any JD to auto-fill, tailor ATS resumes, and
+                access curated prep resources — all in one place.
               </p>
             </AnimatedPanel>
           </div>
@@ -102,8 +102,8 @@ export default function MarketingHomePage() {
 
           <AnimatedPanel delay={0.65} hover={false}>
             <p className="text-sm leading-7 text-muted-foreground">
-              Create an account, upload one master resume, and move straight into
-              real tailoring and paid plan upgrades.
+              Free tier: 10 tracked applications, 5 AI auto-fills, 2 resume tailors.
+              Upgrade for unlimited tracking and more AI credits.
             </p>
           </AnimatedPanel>
 
@@ -148,7 +148,7 @@ export default function MarketingHomePage() {
                   <div className="rounded-[24px] border border-border/70 bg-background/80 p-5 transition-transform duration-300 hover:-translate-y-1">
                     <div className="text-sm text-muted-foreground">Before</div>
                     <div className="mt-2 text-4xl font-semibold">
-                      <AnimatedCounter target={61} />
+                      <AnimatedCounter target={61} suffix="%" />
                     </div>
                     <p className="mt-3 text-sm leading-6 text-muted-foreground">
                       Generic summary, buried skills, and missing ATS keywords.
@@ -159,7 +159,7 @@ export default function MarketingHomePage() {
                   <div className="score-ring-pulse rounded-[24px] border border-primary/30 bg-primary/10 p-5 transition-transform duration-300 hover:-translate-y-1">
                     <div className="text-sm text-primary">After</div>
                     <div className="mt-2 text-4xl font-semibold text-gradient">
-                      <AnimatedCounter target={87} />
+                      <AnimatedCounter target={87} suffix="%" />
                     </div>
                     <p className="mt-3 text-sm leading-6 text-muted-foreground">
                       Tailored summary, reordered bullets, and JD-aligned skill prioritization.
@@ -265,11 +265,11 @@ export default function MarketingHomePage() {
             <SpotlightCard className="h-full">
               <Card className="h-full shimmer">
                 <CardHeader>
-                  <CardTitle>One-click, not a chatbot</CardTitle>
+                  <CardTitle>Spreadsheet-style tracker</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm leading-7 text-muted-foreground">
-                  The interface is built around upload, paste, tailor, and download so users do
-                  not waste time prompt-engineering every application.
+                  Track every application like Google Sheets — sort, filter by status, star
+                  priorities, and inline-edit any cell. No more messy Excel files.
                 </CardContent>
               </Card>
             </SpotlightCard>
@@ -278,11 +278,11 @@ export default function MarketingHomePage() {
             <SpotlightCard className="h-full">
               <Card className="h-full shimmer">
                 <CardHeader>
-                  <CardTitle>ATS match score visibility</CardTitle>
+                  <CardTitle>AI auto-fill from JDs</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm leading-7 text-muted-foreground">
-                  Every tailored version shows score uplift and a clear audit trail of rewritten
-                  bullets, reordered sections, and inserted keywords.
+                  Paste a job description and AI extracts company, role, skills, salary range,
+                  work mode, and experience level into your tracker row automatically.
                 </CardContent>
               </Card>
             </SpotlightCard>
@@ -291,12 +291,11 @@ export default function MarketingHomePage() {
             <SpotlightCard className="h-full">
               <Card className="h-full shimmer">
                 <CardHeader>
-                  <CardTitle>Priced for India</CardTitle>
+                  <CardTitle>Built-in prep resources</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm leading-7 text-muted-foreground">
-                  Basic at ₹199/mo gives you 40 monthly tailors with GPT-4o mini and
-                  Claude Haiku. Premium at ₹699/mo gives you 50 premium tailors with
-                  Claude Sonnet 4 and GPT-4o. Both launch prices are GST-inclusive.
+                  Every tracked application links to curated prep — NeetCode, Striver&apos;s SDE
+                  Sheet, system design primers, and behavioral guides matched to the role.
                 </CardContent>
               </Card>
             </SpotlightCard>
@@ -322,11 +321,11 @@ export default function MarketingHomePage() {
                 as="h2"
                 className="mx-auto max-w-2xl justify-center text-3xl font-semibold sm:text-4xl"
                 delay={0.1}
-                text="Ready to stop sending the same resume everywhere?"
+                text="Ready to ditch the messy Excel tracker?"
               />
               <p className="mx-auto max-w-xl text-lg leading-8 text-slate-300">
-                Two free demos. No credit card required. See your match score jump
-                before you commit.
+                Track 10 applications free. Paste any JD, auto-fill with AI, tailor
+                resumes, and prep for interviews. No credit card required.
               </p>
               <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <Link

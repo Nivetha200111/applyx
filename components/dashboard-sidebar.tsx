@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  ClipboardList,
   FileText,
   History,
   LayoutDashboard,
@@ -18,6 +19,11 @@ const navItems = [
     href: "/dashboard",
     label: "Overview",
     icon: LayoutDashboard,
+  },
+  {
+    href: "/tracker",
+    label: "Tracker",
+    icon: ClipboardList,
   },
   {
     href: "/resumes",
@@ -108,32 +114,41 @@ export function DashboardSidebar({
           <LogoutButton />
         </div>
       </aside>
-      <nav className="sticky top-0 z-30 flex items-center gap-2 overflow-x-auto border-b border-border/70 bg-background/95 px-4 py-3 backdrop-blur lg:hidden">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive =
-            pathname === item.href || pathname.startsWith(`${item.href}/`);
-
-          return (
-            <Link
-              key={item.href}
-              className={cn(
-                "flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors",
-                isActive
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-card/85 text-muted-foreground",
-              )}
-              href={item.href}
-            >
-              <Icon className="h-4 w-4" />
-              {item.label}
-            </Link>
-          );
-        })}
-        <div className="ml-auto shrink-0">
+      <div className="sticky top-0 z-30 border-b border-border/70 bg-background/95 backdrop-blur lg:hidden">
+        <div className="flex items-center gap-3 px-4 py-2">
+          <Link className="inline-flex items-center gap-2" href="/">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/15 text-sm font-semibold text-primary">
+              A
+            </span>
+            <span className="text-sm font-semibold">ApplyX</span>
+          </Link>
+          <span className="ml-auto text-xs font-medium text-primary">{planLabel}</span>
           <ThemeToggle />
         </div>
-      </nav>
+        <nav className="flex items-center gap-2 overflow-x-auto px-4 pb-3">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive =
+              pathname === item.href || pathname.startsWith(`${item.href}/`);
+
+            return (
+              <Link
+                key={item.href}
+                className={cn(
+                  "flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+                  isActive
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card/85 text-muted-foreground",
+                )}
+                href={item.href}
+              >
+                <Icon className="h-4 w-4" />
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
     </>
   );
 }

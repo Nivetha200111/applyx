@@ -47,7 +47,7 @@ export default async function TailoredResumesPage() {
                       {resume.templateUsed}
                     </CardDescription>
                   </div>
-                  <Badge variant="success">{resume.matchScoreAfter ?? 0} match</Badge>
+                  <Badge variant="success">{resume.matchScoreAfter ?? 0}% match</Badge>
                 </div>
               </CardHeader>
               <CardContent>

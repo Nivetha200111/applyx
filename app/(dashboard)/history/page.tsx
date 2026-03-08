@@ -13,6 +13,7 @@ const statusVariant = {
   demo: "warning",
   parse_resume: "outline",
   parse_job_description: "outline",
+  parse_tracker_jd: "outline",
   tailor_resume: "success",
   generate_pdf: "default",
   generate_docx: "default",

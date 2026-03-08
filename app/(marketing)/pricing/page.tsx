@@ -17,24 +17,24 @@ import { cn } from "@/lib/utils";
 
 const faqs = [
   {
-    q: "What happens after my 2 free demos?",
-    a: "You can upgrade to Basic (₹199/mo) for 40 monthly tailors with GPT-4o mini, or Premium (₹699/mo) for 50 premium tailors with Claude Sonnet 4.",
+    q: "What can I do on the free tier?",
+    a: "Track up to 10 applications, use 5 AI auto-fills from JDs, and get 2 free resume tailors. Enough to test the full flow before committing.",
   },
   {
-    q: "Which AI models do I get?",
-    a: "Free and Basic use affordable models (GPT-4o mini, Claude Haiku 4.5) for fast, cost-effective tailoring. Premium unlocks Claude Sonnet 4 and GPT-4o for the most nuanced rewrites.",
+    q: "What is an AI auto-fill?",
+    a: "Paste a job description and AI extracts company, role, skills, salary, work mode, and experience into your tracker row. Each extraction uses one auto-fill credit.",
+  },
+  {
+    q: "Which AI models power the auto-fill?",
+    a: "Tracker auto-fills use fast affordable models (Claude Haiku / GPT-4o mini) for instant extraction. Premium tailoring uses Claude Sonnet 4 and GPT-4o for deeper rewrites.",
   },
   {
     q: "Is GST included in the listed price?",
-    a: "Yes. The displayed launch pricing is GST-inclusive. Current India UPI checkout also avoids payment-gateway MDR, which helps keep the plans lower.",
+    a: "Yes. The displayed launch pricing is GST-inclusive. UPI checkout also avoids payment-gateway MDR.",
   },
   {
-    q: "Can I cancel anytime?",
-    a: "Yes. Paid plans can run through hosted checkout when configured, and the fallback manual billing flow can be stopped at the next cycle without automatic renewal.",
-  },
-  {
-    q: "Why is pricing in rupees?",
-    a: "ApplyX is built for Indian job seekers. We price in INR so you never pay inflated dollar-denominated SaaS rates for a local job search workflow.",
+    q: "Can I add applications without AI?",
+    a: "Yes. Quick add lets you manually enter company and role — no AI credit used. AI auto-fill is only consumed when you paste a JD.",
   },
 ];
 
