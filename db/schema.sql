@@ -236,6 +236,16 @@ create table if not exists public.tracked_applications (
   updated_at timestamptz not null default timezone('utc', now())
 );
 
+create table if not exists public.request_rate_limits (
+  route_key text not null,
+  identifier_hash text not null,
+  window_started_at timestamptz not null,
+  request_count integer not null default 1 check (request_count >= 0),
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now()),
+  primary key (route_key, identifier_hash)
+);
+
 -- Indexes
 
 create index if not exists users_plan_idx on public.users (plan);
@@ -256,6 +266,7 @@ create index if not exists tracked_apps_user_id_idx on public.tracked_applicatio
 create index if not exists tracked_apps_user_status_idx on public.tracked_applications (user_id, status);
 create index if not exists tracked_apps_user_archived_idx on public.tracked_applications (user_id, is_archived, updated_at desc);
 create index if not exists tracked_apps_skills_idx on public.tracked_applications using gin (required_skills);
+create index if not exists request_rate_limits_window_idx on public.request_rate_limits (window_started_at);
 
 -- Triggers
 
@@ -292,5 +303,11 @@ execute procedure public.set_updated_at();
 drop trigger if exists set_tracked_applications_updated_at on public.tracked_applications;
 create trigger set_tracked_applications_updated_at
 before update on public.tracked_applications
+for each row
+execute procedure public.set_updated_at();
+
+drop trigger if exists set_request_rate_limits_updated_at on public.request_rate_limits;
+create trigger set_request_rate_limits_updated_at
+before update on public.request_rate_limits
 for each row
 execute procedure public.set_updated_at();

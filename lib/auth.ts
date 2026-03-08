@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { applyDeveloperAdminAccess } from "@/lib/developer-access";
+import { HttpError } from "@/lib/security/api";
 import type { AppUser } from "@/lib/types";
 import {
   dbQuery,
@@ -107,7 +108,7 @@ export async function createUserAccount(input: {
   );
 
   if (existing.rowCount) {
-    throw new Error("An account with this email already exists.");
+    throw new HttpError(400, "Unable to create account with those details.");
   }
 
   const passwordHash = await bcrypt.hash(input.password, 10);
@@ -153,7 +154,7 @@ export async function signInUser(input: {
   const user = firstRow(result);
 
   if (!user || !(await bcrypt.compare(input.password, user.password_hash))) {
-    throw new Error("Invalid email or password.");
+    throw new HttpError(400, "Invalid email or password.");
   }
 
   await setSessionForUser(user.id, input);

@@ -7,6 +7,8 @@ import { getManualBillingReturnUrl, hasManualBillingConfig } from "@/lib/billing
 import { isDeveloperAdminUser } from "@/lib/developer-access";
 import { getDodoClient, getDodoProductId, getDodoReturnUrl } from "@/lib/dodo/client";
 import { getPlanById } from "@/lib/plans";
+import { toErrorResponse } from "@/lib/security/api";
+import { enforceRateLimit } from "@/lib/security/rate-limit";
 import { getSiteUrl } from "@/lib/site-url";
 
 export const runtime = "nodejs";
@@ -22,6 +24,14 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
     }
+
+    await enforceRateLimit({
+      key: "billing:checkout",
+      identifier: user.id,
+      limit: 5,
+      windowSeconds: 300,
+      message: "Too many checkout attempts. Please wait a few minutes and try again.",
+    });
 
     if (isDeveloperAdminUser(user)) {
       return NextResponse.json(
@@ -150,11 +160,9 @@ export async function POST(request: Request) {
       mode: "manual",
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Unable to start checkout.",
-      },
-      { status: 400 },
-    );
+    return toErrorResponse(error, {
+      fallbackMessage: "Unable to start checkout right now.",
+      logLabel: "billing/checkout",
+    });
   }
 }

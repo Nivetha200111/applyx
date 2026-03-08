@@ -5,6 +5,8 @@ import { generateResumePdfBuffer } from "@/lib/pdf/generate-pdf";
 import { getCurrentUser } from "@/lib/auth";
 import { dbQuery } from "@/lib/db";
 import { getTailoredResumeForUser } from "@/lib/data";
+import { toErrorResponse } from "@/lib/security/api";
+import { enforceRateLimit } from "@/lib/security/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -20,6 +22,14 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
     }
+
+    await enforceRateLimit({
+      key: "tailored:download",
+      identifier: user.id,
+      limit: 20,
+      windowSeconds: 60,
+      message: "Download rate limit reached. Please wait a minute and try again.",
+    });
 
     const url = new URL(request.url);
     const format = formatSchema.parse(url.searchParams.get("format") ?? "pdf");
@@ -67,11 +77,9 @@ export async function GET(
       },
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Unable to download resume.",
-      },
-      { status: 400 },
-    );
+    return toErrorResponse(error, {
+      fallbackMessage: "Unable to download that resume right now.",
+      logLabel: "api/tailored/download",
+    });
   }
 }

@@ -2,11 +2,14 @@ import { z } from "zod";
 import { NextResponse } from "next/server";
 import { parseJdWithAi } from "@/lib/ai/parse-jd";
 import { tailorResumeWithAi } from "@/lib/ai/tailor-resume";
+import { isDeveloperAdminUser } from "@/lib/developer-access";
 import { getCurrentUser } from "@/lib/auth";
 import { dbQuery, firstRow, withTransaction } from "@/lib/db";
 import { getRemainingTailors, refreshUserAccess } from "@/lib/data";
 import { getPlanById } from "@/lib/plans";
 import { suggestPrepResources } from "@/lib/prep-resources";
+import { HttpError, toErrorResponse } from "@/lib/security/api";
+import { enforceRateLimit } from "@/lib/security/rate-limit";
 import type { ParsedJD, ParsedResume, ResumeTemplate } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -51,6 +54,14 @@ async function syncTailoredResumeToTracker(params: {
 
   try {
     return await withTransaction<TrackerSyncResult>(async (client) => {
+      await client.query(
+        `select id
+         from public.users
+         where id = $1
+         for update`,
+        [params.userId],
+      );
+
       let existingId: string | null = null;
 
       if (params.sourceUrl) {
@@ -212,6 +223,14 @@ export async function POST(request: Request) {
     }
 
     const currentUser = await refreshUserAccess(sessionUser);
+    await enforceRateLimit({
+      key: "tailor:create",
+      identifier: currentUser.id,
+      limit: 10,
+      windowSeconds: 60,
+      message: "Tailor rate limit reached. Please wait a minute and try again.",
+    });
+
     const payload = tailorRequestSchema.parse(await request.json());
 
     if (getRemainingTailors(currentUser) <= 0) {
@@ -250,7 +269,50 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid plan configuration." }, { status: 400 });
     }
 
+    const developerAdmin = isDeveloperAdminUser(currentUser);
+
     const tailoredResumeId = await withTransaction(async (client) => {
+      await client.query(
+        `select id
+         from public.users
+         where id = $1
+         for update`,
+        [currentUser.id],
+      );
+
+      if (!developerAdmin) {
+        if (currentUser.plan === "free") {
+          const demoUsageResult = await client.query<{ id: string }>(
+            `update public.users
+             set demo_tailors_used = demo_tailors_used + 1,
+                 updated_at = timezone('utc', now())
+             where id = $1
+               and demo_tailors_used < $2
+             returning id`,
+            [currentUser.id, plan.includedDemos],
+          );
+
+          if (demoUsageResult.rowCount === 0) {
+            throw new HttpError(403, "Tailor limit reached for your current plan.");
+          }
+        } else {
+          const monthlyLimit = currentUser.monthlyTailorLimit || plan.monthlyTailors;
+          const monthlyUsageResult = await client.query<{ id: string }>(
+            `update public.users
+             set monthly_tailors_used = monthly_tailors_used + 1,
+                 updated_at = timezone('utc', now())
+             where id = $1
+               and monthly_tailors_used < $2
+             returning id`,
+            [currentUser.id, monthlyLimit],
+          );
+
+          if (monthlyUsageResult.rowCount === 0) {
+            throw new HttpError(403, "Tailor limit reached for your current plan.");
+          }
+        }
+      }
+
       const jdResult = await client.query<{ id: string }>(
         `insert into public.job_descriptions (
           user_id,
@@ -310,24 +372,6 @@ export async function POST(request: Request) {
         ],
       );
 
-      if (currentUser.plan === "free") {
-        await client.query(
-          `update public.users
-           set demo_tailors_used = demo_tailors_used + 1,
-               updated_at = timezone('utc', now())
-           where id = $1`,
-          [currentUser.id],
-        );
-      } else {
-        await client.query(
-          `update public.users
-           set monthly_tailors_used = monthly_tailors_used + 1,
-               updated_at = timezone('utc', now())
-           where id = $1`,
-          [currentUser.id],
-        );
-      }
-
       await client.query(
         `insert into public.usage_log (user_id, action, plan_tier, model_tier, metadata)
          values ($1, 'parse_job_description', $2, $3, $4::jsonb),
@@ -370,11 +414,9 @@ export async function POST(request: Request) {
       trackerMessage: trackerSync.message,
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Unable to tailor resume.",
-      },
-      { status: 400 },
-    );
+    return toErrorResponse(error, {
+      fallbackMessage: "Unable to tailor resume right now.",
+      logLabel: "api/tailor",
+    });
   }
 }

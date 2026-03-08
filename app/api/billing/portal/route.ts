@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { isDeveloperAdminUser } from "@/lib/developer-access";
 import { getDodoClient } from "@/lib/dodo/client";
+import { toErrorResponse } from "@/lib/security/api";
+import { enforceRateLimit } from "@/lib/security/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -12,6 +14,14 @@ export async function POST() {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
     }
+
+    await enforceRateLimit({
+      key: "billing:portal",
+      identifier: user.id,
+      limit: 10,
+      windowSeconds: 300,
+      message: "Too many billing portal requests. Please wait before trying again.",
+    });
 
     if (isDeveloperAdminUser(user)) {
       return NextResponse.json(
@@ -35,11 +45,9 @@ export async function POST() {
       portalUrl: portalSession.link,
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Unable to open billing portal.",
-      },
-      { status: 400 },
-    );
+    return toErrorResponse(error, {
+      fallbackMessage: "Unable to open the billing portal right now.",
+      logLabel: "billing/portal",
+    });
   }
 }

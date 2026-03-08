@@ -2,6 +2,8 @@ import { z } from "zod";
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { dbQuery } from "@/lib/db";
+import { toErrorResponse } from "@/lib/security/api";
+import { enforceRateLimit } from "@/lib/security/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -61,6 +63,14 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
     }
 
+    await enforceRateLimit({
+      key: "tracker:update",
+      identifier: sessionUser.id,
+      limit: 30,
+      windowSeconds: 60,
+      message: "Tracker update rate limit reached. Please wait a minute and try again.",
+    });
+
     const payload = updateSchema.parse(await request.json());
     const setClauses: string[] = [];
     const values: unknown[] = [];
@@ -100,10 +110,10 @@ export async function PATCH(
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Update failed." },
-      { status: 400 },
-    );
+    return toErrorResponse(error, {
+      fallbackMessage: "Unable to update that application right now.",
+      logLabel: "api/applications/update",
+    });
   }
 }
 
@@ -117,6 +127,14 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
     }
 
+    await enforceRateLimit({
+      key: "tracker:delete",
+      identifier: sessionUser.id,
+      limit: 20,
+      windowSeconds: 60,
+      message: "Tracker delete rate limit reached. Please wait a minute and try again.",
+    });
+
     const result = await dbQuery(
       `delete from public.tracked_applications
        where id = $1 and user_id = $2`,
@@ -129,9 +147,9 @@ export async function DELETE(
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Delete failed." },
-      { status: 400 },
-    );
+    return toErrorResponse(error, {
+      fallbackMessage: "Unable to delete that application right now.",
+      logLabel: "api/applications/delete",
+    });
   }
 }

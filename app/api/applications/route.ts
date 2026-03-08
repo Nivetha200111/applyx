@@ -11,18 +11,11 @@ import {
 } from "@/lib/data";
 import { getPlanById } from "@/lib/plans";
 import { suggestPrepResources } from "@/lib/prep-resources";
+import { HttpError, toErrorResponse } from "@/lib/security/api";
+import { enforceRateLimit } from "@/lib/security/rate-limit";
 import type { ApplicationStatus } from "@/lib/types";
 
 export const runtime = "nodejs";
-
-class HttpError extends Error {
-  status: number;
-
-  constructor(status: number, message: string) {
-    super(message);
-    this.status = status;
-  }
-}
 
 const createApplicationSchema = z.object({
   companyName: z.string().max(200).optional(),
@@ -47,6 +40,14 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
     }
 
+    await enforceRateLimit({
+      key: "tracker:list",
+      identifier: sessionUser.id,
+      limit: 60,
+      windowSeconds: 60,
+      message: "Tracker list rate limit reached. Please wait a minute and try again.",
+    });
+
     const url = new URL(request.url);
     const statusParam = url.searchParams.get("status");
     const status = statusParam ? statusParam.split(",") as ApplicationStatus[] : undefined;
@@ -63,10 +64,10 @@ export async function GET(request: Request) {
 
     return NextResponse.json(result);
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Failed to fetch applications." },
-      { status: 400 },
-    );
+    return toErrorResponse(error, {
+      fallbackMessage: "Failed to fetch applications right now.",
+      logLabel: "api/applications/list",
+    });
   }
 }
 
@@ -78,6 +79,14 @@ export async function POST(request: Request) {
     }
 
     const currentUser = await refreshUserAccess(sessionUser);
+    await enforceRateLimit({
+      key: "tracker:create",
+      identifier: currentUser.id,
+      limit: 10,
+      windowSeconds: 60,
+      message: "Tracker create rate limit reached. Please wait a minute and try again.",
+    });
+
     const payload = createApplicationSchema.parse(await request.json());
     const plan = getPlanById(currentUser.plan);
 
@@ -227,13 +236,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true, applicationId: created });
   } catch (error) {
-    if (error instanceof HttpError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
-    }
-
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Failed to create application." },
-      { status: 400 },
-    );
+    return toErrorResponse(error, {
+      fallbackMessage: "Failed to create application right now.",
+      logLabel: "api/applications",
+    });
   }
 }

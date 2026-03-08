@@ -15,11 +15,11 @@ if (!connectionString) {
 
 const planCatalog = {
   basic: {
-    monthlyTailors: 30,
+    monthlyTailors: 40,
     modelTier: "basic",
   },
   premium: {
-    monthlyTailors: 999999,
+    monthlyTailors: 50,
     modelTier: "premium",
   },
 };
@@ -59,6 +59,10 @@ try {
     throw new Error(`Unsupported plan tier: ${payment.plan_tier}`);
   }
 
+  if (payment.status === "paid") {
+    throw new Error("Payment has already been approved.");
+  }
+
   const plan = planCatalog[payment.plan_tier];
 
   await client.query(
@@ -84,6 +88,7 @@ try {
         billing_cycle_start = timezone('utc', now()),
         billing_cycle_end = timezone('utc', now()) + interval '30 days',
         monthly_tailors_used = 0,
+        monthly_tracker_parses_used = 0,
         monthly_tailor_limit = $3,
         preferred_model_tier = $4,
         updated_at = timezone('utc', now())

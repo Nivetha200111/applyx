@@ -7,17 +7,10 @@ import { withTransaction } from "@/lib/db";
 import { refreshUserAccess } from "@/lib/data";
 import { getPlanById } from "@/lib/plans";
 import { suggestPrepResources } from "@/lib/prep-resources";
+import { HttpError, toErrorResponse } from "@/lib/security/api";
+import { enforceRateLimit } from "@/lib/security/rate-limit";
 
 export const runtime = "nodejs";
-
-class HttpError extends Error {
-  status: number;
-
-  constructor(status: number, message: string) {
-    super(message);
-    this.status = status;
-  }
-}
 
 const parseRequestSchema = z.object({
   rawJdText: z.string().min(50).max(30000),
@@ -34,6 +27,14 @@ export async function POST(
     }
 
     const currentUser = await refreshUserAccess(sessionUser);
+    await enforceRateLimit({
+      key: "tracker:parse",
+      identifier: currentUser.id,
+      limit: 10,
+      windowSeconds: 60,
+      message: "Tracker parse rate limit reached. Please wait a minute and try again.",
+    });
+
     const plan = getPlanById(currentUser.plan);
     const developerAdmin = isDeveloperAdminUser(currentUser);
     if (!plan) {
@@ -128,13 +129,9 @@ export async function POST(
 
     return NextResponse.json({ ok: true, parsed });
   } catch (error) {
-    if (error instanceof HttpError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
-    }
-
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Parse failed." },
-      { status: 400 },
-    );
+    return toErrorResponse(error, {
+      fallbackMessage: "Unable to parse that job description right now.",
+      logLabel: "api/applications/parse",
+    });
   }
 }
