@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { BillingPortalButton } from "@/components/billing/billing-portal-button";
 import { CheckoutButton } from "@/components/billing/checkout-button";
 import { PricingCard } from "@/components/pricing-card";
@@ -9,11 +10,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { requireUser } from "@/lib/auth";
+import { getManualBillingReturnUrl } from "@/lib/billing/config";
+import {
+  getPaymentStatusLabel,
+  isManualPaymentAwaitingVerification,
+} from "@/lib/billing/payment-status";
 import { hasManualBillingConfig } from "@/lib/billing/config";
 import { isDeveloperAdminUser } from "@/lib/developer-access";
 import { getPaymentsForUser, refreshUserAccess } from "@/lib/data";
 import { hasDodoBillingConfig } from "@/lib/dodo/client";
 import { planCatalog, pricingTiers } from "@/lib/plans";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default async function SettingsPage() {
   const sessionUser = await requireUser("/settings");
@@ -22,6 +30,11 @@ export default async function SettingsPage() {
   const hasDodo = hasDodoBillingConfig();
   const hasManual = hasManualBillingConfig();
   const developerAdmin = isDeveloperAdminUser(user);
+  const pendingManualPaymentsByPlan = new Map(
+    payments
+      .filter((payment) => payment.billingProvider === "manual" && payment.status === "pending")
+      .map((payment) => [payment.planTier, payment]),
+  );
 
   return (
     <div className="space-y-8">
@@ -101,22 +114,48 @@ export default async function SettingsPage() {
                     at ₹{plan.priceInr}.
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <CheckoutButton
-                    disabled={!hasDodo && !hasManual}
-                    label={
-                      hasDodo
-                        ? user.plan === plan.id
-                          ? `Renew ${plan.name}`
-                          : `Upgrade to ${plan.name}`
-                        : hasManual
-                          ? user.plan === plan.id
-                            ? `Renew ${plan.name} via UPI`
-                            : `Pay via UPI for ${plan.name}`
-                          : "Billing unavailable"
+                <CardContent className="space-y-3">
+                  {(() => {
+                    const pendingPayment = pendingManualPaymentsByPlan.get(plan.id);
+                    const awaitingVerification =
+                      pendingPayment ? isManualPaymentAwaitingVerification(pendingPayment) : false;
+
+                    if (pendingPayment?.providerCheckoutId) {
+                      return (
+                        <>
+                          <div className="rounded-2xl border border-border/70 bg-card/70 p-3 text-sm text-muted-foreground">
+                            {awaitingVerification
+                              ? "Payment reference submitted. Verification is pending."
+                              : "Payment request created. Complete the UPI step to activate the plan."}
+                          </div>
+                          <Link
+                            className={cn(buttonVariants(), "w-full")}
+                            href={getManualBillingReturnUrl(pendingPayment.providerCheckoutId)}
+                          >
+                            {awaitingVerification ? "View payment status" : "Continue UPI payment"}
+                          </Link>
+                        </>
+                      );
                     }
-                    planId={plan.id as "basic" | "premium"}
-                  />
+
+                    return (
+                      <CheckoutButton
+                        disabled={!hasDodo && !hasManual}
+                        label={
+                          hasDodo
+                            ? user.plan === plan.id
+                              ? `Renew ${plan.name}`
+                              : `Upgrade to ${plan.name}`
+                            : hasManual
+                              ? user.plan === plan.id
+                                ? `Renew ${plan.name} via UPI`
+                                : `Pay via UPI for ${plan.name}`
+                              : "Billing unavailable"
+                        }
+                        planId={plan.id as "basic" | "premium"}
+                      />
+                    );
+                  })()}
                 </CardContent>
               </Card>
             ))}
@@ -146,7 +185,7 @@ export default async function SettingsPage() {
                   {payment.planTier.slice(1)} • ₹{payment.amountInr}
                 </div>
                 <div className="mt-1 text-sm text-muted-foreground">
-                  {payment.status} • {new Date(payment.createdAt).toLocaleString("en-IN")}
+                  {getPaymentStatusLabel(payment)} • {new Date(payment.createdAt).toLocaleString()}
                 </div>
               </div>
             ))

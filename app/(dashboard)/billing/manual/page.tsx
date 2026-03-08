@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import { requireUser } from "@/lib/auth";
 import { buildUpiPaymentUrl, getManualBillingConfig } from "@/lib/billing/config";
+import { isManualPaymentAwaitingVerification } from "@/lib/billing/payment-status";
 import { getPaymentForUserByCheckoutId, refreshUserAccess } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -38,6 +39,7 @@ export default async function ManualBillingPage({
   }
 
   const config = getManualBillingConfig();
+  const verificationPending = isManualPaymentAwaitingVerification(payment);
   const upiPaymentUrl =
     config.upiPaymentUrl ??
     buildUpiPaymentUrl({
@@ -58,13 +60,14 @@ export default async function ManualBillingPage({
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
       <div className="space-y-3">
-        <Badge variant="warning" className="w-fit">
-          UPI checkout beta
+        <Badge variant={verificationPending ? "success" : "warning"} className="w-fit">
+          {verificationPending ? "Verification pending" : "UPI checkout beta"}
         </Badge>
         <h1 className="text-3xl font-semibold">Complete payment and submit the reference</h1>
         <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
-          Pay the exact plan amount using the QR code or UPI app, then submit the
-          transaction reference so we can verify it and activate your plan.
+          {verificationPending
+            ? "Your payment reference has been received. We’re waiting to verify it before activating the plan."
+            : "Pay the exact plan amount using the QR code or UPI app, then submit the transaction reference so we can verify it and activate your plan."}
         </p>
       </div>
 
@@ -82,7 +85,21 @@ export default async function ManualBillingPage({
               Request ID: <span className="font-mono text-foreground">{payment.providerCheckoutId}</span>
             </div>
 
-            {qrCodeDataUrl ? (
+            {verificationPending ? (
+              <div className="rounded-[32px] border border-primary/25 bg-primary/10 p-5">
+                <div className="space-y-2">
+                  <div className="text-sm font-medium text-foreground">
+                    Reference received
+                  </div>
+                  <div className="font-mono text-sm text-foreground">
+                    {payment.providerPaymentId}
+                  </div>
+                  <p className="text-sm leading-7 text-muted-foreground">
+                    Keep this tab or return to settings. Access will be activated after verification.
+                  </p>
+                </div>
+              </div>
+            ) : qrCodeDataUrl ? (
               <div className="rounded-[32px] border border-border/70 bg-card/70 p-5">
                 <div className="mx-auto max-w-[320px] overflow-hidden rounded-[28px] border border-border/60 bg-white p-4 shadow-sm">
                   <Image
@@ -107,34 +124,36 @@ export default async function ManualBillingPage({
               </div>
             ) : null}
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <a
-                className={cn(
-                  buttonVariants({ size: "lg" }),
-                  "justify-between rounded-3xl",
-                  !upiPaymentUrl && "pointer-events-none opacity-50",
-                )}
-                href={upiPaymentUrl ?? "#"}
-                rel="noreferrer"
-                target="_blank"
-                >
-                Open UPI app
-                <ExternalLink className="h-4 w-4" />
-              </a>
+            {!verificationPending ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                <a
+                  className={cn(
+                    buttonVariants({ size: "lg" }),
+                    "justify-between rounded-3xl",
+                    !upiPaymentUrl && "pointer-events-none opacity-50",
+                  )}
+                  href={upiPaymentUrl ?? "#"}
+                  rel="noreferrer"
+                  target="_blank"
+                  >
+                  Open UPI app
+                  <ExternalLink className="h-4 w-4" />
+                </a>
 
-              <div
-                className={cn(
-                  buttonVariants({ size: "lg", variant: "outline" }),
-                  "pointer-events-none justify-between rounded-3xl opacity-60",
-                )}
-                aria-disabled="true"
-              >
-                International payments
-                <span className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                  Coming soon
-                </span>
+                <div
+                  className={cn(
+                    buttonVariants({ size: "lg", variant: "outline" }),
+                    "pointer-events-none justify-between rounded-3xl opacity-60",
+                  )}
+                  aria-disabled="true"
+                >
+                  International payments
+                  <span className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                    Coming soon
+                  </span>
+                </div>
               </div>
-            </div>
+            ) : null}
 
             {!upiPaymentUrl ? (
               <div className="rounded-3xl border border-amber-400/40 bg-amber-400/10 p-4 text-sm leading-7 text-amber-100">
@@ -142,7 +161,14 @@ export default async function ManualBillingPage({
               </div>
             ) : null}
 
-            <ManualPaymentForm paymentId={paymentId} />
+            {verificationPending ? (
+              <div className="rounded-3xl border border-border/70 bg-card/60 p-4 text-sm leading-7 text-muted-foreground">
+                You do not need to resubmit anything. Once the payment is verified, the plan
+                will appear in your account automatically.
+              </div>
+            ) : (
+              <ManualPaymentForm paymentId={paymentId} />
+            )}
           </CardContent>
         </Card>
 

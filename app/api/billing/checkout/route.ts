@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 import { z } from "zod";
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { dbQuery } from "@/lib/db";
+import { dbQuery, firstRow } from "@/lib/db";
 import { getManualBillingReturnUrl, hasManualBillingConfig } from "@/lib/billing/config";
 import { isDeveloperAdminUser } from "@/lib/developer-access";
 import { getDodoClient, getDodoProductId, getDodoReturnUrl } from "@/lib/dodo/client";
@@ -123,6 +123,30 @@ export async function POST(request: Request) {
       if (!hasManualBillingConfig()) {
         throw error;
       }
+    }
+
+    const existingManualPayment = await dbQuery<{
+      provider_checkout_id: string | null;
+    }>(
+      `select provider_checkout_id
+       from public.payments
+       where user_id = $1
+         and plan_tier = $2
+         and billing_provider = 'manual'
+         and status = 'pending'
+       order by updated_at desc
+       limit 1`,
+      [user.id, parsed.planId],
+    );
+    const existingManualCheckoutId = firstRow(existingManualPayment)?.provider_checkout_id ?? null;
+
+    if (existingManualCheckoutId) {
+      return NextResponse.json({
+        ok: true,
+        checkoutUrl: getManualBillingReturnUrl(existingManualCheckoutId),
+        sessionId: existingManualCheckoutId,
+        mode: "manual",
+      });
     }
 
     const manualPaymentId = `manual_${randomUUID()}`;
