@@ -53,7 +53,14 @@ export function PricingCard({ tier }: PricingCardProps) {
                 <CardTitle>{tier.name}</CardTitle>
               </div>
               {tier.highlighted ? <Badge variant="success">Most Popular</Badge> : null}
-              {isPremium ? <Badge variant="warning">Best Quality</Badge> : null}
+              {isPremium ? (
+                <Badge
+                  className="border-amber-200/30 bg-amber-300 text-slate-950 shadow-sm shadow-amber-500/10"
+                  variant="warning"
+                >
+                  Best Quality
+                </Badge>
+              ) : null}
             </div>
             <CardDescription>{tier.description}</CardDescription>
             <div className="flex items-end gap-1 pt-4">
@@ -100,7 +107,10 @@ export function PricingCard({ tier }: PricingCardProps) {
               className={cn(
                 buttonVariants({ variant: tier.highlighted || isPremium ? "default" : "outline" }),
                 "w-full shimmer",
-                isPremium && "bg-gradient-to-r from-primary to-accent text-white hover:opacity-90",
+                tier.highlighted && !isPremium &&
+                  "bg-primary text-white shadow-lg shadow-primary/25 hover:bg-primary/90 dark:text-white",
+                isPremium &&
+                  "bg-gradient-to-r from-emerald-400 via-primary to-accent text-slate-950 shadow-lg shadow-primary/20 hover:opacity-95 dark:text-slate-950",
               )}
               href={tier.href}
             >
