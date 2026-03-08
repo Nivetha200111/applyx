@@ -319,6 +319,7 @@ async function activatePaidPlan(
        billing_cycle_end = $5::timestamptz,
        monthly_tailors_used = 0,
        monthly_tailor_limit = $6,
+       monthly_tracker_parses_used = 0,
        preferred_model_tier = $7,
        updated_at = timezone('utc', now())
      where id = $8`,
@@ -416,6 +417,7 @@ async function downgradeToFreePlan(
        billing_cycle_end = $3::timestamptz,
        monthly_tailors_used = 0,
        monthly_tailor_limit = 0,
+       monthly_tracker_parses_used = 0,
        preferred_model_tier = 'demo',
        updated_at = timezone('utc', now())
      where id = $4`,

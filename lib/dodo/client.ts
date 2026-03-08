@@ -10,8 +10,14 @@ const planEnvMap: Record<PaidPlanTier, string> = {
   premium: "DODO_PREMIUM_PRODUCT_ID",
 };
 
+function getDodoApiKey() {
+  return process.env.DODO_APPLYX_KEY?.trim()
+    || process.env.DODO_PAYMENTS_API_KEY?.trim()
+    || null;
+}
+
 export function hasDodoBillingConfig() {
-  if (!process.env.DODO_PAYMENTS_API_KEY?.trim()) {
+  if (!getDodoApiKey()) {
     return false;
   }
 
@@ -23,10 +29,10 @@ export function getDodoEnvironment(): DodoEnvironment {
 }
 
 export function getDodoClient() {
-  const bearerToken = process.env.DODO_PAYMENTS_API_KEY?.trim();
+  const bearerToken = getDodoApiKey();
 
   if (!bearerToken) {
-    throw new Error("Dodo Payments API key is not configured.");
+    throw new Error("Dodo Payments API key is not configured. Set DODO_APPLYX_KEY or DODO_PAYMENTS_API_KEY.");
   }
 
   return new DodoPayments({
