@@ -273,7 +273,7 @@ export function TrackerView({
 
       {total > applications.length ? (
         <div className="text-center">
-          <Button onClick={fetchApplications} variant="outline">
+          <Button onClick={() => fetchApplications()} variant="outline">
             {isPending ? "Loading..." : `Showing ${applications.length} of ${total}`}
           </Button>
         </div>
