@@ -2,7 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
-  serverExternalPackages: ["@neondatabase/serverless"],
+  experimental: {
+    serverComponentsExternalPackages: ["@neondatabase/serverless"],
+  },
 };
 
 export default nextConfig;
