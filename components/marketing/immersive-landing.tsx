@@ -257,60 +257,60 @@ const capabilityCards: CapabilityCard[] = [
     title: "Keep Momentum",
     eyebrow: "No more broken handoffs",
     description:
-      "The product moves from parse to tailor to tracking without dropping context, so every click feels like progress instead of reset.",
+      "Paste the JD once, then move from analysis to tailoring to tracking without rebuilding context at each step.",
     metric: "One continuous flow",
     gradient: "from-sky-500/30 via-cyan-400/10 to-transparent",
     accentText: "text-sky-700 dark:text-sky-200",
     icon: Workflow,
     points: [
-      "The active card expands so the next best action feels obvious.",
-      "Hover and focus states keep the layout feeling alive instead of static.",
-      "Context carries forward, which lowers friction and keeps people engaged.",
+      "Role signals carry straight into the tailored resume instead of getting lost between tools.",
+      "Each application keeps its resume, status, and next step tied together.",
+      "Less context switching means faster decisions and fewer dropped applications.",
     ],
   },
   {
     title: "Win Attention",
     eyebrow: "Show value fast",
     description:
-      "The most convincing proof rises first: stronger bullets, tighter summaries, and clearer role alignment before attention drifts.",
+      "Stronger bullets, tighter summaries, and better skill ordering help recruiters see fit before attention drifts.",
     metric: "Proof over fluff",
     gradient: "from-emerald-500/30 via-teal-400/10 to-transparent",
     accentText: "text-emerald-700 dark:text-emerald-200",
     icon: FileBadge2,
     points: [
-      "Evidence appears exactly where someone wonders whether the product really helps.",
-      "Panels stay readable while still feeling high-end and reactive.",
-      "Motion supports trust instead of distracting from the message.",
+      "The strongest evidence shows up early, where skim readers make the first judgment.",
+      "ATS keywords get covered without turning the resume into a keyword dump.",
+      "The rewrite stays readable to humans while still improving match strength.",
     ],
   },
   {
     title: "Stay Visible",
     eyebrow: "Follow-up without mental load",
     description:
-      "Reminders, status movement, and urgency cues keep the board active so strong applications do not die from silence.",
+      "Applied dates, follow-up reminders, and status changes keep strong applications from going cold in silence.",
     metric: "Follow-up stays alive",
     gradient: "from-amber-400/30 via-orange-300/10 to-transparent",
     accentText: "text-amber-700 dark:text-amber-200",
     icon: CalendarClock,
     points: [
-      "Urgency is visible at a glance, which nudges action before an opportunity cools.",
-      "Status shifts happen in place, so the board reads like a live system.",
-      "The layout still works on mobile without collapsing into clutter.",
+      "The board tells you what needs action next instead of making you remember it.",
+      "Reminders reduce the silent drop-off that happens after most applications.",
+      "Momentum survives even when you are juggling multiple roles at once.",
     ],
   },
   {
-    title: "Feel In Control",
-    eyebrow: "High-signal visual hierarchy",
+    title: "Reduce Chaos",
+    eyebrow: "Know what matters next",
     description:
-      "Contrast, rhythm, and emphasis pull your eye toward the actions that matter most, which makes the product feel calmer and more decisive.",
+      "One system keeps job context, tailored resumes, and next actions in view so the search feels manageable under pressure.",
     metric: "Clarity under pressure",
     gradient: "from-fuchsia-500/30 via-violet-400/10 to-transparent",
     accentText: "text-fuchsia-700 dark:text-fuchsia-200",
     icon: BriefcaseBusiness,
     points: [
-      "The hierarchy tells people where to look before they start scanning manually.",
-      "Light and dark surfaces each carry a distinct atmosphere instead of feeling templated.",
-      "Hover motion is concentrated around intent, not sprayed over everything.",
+      "You can see what is moving, what is stalled, and what deserves another push.",
+      "Each application keeps its history and context in one place.",
+      "Less guessing creates calmer decisions during a stressful search.",
     ],
   },
 ];
@@ -776,15 +776,14 @@ export function ImmersiveLanding() {
       >
         <div className="max-w-3xl space-y-4">
           <Badge className="w-fit border border-white/50 bg-white/60 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-foreground/80 dark:border-white/10 dark:bg-slate-900/70 dark:text-slate-200">
-            Capability rail
+            Application flow
           </Badge>
           <h2 className="text-3xl font-semibold sm:text-4xl lg:text-5xl">
-            UI states that pull attention toward the next smart move.
+            Every step should move you closer to an interview.
           </h2>
           <p className="max-w-2xl text-lg leading-8 text-muted-foreground">
-            Hover or tap through the rail and the active panel expands into the benefit
-            that matters most. The rest stay visible, compressed, and ready, so the page
-            feels guided instead of manual.
+            Parse the role, tailor the resume, track the application, and follow up on
+            time without rebuilding context across docs, spreadsheets, and tabs.
           </p>
         </div>
 

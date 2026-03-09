@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+const nullableOptionalString = z.preprocess(
+  (value) => (value === null ? undefined : value),
+  z.string().optional(),
+);
+
 export const parsedResumeSchema = z.object({
   personal: z.object({
     name: z.string(),
@@ -55,15 +60,15 @@ export const parsedResumeSchema = z.object({
 export const parsedJdSchema = z.object({
   title: z.string(),
   company: z.string(),
-  location: z.string().optional(),
-  type: z.string().optional(),
+  location: nullableOptionalString,
+  type: nullableOptionalString,
   requiredSkills: z.array(z.string()),
   preferredSkills: z.array(z.string()),
   requiredExperience: z.string(),
   keyResponsibilities: z.array(z.string()),
   keywords: z.array(z.string()),
   industryTerms: z.array(z.string()),
-  educationRequirement: z.string().optional(),
+  educationRequirement: nullableOptionalString,
 });
 
 export const trackerParsedJdSchema = parsedJdSchema.extend({
@@ -76,8 +81,8 @@ export const trackerParsedJdSchema = parsedJdSchema.extend({
     .nullable()
     .optional(),
   workMode: z.enum(["remote", "hybrid", "onsite", "unknown"]).optional(),
-  applicationDeadline: z.string().nullable().optional(),
-  sourcePlatform: z.string().nullable().optional(),
+  applicationDeadline: nullableOptionalString,
+  sourcePlatform: nullableOptionalString,
 });
 
 export const tailorChangeSchema = z.object({
