@@ -2,15 +2,15 @@ import Link from "next/link";
 import { MobileNav } from "@/components/mobile-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { buttonVariants } from "@/components/ui/button";
-import { getCurrentUser } from "@/lib/auth";
+import { hasSessionCookie } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
-export default async function MarketingLayout({
+export default function MarketingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getCurrentUser();
+  const isLoggedIn = hasSessionCookie();
 
   return (
     <div className="page-shell">
@@ -33,7 +33,7 @@ export default async function MarketingLayout({
               <Link className="transition-colors duration-200 hover:text-foreground" href="/pricing">
                 Pricing
               </Link>
-              {user ? (
+              {isLoggedIn ? (
                 <Link className={cn(buttonVariants(), "shimmer")} href="/dashboard">
                   Open Dashboard
                 </Link>
@@ -48,7 +48,7 @@ export default async function MarketingLayout({
                 </>
               )}
             </nav>
-            <MobileNav isLoggedIn={!!user} />
+            <MobileNav isLoggedIn={isLoggedIn} />
           </div>
         </div>
       </header>
@@ -63,8 +63,8 @@ export default async function MarketingLayout({
             <Link className="transition-colors duration-200 hover:text-foreground" href="/pricing">
               Pricing
             </Link>
-            <Link className="transition-colors duration-200 hover:text-foreground" href={user ? "/dashboard" : "/signup"}>
-              {user ? "Dashboard" : "Get Started"}
+            <Link className="transition-colors duration-200 hover:text-foreground" href={isLoggedIn ? "/dashboard" : "/signup"}>
+              {isLoggedIn ? "Dashboard" : "Get Started"}
             </Link>
           </div>
         </div>

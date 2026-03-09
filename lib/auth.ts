@@ -238,6 +238,10 @@ export async function getCurrentUser() {
   }
 }
 
+export function hasSessionCookie() {
+  return cookies().has(SESSION_COOKIE_NAME);
+}
+
 export async function requireUser(nextPath = "/dashboard") {
   const user = await getCurrentUser();
 

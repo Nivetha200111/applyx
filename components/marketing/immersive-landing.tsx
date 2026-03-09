@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   AnimatePresence,
   LayoutGroup,
@@ -349,55 +349,13 @@ export function ImmersiveLanding() {
   const [activeStage, setActiveStage] = useState(0);
   const [activeCapability, setActiveCapability] = useState(0);
 
-  useEffect(() => {
-    if (reduceMotion) return;
-
-    const rotation = window.setInterval(() => {
-      setActiveStage((current) => (current + 1) % workflowStages.length);
-    }, 4800);
-
-    return () => window.clearInterval(rotation);
-  }, [reduceMotion]);
-
   return (
     <div className="relative overflow-hidden">
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="aurora-shell absolute inset-x-0 top-0 h-[54rem]" />
-        <motion.div
-          className="absolute left-[-12rem] top-20 h-80 w-80 rounded-full bg-sky-400/18 blur-3xl dark:bg-sky-400/14"
-          animate={
-            reduceMotion
-              ? undefined
-              : {
-                  x: [0, 80, -20, 0],
-                  y: [0, -30, 30, 0],
-                  scale: [1, 1.08, 0.96, 1],
-                }
-          }
-          transition={{
-            duration: 16,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute right-[-10rem] top-40 h-72 w-72 rounded-full bg-emerald-400/16 blur-3xl dark:bg-emerald-400/14"
-          animate={
-            reduceMotion
-              ? undefined
-              : {
-                  x: [0, -70, 10, 0],
-                  y: [0, 30, -20, 0],
-                  scale: [1, 0.94, 1.06, 1],
-                }
-          }
-          transition={{
-            duration: 18,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <div className="grid-sweep absolute inset-x-0 top-0 h-[58rem]" />
+        <div className="absolute left-[-12rem] top-20 h-80 w-80 rounded-full bg-sky-400/18 blur-3xl dark:bg-sky-400/14" />
+        <div className="absolute right-[-10rem] top-40 h-72 w-72 rounded-full bg-emerald-400/16 blur-3xl dark:bg-emerald-400/14" />
+        <div className="grid-sweep absolute inset-x-0 top-0 h-[58rem] [animation:none]" />
         <div className="noise-overlay absolute inset-0 opacity-40" />
       </div>
 

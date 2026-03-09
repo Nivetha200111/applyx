@@ -3,6 +3,7 @@ import { IBM_Plex_Mono, Manrope } from "next/font/google";
 import Script from "next/script";
 import { Toaster } from "sonner";
 import "./globals.css";
+import { PageTransition } from "@/components/ui/page-transition";
 import { cn } from "@/lib/utils";
 
 const manrope = Manrope({
@@ -64,7 +65,7 @@ export default function RootLayout({
         <Script id="applyx-theme" strategy="beforeInteractive">
           {`try{const key="applyx-theme";const stored=localStorage.getItem(key);const theme=stored==="light"||stored==="dark"?stored:(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.classList.toggle("dark",theme==="dark");document.documentElement.style.colorScheme=theme;}catch(e){}`}
         </Script>
-        {children}
+        <PageTransition>{children}</PageTransition>
         <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
