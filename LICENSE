@@ -1,0 +1,31 @@
+ApplyX Source-Available License
+Copyright (c) 2026 Nivetha Sivakumar
+All rights reserved.
+
+Permission is granted to view, clone, and fork this repository solely for:
+
+1. evaluating the codebase;
+2. discussing issues;
+3. proposing changes back to the canonical ApplyX repository through pull requests.
+
+You may not, without prior written permission from the copyright holder:
+
+1. use this codebase, in whole or in part, for a hosted or commercial product;
+2. redistribute, sublicense, sell, or publish the codebase or derivative works;
+3. deploy this codebase or derivative works for third-party use;
+4. remove or alter copyright, attribution, or branding notices;
+5. use the ApplyX name, logos, or branding.
+
+Contributions intentionally submitted for inclusion in this repository are provided with a
+perpetual, worldwide, non-exclusive, irrevocable, royalty-free license for the maintainer
+to use, reproduce, modify, distribute, sublicense, and relicense as part of ApplyX.
+
+This license does not grant any right to the ApplyX trademark, service marks, trade dress,
+or branding.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+OR OTHER DEALINGS IN THE SOFTWARE.

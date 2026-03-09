@@ -14,6 +14,8 @@ Send the details to the maintainer directly with:
 
 If email is configured for manual billing support, use that address first. Otherwise open a private GitHub security advisory if available.
 
+Please do not open public GitHub issues for exploitable security bugs.
+
 ## Scope
 
 The highest-priority reports are:
@@ -29,5 +31,6 @@ The highest-priority reports are:
 - good-faith testing only
 - no mass scanning or destructive activity
 - no access to user data beyond what is needed to demonstrate the issue
+- never include secrets, session tokens, payment references, or private resumes in reports
 
 ApplyX is in beta, so reports that improve real user safety and cost control are especially valuable.

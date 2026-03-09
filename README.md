@@ -1,6 +1,8 @@
 # ApplyX v2
 
-ApplyX v2 is an India-first AI resume tailoring platform built with Next.js 14, TypeScript, Tailwind CSS, PostgreSQL, Anthropic, OpenAI fallback, and a billing layer that prefers Dodo Payments but can fall back to manual payment links. Users create an account, upload one master resume, paste any job description, and receive an ATS-optimized tailored resume in PDF or DOCX format.
+ApplyX v2 is a source-available AI resume tailoring and job application workflow product built with Next.js 14, TypeScript, Tailwind CSS, PostgreSQL, Anthropic, OpenAI fallback, and a billing layer that prefers Dodo Payments but can fall back to manual payment links. Users create an account, upload one master resume, paste any job description, and receive an ATS-optimized tailored resume in PDF or DOCX format.
+
+The code is visible for evaluation and upstream contributions, but commercial reuse is not permitted without written permission. See `LICENSE`.
 
 ## Stack
 

@@ -2,6 +2,11 @@
 
 ApplyX is in public beta. Small, focused fixes are the most useful contributions right now.
 
+## Repository Model
+
+This repository is source-available, not open source. See `LICENSE` before reusing code
+outside this repository.
+
 ## Ways To Help
 
 - report broken resume parsing or export formatting
@@ -24,6 +29,12 @@ ApplyX is in public beta. Small, focused fixes are the most useful contributions
 - run `npm run build`
 - include screenshots for UI changes
 - describe user impact, risks, and manual test steps
+- do not include secrets, production data, exported resumes, or billing records
+
+## Contribution Terms
+
+By submitting a pull request, you agree that your contribution can be used, modified,
+relicensed, and distributed by the maintainer as part of ApplyX.
 
 ## Issue Reports
 
