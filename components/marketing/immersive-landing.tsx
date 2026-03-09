@@ -334,9 +334,9 @@ const heroStats = [
 ];
 
 const liveSignals = [
-  "JD mapped into hiring priorities",
-  "Resume delta pushed into export-ready drafts",
-  "Follow-up timing scheduled from the same role context",
+  "Tailor each resume to the role in minutes",
+  "Track every application without spreadsheets",
+  "Follow up before promising roles go cold",
 ];
 
 const sectionEntrance = {
@@ -368,7 +368,7 @@ export function ImmersiveLanding() {
               transition={sectionEntrance}
             >
               <Badge variant="outline" className="border-white/50 bg-white/55 px-4 py-2 text-[11px] uppercase tracking-[0.24em] text-foreground/80 dark:border-white/10 dark:bg-slate-900/70 dark:text-slate-200">
-                Motion-first landing page
+                Built for serious job searches
               </Badge>
             </motion.div>
 
@@ -380,15 +380,16 @@ export function ImmersiveLanding() {
             >
               <div className="space-y-3">
                 <p className="font-mono text-sm uppercase tracking-[0.3em] text-muted-foreground">
-                  ApplyX control room
+                  Tailor. Track. Follow up.
                 </p>
                 <h1 className="max-w-3xl text-5xl font-semibold leading-[0.96] sm:text-6xl lg:text-7xl">
-                  A cinematic UI for the full job-search loop.
+                  Get more interviews without rewriting your resume from scratch.
                 </h1>
               </div>
               <p className="max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
-                Resume tailoring, pipeline tracking, and interview prep rendered as one
-                linked motion system with live card transitions instead of static sections.
+                ApplyX turns every job post into a tailored resume, a tracked application,
+                and a follow-up plan, so you move faster, stay organized, and stop losing
+                strong opportunities to chaos.
               </p>
             </motion.div>
 
@@ -405,7 +406,7 @@ export function ImmersiveLanding() {
                 )}
                 href="/signup"
               >
-                Enter the flow
+                Start with 2 free demos
                 <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
               <Link
