@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { LogoutButton } from "@/components/logout-button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ApplyxLogo } from "@/components/ui/applyx-logo";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -76,13 +77,7 @@ export function DashboardSidebar({
     <>
       <aside className="hidden w-72 shrink-0 border-r border-border/70 bg-card/70 px-6 py-8 backdrop-blur-xl lg:block">
         <Link className="inline-flex items-center gap-3" href="/">
-          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/15 text-lg font-semibold text-primary">
-            A
-          </span>
-          <div>
-            <div className="font-semibold">ApplyX</div>
-            <div className="text-sm text-muted-foreground">Resume tailoring + tracker</div>
-          </div>
+          <ApplyxLogo />
         </Link>
         {userName ? (
           <div className="mt-6 rounded-[24px] border border-border/70 bg-background/65 p-4">
@@ -129,9 +124,7 @@ export function DashboardSidebar({
       <div className="sticky top-0 z-30 border-b border-border/70 bg-background/95 backdrop-blur lg:hidden">
         <div className="flex items-center gap-3 px-4 py-2">
           <Link className="inline-flex items-center gap-2" href="/">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/15 text-sm font-semibold text-primary">
-              A
-            </span>
+            <ApplyxLogo markOnly size="sm" />
             <span className="text-sm font-semibold">ApplyX</span>
           </Link>
           <span className="ml-auto text-xs font-medium text-primary">{planLabel}</span>

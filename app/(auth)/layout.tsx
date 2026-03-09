@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ApplyxLogo } from "@/components/ui/applyx-logo";
 import { getCurrentUser } from "@/lib/auth";
 
 export default async function AuthLayout({
@@ -17,8 +18,13 @@ export default async function AuthLayout({
     <div className="grid min-h-screen lg:grid-cols-[0.9fr_1.1fr]">
       <div className="hidden border-r border-border/70 bg-slate-950 px-10 py-12 text-slate-100 lg:flex lg:flex-col lg:justify-between">
         <div className="space-y-6">
-          <Link className="text-lg font-semibold" href="/">
-            ApplyX
+          <Link className="inline-flex" href="/">
+            <ApplyxLogo
+              scheme="dark"
+              subtitle={null}
+              titleClassName="text-slate-50"
+              size="lg"
+            />
           </Link>
           <div className="space-y-4">
             <h1 className="text-4xl font-semibold leading-tight">

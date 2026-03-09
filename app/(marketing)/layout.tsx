@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MobileNav } from "@/components/mobile-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ApplyxLogo } from "@/components/ui/applyx-logo";
 import { buttonVariants } from "@/components/ui/button";
 import { hasSessionCookie } from "@/lib/auth";
 import { cn } from "@/lib/utils";
@@ -17,13 +18,7 @@ export default function MarketingLayout({
       <header className="sticky top-0 z-30 border-b border-border/40 bg-background/60 backdrop-blur-2xl transition-all duration-300">
         <div className="relative mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-5 sm:px-6 lg:px-8">
           <Link className="inline-flex items-center gap-3 transition-transform duration-200 hover:scale-[1.02]" href="/">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/15 text-lg font-semibold text-primary shadow-sm">
-              A
-            </span>
-            <div>
-              <div className="font-semibold">ApplyX</div>
-              <div className="text-sm text-muted-foreground">Resume tailoring + tracker</div>
-            </div>
+            <ApplyxLogo />
           </Link>
           <div className="flex items-center gap-3">
             <div className="hidden md:block">
@@ -55,9 +50,8 @@ export default function MarketingLayout({
       <main>{children}</main>
       <footer className="border-t border-border/40 bg-background/55 backdrop-blur-xl">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-muted-foreground sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-          <div className="space-y-1">
-            <p className="font-medium text-foreground">ApplyX</p>
-            <p>Built for fast, focused job searches.</p>
+          <div className="space-y-2">
+            <ApplyxLogo className="gap-2" size="sm" subtitle="Built for fast, focused job searches." />
           </div>
           <div className="flex items-center gap-6">
             <Link className="transition-colors duration-200 hover:text-foreground" href="/pricing">
