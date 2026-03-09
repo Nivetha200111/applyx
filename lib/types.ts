@@ -258,6 +258,7 @@ export interface TrackedApplicationRecord {
   contactEmail: string | null;
   tailoredResumeId: string | null;
   prepResources: PrepResource[];
+  followedUp: boolean;
   isArchived: boolean;
   createdAt: string;
   updatedAt: string;

@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  BarChart3,
   ClipboardList,
   FileText,
   History,
   LayoutDashboard,
+  Mail,
   Settings,
   Sparkles,
 } from "lucide-react";
@@ -34,6 +36,16 @@ const navItems = [
     href: "/tailored",
     label: "Tailored",
     icon: Sparkles,
+  },
+  {
+    href: "/analytics",
+    label: "Analytics",
+    icon: BarChart3,
+  },
+  {
+    href: "/templates",
+    label: "Templates",
+    icon: Mail,
   },
   {
     href: "/history",

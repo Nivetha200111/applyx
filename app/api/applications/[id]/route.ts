@@ -31,6 +31,7 @@ const updateSchema = z.object({
   sourceUrl: z.string().max(2000).nullable().optional(),
   sourcePlatform: z.string().max(100).nullable().optional(),
   isArchived: z.boolean().optional(),
+  followedUp: z.boolean().optional(),
 });
 
 const fieldMap: Record<string, string> = {
@@ -51,6 +52,7 @@ const fieldMap: Record<string, string> = {
   sourceUrl: "source_url",
   sourcePlatform: "source_platform",
   isArchived: "is_archived",
+  followedUp: "followed_up",
 };
 
 export async function PATCH(

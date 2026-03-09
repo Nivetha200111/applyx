@@ -231,6 +231,7 @@ create table if not exists public.tracked_applications (
   contact_email text,
   tailored_resume_id uuid references public.tailored_resumes(id) on delete set null,
   prep_resources jsonb not null default '[]'::jsonb,
+  followed_up boolean not null default false,
   is_archived boolean not null default false,
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now())

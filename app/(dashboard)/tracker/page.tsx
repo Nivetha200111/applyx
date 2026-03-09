@@ -1,3 +1,4 @@
+import { FollowUpReminders } from "@/components/tracker/follow-up-reminders";
 import { TrackerView } from "@/components/tracker/tracker-view";
 import { requireUser } from "@/lib/auth";
 import {
@@ -31,6 +32,8 @@ export default async function TrackerPage() {
           company, role, skills, and salary with AI. Click any cell to edit inline.
         </p>
       </div>
+
+      <FollowUpReminders />
 
       <TrackerView
         initialApplications={applications}

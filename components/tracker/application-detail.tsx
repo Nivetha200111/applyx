@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { InterviewPrepPanel } from "@/components/tracker/interview-prep-panel";
 import { prepResourceCatalog, prepCategoryLabels } from "@/lib/prep-resources";
 import type { PrepResource, TrackedApplicationRecord } from "@/lib/types";
 
@@ -128,8 +129,14 @@ export function ApplicationDetail({ app, onUpdate }: ApplicationDetailProps) {
         </div>
       </div>
 
-      {/* Right: Prep Resources */}
-      <div className="min-w-0 space-y-4 rounded-[24px] border border-border/60 bg-background/30 p-4">
+      {/* Right: Interview Prep + Resources */}
+      <div className="min-w-0 space-y-4">
+        <InterviewPrepPanel
+          requiredSkills={app.requiredSkills}
+          preferredSkills={app.preferredSkills}
+          roleTitle={app.roleTitle}
+        />
+      <div className="rounded-[24px] border border-border/60 bg-background/30 p-4 space-y-4">
         <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
           Preparation Resources
         </div>
@@ -154,6 +161,7 @@ export function ApplicationDetail({ app, onUpdate }: ApplicationDetailProps) {
             </div>
           </div>
         ))}
+      </div>
       </div>
     </div>
   );
