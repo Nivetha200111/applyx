@@ -73,10 +73,10 @@ const workflowStages: WorkflowStage[] = [
   {
     id: "parse",
     name: "Parse",
-    eyebrow: "Signal Extraction",
-    headline: "Read the JD like a recruiter, not a keyword dump.",
+    eyebrow: "Spot The Edge",
+    headline: "See why a role is worth chasing before you waste an hour on it.",
     description:
-      "Paste a job post and watch the role resolve into skills, scope, seniority, work mode, and missing language before you touch the resume.",
+      "Paste a job post and the noise resolves into hiring priorities, missing proof points, and the language most likely to earn a second look.",
     accentText: "text-sky-200",
     accentSoft: "bg-sky-400/15 text-sky-100",
     accentGlow: "from-sky-400/40 via-cyan-300/15 to-transparent",
@@ -89,39 +89,39 @@ const workflowStages: WorkflowStage[] = [
       delta: "+12 signals",
     },
     metrics: [
-      { label: "Skills extracted", value: "18" },
-      { label: "Comp clues", value: "3" },
-      { label: "Role priorities", value: "6" },
+      { label: "Core skills", value: "18" },
+      { label: "Salary clues", value: "3" },
+      { label: "Priority themes", value: "6" },
     ],
     highlights: [
-      "Clusters requirements into hiring priorities instead of a flat keyword list.",
+      "Turns a long JD into the few proof points recruiters actually scan for.",
       "Separates hard skills, ownership signals, and logistics in one pass.",
-      "Flags terms your current resume never mentions before tailoring starts.",
+      "Flags the missing language before you start editing under pressure.",
     ],
     queue: [
       {
-        label: "Primary ask",
+        label: "What to mirror",
         value: "TypeScript + AI evaluation",
-        hint: "Mirrored into summary and recent bullets.",
+        hint: "Pull this into the summary and strongest recent bullets.",
       },
       {
-        label: "Scope cue",
+        label: "What to prove",
         value: "Own the internal platform",
-        hint: "Raises architecture and cross-team language.",
+        hint: "Shift the resume toward ownership, systems, and decision-making.",
       },
     ],
     floatCard: {
-      label: "Fresh roles mapped",
+      label: "Fast clarity",
       value: "04",
     },
   },
   {
     id: "tailor",
     name: "Tailor",
-    eyebrow: "Resume Delta Engine",
-    headline: "Reshape the resume with believable, ATS-safe edits.",
+    eyebrow: "Look Like The Fit",
+    headline: "Look like the obvious match without sounding manufactured.",
     description:
-      "The system reorders bullets, rewrites the summary, and lifts the strongest evidence without turning the candidate into fiction.",
+      "The resume shifts around real experience, sharper proof, and safer ATS structure so you read as relevant faster.",
     accentText: "text-emerald-200",
     accentSoft: "bg-emerald-400/15 text-emerald-100",
     accentGlow: "from-emerald-400/40 via-teal-300/15 to-transparent",
@@ -134,39 +134,39 @@ const workflowStages: WorkflowStage[] = [
       delta: "+26 uplift",
     },
     metrics: [
-      { label: "Bullets reprioritized", value: "09" },
-      { label: "Summary variants", value: "03" },
-      { label: "Exports ready", value: "PDF + DOCX" },
+      { label: "Bullets moved up", value: "09" },
+      { label: "Summary angles", value: "03" },
+      { label: "Ready to send", value: "PDF + DOCX" },
     ],
     highlights: [
-      "Keeps formatting single-column and ATS-safe while still feeling premium.",
-      "Preserves truthfulness by editing around real experience, not inventing projects.",
-      "Surfaces the strongest evidence first so recruiters see fit immediately.",
+      "Keeps the format ATS-safe while making the strongest proof impossible to miss.",
+      "Edits around real experience instead of inventing projects or fake expertise.",
+      "Surfaces the bullets most likely to make a recruiter pause and keep reading.",
     ],
     queue: [
       {
-        label: "Summary state",
+        label: "What shifts first",
         value: "Platform + product impact",
-        hint: "Shifted from generic engineer language.",
+        hint: "Generic engineer language gets replaced with sharper business proof.",
       },
       {
-        label: "Keyword gap",
+        label: "What closes the gap",
         value: "Evaluation pipelines covered",
-        hint: "Inserted into two measurable bullets.",
+        hint: "Inserted where it adds signal instead of bloating the page.",
       },
     ],
     floatCard: {
-      label: "Version delta",
+      label: "Match lift",
       value: "+26%",
     },
   },
   {
     id: "track",
     name: "Track",
-    eyebrow: "Live Pipeline Board",
-    headline: "Push every tailored draft into a board that stays alive.",
+    eyebrow: "Stay Top Of Mind",
+    headline: "Keep promising roles warm before they quietly slip away.",
     description:
-      "Each role becomes a moving system with status, follow-up timing, priorities, and notes instead of another dead spreadsheet row.",
+      "Each application gets a next move, a reminder window, and a priority signal so good roles do not vanish into spreadsheet debt.",
     accentText: "text-amber-100",
     accentSoft: "bg-amber-300/15 text-amber-50",
     accentGlow: "from-amber-300/40 via-orange-300/15 to-transparent",
@@ -180,38 +180,38 @@ const workflowStages: WorkflowStage[] = [
     },
     metrics: [
       { label: "Pipeline stages", value: "07" },
-      { label: "Smart reminders", value: "Always on" },
-      { label: "Priority tags", value: "Hot / Warm / Hold" },
+      { label: "Reminder logic", value: "Always on" },
+      { label: "Urgency cues", value: "Hot / Warm / Hold" },
     ],
     highlights: [
-      "Auto-fills the tracker from the same role context used to tailor the resume.",
-      "Keeps follow-ups visible so promising roles do not disappear after submission.",
-      "Links interview prep, notes, and exports back to the same card.",
+      "The same role context fills the tracker, so momentum carries forward automatically.",
+      "Follow-ups stay visible before a strong application goes cold.",
+      "Prep, notes, and exports stay attached to the same role instead of drifting apart.",
     ],
     queue: [
       {
-        label: "Board state",
+        label: "What happens next",
         value: "Applied -> recruiter screen",
-        hint: "Reminder scheduled before the status cools off.",
+        hint: "A reminder lands before the thread loses heat.",
       },
       {
-        label: "Role urgency",
+        label: "What deserves attention",
         value: "High-fit, high-priority",
-        hint: "Pinned above passive applications.",
+        hint: "Pinned above passive applications so attention goes where odds are better.",
       },
     ],
     floatCard: {
-      label: "Active board cards",
+      label: "Live momentum",
       value: "17",
     },
   },
   {
     id: "prepare",
     name: "Prepare",
-    eyebrow: "Interview Command Layer",
-    headline: "Turn each application into a prep room before the interview lands.",
+    eyebrow: "Walk In Ready",
+    headline: "Walk into interviews already thinking like an insider.",
     description:
-      "Attach practice loops, system design reads, behavior prompts, and company notes to the exact role that generated them.",
+      "Each application becomes its own prep room, with the stories, reads, and notes most likely to raise confidence before the call.",
     accentText: "text-fuchsia-200",
     accentSoft: "bg-fuchsia-400/15 text-fuchsia-100",
     accentGlow: "from-fuchsia-400/40 via-violet-300/15 to-transparent",
@@ -224,29 +224,29 @@ const workflowStages: WorkflowStage[] = [
       delta: "role-aware",
     },
     metrics: [
-      { label: "Behavior prompts", value: "12" },
-      { label: "System design reads", value: "04" },
+      { label: "Story prompts", value: "12" },
+      { label: "Design reads", value: "04" },
       { label: "Notes pinned", value: "Unlimited" },
     ],
     highlights: [
-      "Prep resources stay attached to the application instead of scattered across tabs.",
-      "Behavior stories can mirror the exact responsibilities emphasized in the JD.",
-      "The page remains useful after submission because it becomes your interview workspace.",
+      "Prep resources stay attached to the role instead of getting lost across tabs.",
+      "Behavior stories mirror the responsibilities the JD emphasized most.",
+      "The application stays useful after submission because it becomes your prep workspace.",
     ],
     queue: [
       {
-        label: "Prompt set",
+        label: "What they may probe",
         value: "Ownership + ambiguity stories",
-        hint: "Aligned to hiring-manager expectations.",
+        hint: "Pulled toward the signals a hiring manager is likely to test.",
       },
       {
-        label: "Practice lane",
+        label: "What to rehearse",
         value: "System design + behavioral loop",
-        hint: "Switched on for this company profile.",
+        hint: "A tighter prep lane means less last-minute thrashing.",
       },
     ],
     floatCard: {
-      label: "Prep depth",
+      label: "Confidence mode",
       value: "Deep",
     },
   },
@@ -254,89 +254,89 @@ const workflowStages: WorkflowStage[] = [
 
 const capabilityCards: CapabilityCard[] = [
   {
-    title: "Workflow Morph",
-    eyebrow: "Shared layout card transitions",
+    title: "Keep Momentum",
+    eyebrow: "No more broken handoffs",
     description:
-      "Cards expand, compress, and hand detail from one state to another so the page feels like a product demo instead of stacked marketing blocks.",
-    metric: "4 linked scenes",
+      "The product moves from parse to tailor to tracking without dropping context, so every click feels like progress instead of reset.",
+    metric: "One continuous flow",
     gradient: "from-sky-500/30 via-cyan-400/10 to-transparent",
     accentText: "text-sky-700 dark:text-sky-200",
     icon: Workflow,
     points: [
-      "Hover or tap shifts the active capability without a hard page break.",
-      "Large panels reuse motion language from the hero for visual continuity.",
-      "The active card reveals denser copy while inactive cards stay compressed.",
+      "The active card expands so the next best action feels obvious.",
+      "Hover and focus states keep the layout feeling alive instead of static.",
+      "Context carries forward, which lowers friction and keeps people engaged.",
     ],
   },
   {
-    title: "Resume Delta",
-    eyebrow: "Animated evidence surfaces",
+    title: "Win Attention",
+    eyebrow: "Show value fast",
     description:
-      "The UI shows before-and-after pressure points: stronger bullets, tighter summaries, and clearer skill alignment at the exact moment the viewer asks for proof.",
-    metric: "Believable uplift",
+      "The most convincing proof rises first: stronger bullets, tighter summaries, and clearer role alignment before attention drifts.",
+    metric: "Proof over fluff",
     gradient: "from-emerald-500/30 via-teal-400/10 to-transparent",
     accentText: "text-emerald-700 dark:text-emerald-200",
     icon: FileBadge2,
     points: [
-      "Highlight cards lift metrics and changed content without overwhelming the page.",
-      "Floating support panels give the hero more depth than a single static mockup.",
-      "Transitions prioritize legibility over novelty so motion still sells the product.",
+      "Evidence appears exactly where someone wonders whether the product really helps.",
+      "Panels stay readable while still feeling high-end and reactive.",
+      "Motion supports trust instead of distracting from the message.",
     ],
   },
   {
-    title: "Tracker Pulse",
-    eyebrow: "Stateful follow-up UI",
+    title: "Stay Visible",
+    eyebrow: "Follow-up without mental load",
     description:
-      "Reminders, status movement, and priority heat are treated like live signals. That keeps the board feeling active rather than archival.",
-    metric: "Board stays alive",
+      "Reminders, status movement, and urgency cues keep the board active so strong applications do not die from silence.",
+    metric: "Follow-up stays alive",
     gradient: "from-amber-400/30 via-orange-300/10 to-transparent",
     accentText: "text-amber-700 dark:text-amber-200",
     icon: CalendarClock,
     points: [
-      "Priority cards surface urgency with color, motion, and queue language.",
-      "Status shifts happen in-place so the product reads as operational software.",
-      "The layout stays readable on mobile by collapsing into a vertical motion rail.",
+      "Urgency is visible at a glance, which nudges action before an opportunity cools.",
+      "Status shifts happen in place, so the board reads like a live system.",
+      "The layout still works on mobile without collapsing into clutter.",
     ],
   },
   {
-    title: "Recruiter Readout",
+    title: "Feel In Control",
     eyebrow: "High-signal visual hierarchy",
     description:
-      "The page leans on contrast, blur, and hard typographic rhythm to frame the most important actions immediately while secondary detail drifts into the background.",
-    metric: "No dead space",
+      "Contrast, rhythm, and emphasis pull your eye toward the actions that matter most, which makes the product feel calmer and more decisive.",
+    metric: "Clarity under pressure",
     gradient: "from-fuchsia-500/30 via-violet-400/10 to-transparent",
     accentText: "text-fuchsia-700 dark:text-fuchsia-200",
     icon: BriefcaseBusiness,
     points: [
-      "The hero and CTA each carry their own atmosphere instead of sharing one flat shell.",
-      "Glass surfaces and lighting changes react differently in light and dark themes.",
-      "Motion is concentrated around state changes, not sprayed across every element.",
+      "The hierarchy tells people where to look before they start scanning manually.",
+      "Light and dark surfaces each carry a distinct atmosphere instead of feeling templated.",
+      "Hover motion is concentrated around intent, not sprayed over everything.",
     ],
   },
 ];
 
 const heroStats = [
   {
-    label: "Scenes",
-    value: "04",
-    detail: "Parse, tailor, track, prepare",
+    label: "Less friction",
+    value: "1 flow",
+    detail: "Parse, tailor, track, and follow up without bouncing between tools.",
   },
   {
-    label: "Board state",
+    label: "More control",
     value: "Live",
-    detail: "The pipeline stays actionable",
+    detail: "Every promising role gets a next step before it goes cold.",
   },
   {
-    label: "Output",
+    label: "Stronger signal",
     value: "ATS-safe",
-    detail: "Readable by software and humans",
+    detail: "Sharper resumes that still read like a real person wrote them.",
   },
 ];
 
 const liveSignals = [
-  "Tailor each resume to the role in minutes",
-  "Track every application without spreadsheets",
-  "Follow up before promising roles go cold",
+  "Stop rewriting the same resume for every application.",
+  "Stay top-of-mind after you hit apply.",
+  "Stop losing strong roles to chaos and delay.",
 ];
 
 const sectionEntrance = {
@@ -348,6 +348,8 @@ export function ImmersiveLanding() {
   const reduceMotion = useReducedMotion();
   const [activeStage, setActiveStage] = useState(0);
   const [activeCapability, setActiveCapability] = useState(0);
+  const liftHover = reduceMotion ? undefined : { y: -6, scale: 1.02 };
+  const softHover = reduceMotion ? undefined : { y: -3, scale: 1.01 };
 
   return (
     <div className="relative overflow-hidden">
@@ -429,9 +431,10 @@ export function ImmersiveLanding() {
               {liveSignals.map((signal, index) => (
                 <motion.div
                   key={signal}
-                  className="glass-panel rounded-full px-4 py-2 text-sm text-foreground/85 dark:text-slate-200"
+                  className="glass-panel rounded-full border-white/40 px-4 py-2 text-sm text-foreground/85 transition-colors duration-300 hover:border-sky-300/60 hover:bg-white/75 dark:border-white/10 dark:text-slate-200 dark:hover:border-sky-400/40 dark:hover:bg-slate-900/85"
                   initial={reduceMotion ? false : { opacity: 0, scale: 0.94 }}
                   animate={{ opacity: 1, scale: 1 }}
+                  whileHover={softHover}
                   transition={{ delay: 0.28 + index * 0.08, duration: 0.45 }}
                 >
                   {signal}
@@ -448,16 +451,24 @@ export function ImmersiveLanding() {
               {heroStats.map((stat, index) => (
                 <motion.div
                   key={stat.label}
-                  className="glass-panel rounded-[28px] p-5"
+                  className="glass-panel group rounded-[30px] p-5 md:min-h-[10.5rem] md:p-6"
                   initial={reduceMotion ? false : { opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
+                  whileHover={liftHover}
                   transition={{ delay: 0.34 + index * 0.08, duration: 0.55 }}
                 >
-                  <div className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
-                    {stat.label}
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      {stat.label}
+                    </div>
+                    <div className="h-2.5 w-2.5 rounded-full bg-sky-400/70 shadow-[0_0_20px_rgba(56,189,248,0.55)] transition-transform duration-300 group-hover:scale-125" />
                   </div>
-                  <div className="mt-3 text-3xl font-semibold">{stat.value}</div>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{stat.detail}</p>
+                  <div className="mt-4 text-3xl font-semibold tracking-tight md:text-[2.6rem]">
+                    {stat.value}
+                  </div>
+                  <p className="mt-3 max-w-[18rem] text-sm leading-6 text-muted-foreground">
+                    {stat.detail}
+                  </p>
                 </motion.div>
               ))}
             </motion.div>
@@ -480,7 +491,7 @@ export function ImmersiveLanding() {
                       const Icon = stage.icon;
 
                       return (
-                        <button
+                        <motion.button
                           key={stage.id}
                           className={cn(
                             "relative overflow-hidden rounded-full border px-4 py-2 text-left text-sm transition-colors",
@@ -490,6 +501,8 @@ export function ImmersiveLanding() {
                           )}
                           onClick={() => setActiveStage(index)}
                           type="button"
+                          whileHover={softHover}
+                          whileTap={reduceMotion ? undefined : { scale: 0.98 }}
                         >
                           {isActive ? (
                             <motion.span
@@ -504,13 +517,13 @@ export function ImmersiveLanding() {
                             <Icon className="h-4 w-4" />
                             {stage.name}
                           </span>
-                        </button>
+                        </motion.button>
                       );
                     })}
                   </div>
                 </LayoutGroup>
 
-                <div className="relative mt-5 min-h-[31rem]">
+                <div className="relative mt-5 min-h-[44rem] xl:min-h-[36rem] 2xl:min-h-[34rem]">
                   {workflowStages.map((stage, index) => {
                     const position =
                       (index - activeStage + workflowStages.length) % workflowStages.length;
@@ -565,13 +578,13 @@ export function ImmersiveLanding() {
                             {isCurrent ? (
                               <motion.div
                                 key={stage.id}
-                                className="relative grid h-full gap-6 lg:grid-cols-[1.02fr_0.98fr]"
+                                className="relative grid h-full gap-5 xl:grid-cols-[minmax(0,1.08fr)_minmax(18rem,0.92fr)]"
                                 initial={reduceMotion ? false : { opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={reduceMotion ? undefined : { opacity: 0, y: -12 }}
                                 transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                               >
-                                <div className="flex flex-col justify-between gap-6">
+                                <div className="flex flex-col gap-5">
                                   <div className="space-y-5">
                                     <div className="flex items-center justify-between gap-4">
                                       <Badge
@@ -588,32 +601,48 @@ export function ImmersiveLanding() {
                                     </div>
 
                                     <div className="space-y-3">
-                                      <h2 className="max-w-xl text-3xl font-semibold leading-tight md:text-4xl">
+                                      <h2 className="max-w-2xl text-3xl font-semibold leading-[1.02] md:text-[3.4rem] xl:max-w-xl xl:text-[3.15rem]">
                                         {stage.headline}
                                       </h2>
-                                      <p className="max-w-xl text-sm leading-7 text-slate-300 md:text-base">
+                                      <p className="max-w-2xl text-base leading-8 text-slate-300 xl:max-w-xl">
                                         {stage.description}
                                       </p>
                                     </div>
 
-                                    <div className="space-y-3">
-                                      {stage.highlights.map((highlight) => (
-                                        <div
+                                    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-1">
+                                      {stage.highlights.map((highlight, highlightIndex) => (
+                                        <motion.div
                                           key={highlight}
-                                          className="flex items-start gap-3 text-sm leading-6 text-slate-200"
+                                          className="group rounded-[22px] border border-white/10 bg-white/6 p-4 text-sm leading-7 text-slate-200 backdrop-blur-xl transition-colors duration-300 hover:border-white/20 hover:bg-white/10"
+                                          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+                                          animate={{ opacity: 1, y: 0 }}
+                                          whileHover={softHover}
+                                          transition={{
+                                            delay: 0.06 + highlightIndex * 0.05,
+                                            duration: 0.35,
+                                          }}
                                         >
-                                          <CheckCircle2 className={cn("mt-1 h-4 w-4 shrink-0", stage.accentText)} />
-                                          <span>{highlight}</span>
-                                        </div>
+                                          <div className="flex items-start gap-3">
+                                            <CheckCircle2 className={cn("mt-1 h-4 w-4 shrink-0 transition-transform duration-300 group-hover:scale-110", stage.accentText)} />
+                                            <span>{highlight}</span>
+                                          </div>
+                                        </motion.div>
                                       ))}
                                     </div>
                                   </div>
 
                                   <div className="grid gap-3 sm:grid-cols-3">
-                                    {stage.metrics.map((metric) => (
-                                      <div
+                                    {stage.metrics.map((metric, metricIndex) => (
+                                      <motion.div
                                         key={metric.label}
-                                        className="rounded-[22px] border border-white/10 bg-white/6 p-4 backdrop-blur-xl"
+                                        className="rounded-[22px] border border-white/10 bg-white/6 p-4 backdrop-blur-xl transition-colors duration-300 hover:border-white/20 hover:bg-white/10"
+                                        initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        whileHover={softHover}
+                                        transition={{
+                                          delay: 0.08 + metricIndex * 0.05,
+                                          duration: 0.35,
+                                        }}
                                       >
                                         <div className="text-xs uppercase tracking-[0.22em] text-slate-400">
                                           {metric.label}
@@ -621,13 +650,16 @@ export function ImmersiveLanding() {
                                         <div className="mt-3 text-xl font-semibold text-white">
                                           {metric.value}
                                         </div>
-                                      </div>
+                                      </motion.div>
                                     ))}
                                   </div>
                                 </div>
 
-                                <div className="relative flex flex-col justify-between gap-4">
-                                  <div className="rounded-[28px] border border-white/10 bg-slate-950/35 p-5 backdrop-blur-2xl">
+                                <div className="relative flex flex-col gap-4 xl:pl-1">
+                                  <motion.div
+                                    className="rounded-[28px] border border-white/10 bg-slate-950/35 p-5 backdrop-blur-2xl transition-colors duration-300 hover:border-white/20 hover:bg-slate-950/45"
+                                    whileHover={liftHover}
+                                  >
                                     <div className="flex items-start justify-between gap-4">
                                       <div>
                                         <div className="text-xs uppercase tracking-[0.22em] text-slate-400">
@@ -667,19 +699,20 @@ export function ImmersiveLanding() {
                                         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                                       />
                                     </div>
-                                  </div>
+                                  </motion.div>
 
-                                  <div className="grid gap-3">
+                                  <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-1">
                                     {stage.queue.map((item, queueIndex) => (
                                       <motion.div
                                         key={item.label}
-                                        className="rounded-[24px] border border-white/10 bg-white/6 p-4 backdrop-blur-xl"
+                                        className="rounded-[24px] border border-white/10 bg-white/6 p-4 backdrop-blur-xl transition-colors duration-300 hover:border-white/20 hover:bg-white/10"
                                         initial={
                                           reduceMotion
                                             ? false
                                             : { opacity: 0, x: 20, y: 10 }
                                         }
                                         animate={{ opacity: 1, x: 0, y: 0 }}
+                                        whileHover={softHover}
                                         transition={{
                                           delay: 0.08 + queueIndex * 0.08,
                                           duration: 0.45,
@@ -699,12 +732,13 @@ export function ImmersiveLanding() {
                                   </div>
 
                                   <motion.div
-                                    className="absolute -bottom-3 right-0 hidden rounded-[22px] border border-white/10 bg-slate-950/70 px-4 py-3 shadow-[0_20px_48px_-18px_rgba(15,23,42,0.85)] backdrop-blur-xl md:block"
+                                    className="ml-auto hidden rounded-[22px] border border-white/10 bg-slate-950/70 px-4 py-3 shadow-[0_20px_48px_-18px_rgba(15,23,42,0.85)] backdrop-blur-xl md:block"
                                     animate={
                                       reduceMotion
                                         ? undefined
                                         : { y: [0, -8, 0], rotateZ: [0, -1, 0] }
                                     }
+                                    whileHover={reduceMotion ? undefined : { scale: 1.04 }}
                                     transition={{
                                       duration: 6,
                                       repeat: Infinity,
@@ -745,12 +779,12 @@ export function ImmersiveLanding() {
             Capability rail
           </Badge>
           <h2 className="text-3xl font-semibold sm:text-4xl lg:text-5xl">
-            Card transitions that behave like product states.
+            UI states that pull attention toward the next smart move.
           </h2>
           <p className="max-w-2xl text-lg leading-8 text-muted-foreground">
-            Hover or tap through the rail and the active panel expands into a more
-            technical explanation. The rest compress but stay visible, so the layout keeps
-            momentum instead of snapping between unrelated sections.
+            Hover or tap through the rail and the active panel expands into the benefit
+            that matters most. The rest stay visible, compressed, and ready, so the page
+            feels guided instead of manual.
           </p>
         </div>
 
@@ -763,13 +797,14 @@ export function ImmersiveLanding() {
               return (
                 <motion.button
                   key={card.title}
-                  className="glass-panel relative min-h-[21rem] overflow-hidden rounded-[32px] border text-left"
+                  className="glass-panel group relative min-h-[21rem] overflow-hidden rounded-[32px] border text-left"
                   onClick={() => setActiveCapability(index)}
                   onFocus={() => setActiveCapability(index)}
                   onMouseEnter={() => setActiveCapability(index)}
                   type="button"
                   layout
                   animate={reduceMotion ? undefined : { flex: isActive ? 1.55 : 0.9 }}
+                  whileHover={softHover}
                   transition={{ type: "spring", stiffness: 210, damping: 26 }}
                 >
                   <div
@@ -790,7 +825,7 @@ export function ImmersiveLanding() {
                           <h3 className="text-2xl font-semibold">{card.title}</h3>
                         </div>
                         <div className="rounded-2xl border border-white/40 bg-white/55 p-3 text-foreground/80 shadow-[0_16px_40px_-24px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-slate-900/75 dark:text-slate-100">
-                          <Icon className="h-5 w-5" />
+                          <Icon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3" />
                         </div>
                       </div>
 
