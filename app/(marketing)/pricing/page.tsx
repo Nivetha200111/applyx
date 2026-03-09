@@ -26,7 +26,7 @@ const faqs = [
   },
   {
     q: "Which AI models power the auto-fill?",
-    a: "Tracker auto-fills use affordable Grok models for instant extraction. Premium tailoring uses Grok 4 Fast and Grok 3 Mini for deeper rewrites, with OpenAI kept only as an emergency backup.",
+    a: "Tracker auto-fills use affordable Grok models for fast extraction. Basic tailoring prioritizes speed and volume, while Premium routes harder rewrite work through Grok 4 Fast first for better nuance. OpenAI stays only as an emergency backup.",
   },
   {
     q: "Are taxes included in the listed price?",
@@ -91,15 +91,15 @@ export default function PricingPage() {
               <CardContent className="space-y-3 text-sm leading-7 text-muted-foreground">
                 <div className="flex gap-3">
                   <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                  <span>Fast inference under 10 seconds per tailor</span>
+                  <span>Grok 3 Mini handles most tailors first to keep cost and turnaround low</span>
                 </div>
                 <div className="flex gap-3">
                   <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                  <span>Strong keyword extraction and bullet rewriting</span>
+                  <span>Best for high-volume application sprints where speed matters more than nuance</span>
                 </div>
                 <div className="flex gap-3">
                   <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                  <span>Ideal for high-volume application sprints</span>
+                  <span>Grok 4 Fast stays available as fallback if the primary pass fails</span>
                 </div>
               </CardContent>
             </Card>
@@ -114,15 +114,15 @@ export default function PricingPage() {
               <CardContent className="space-y-3 text-sm leading-7 text-muted-foreground">
                 <div className="flex gap-3">
                   <Zap className="mt-1 h-4 w-4 shrink-0 text-amber-500" />
-                  <span>Deeper reasoning for nuanced bullet rewrites</span>
+                  <span>Grok 4 Fast handles the first pass for denser, more nuanced job descriptions</span>
                 </div>
                 <div className="flex gap-3">
                   <Zap className="mt-1 h-4 w-4 shrink-0 text-amber-500" />
-                  <span>Better context-aware skill matching and ordering</span>
+                  <span>Better for stronger bullet ordering, cleaner emphasis, and tougher fit decisions</span>
                 </div>
                 <div className="flex gap-3">
                   <Zap className="mt-1 h-4 w-4 shrink-0 text-amber-500" />
-                  <span>Higher match score uplift on complex JDs</span>
+                  <span>Built for competitive roles where rewrite quality matters more than raw throughput</span>
                 </div>
               </CardContent>
             </Card>

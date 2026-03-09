@@ -52,10 +52,10 @@ export default async function SettingsPage() {
         </CardHeader>
         <CardContent className="text-sm leading-7 text-muted-foreground">
           {user.plan === "premium"
-            ? "Premium routes to Grok 4 Fast first and falls back to Grok 3 Mini."
+            ? "Premium routes tailoring through Grok 4 Fast first for stronger rewrites on harder JDs, then falls back to Grok 3 Mini."
             : user.plan === "basic"
-              ? "Basic routes to Grok 3 Mini first and falls back to Grok 4 Fast."
-              : "Free gives you 2 live demos using Grok 3 Mini / Grok 4 Fast before you need to upgrade."}
+              ? "Basic routes to Grok 3 Mini first to keep tailoring fast and efficient, then falls back to Grok 4 Fast."
+              : "Free gives you 2 demo tailors before you upgrade into either the speed-focused Basic tier or the higher-quality Premium tier."}
         </CardContent>
       </Card>
 

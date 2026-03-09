@@ -32,7 +32,7 @@ export const planCatalog: PlanDefinition[] = [
     priceInr: 249,
     cadence: "month",
     description:
-      "Unlimited tracker, 50 AI auto-fills, and 20 resume tailors for active job seekers.",
+      "Unlimited tracker, 50 AI auto-fills, and 20 fast tailors for high-volume application weeks.",
     includedDemos: 0,
     monthlyTailors: 20,
     masterResumeLimit: 3,
@@ -46,6 +46,7 @@ export const planCatalog: PlanDefinition[] = [
       "50 AI auto-fills per month",
       "20 tailored resumes per month",
       "3 master resumes",
+      "Fast tailoring with Grok 3 Mini",
       "PDF and DOCX export",
       "All prep resources",
       "Taxes included where applicable",
@@ -60,7 +61,7 @@ export const planCatalog: PlanDefinition[] = [
     priceInr: 599,
     cadence: "month",
     description:
-      "Unlimited tracker, unlimited AI auto-fills, 100 premium tailors with Grok 4 Fast.",
+      "Unlimited tracker, unlimited AI auto-fills, and 100 higher-quality tailors for nuanced or competitive roles.",
     includedDemos: 0,
     monthlyTailors: 100,
     masterResumeLimit: 99999,
@@ -74,7 +75,7 @@ export const planCatalog: PlanDefinition[] = [
       "Unlimited AI auto-fills",
       "100 premium tailored resumes per month",
       "Unlimited master resumes",
-      "Premium AI (Grok 4 Fast / Grok 3 Mini)",
+      "Grok 4 Fast primary for higher-quality rewrites",
       "All templates and prep resources",
       "Taxes included where applicable",
     ],
@@ -93,9 +94,12 @@ export const pricingTiers: PricingTier[] = planCatalog.map((plan) => ({
     plan.includedDemos > 0
       ? `${plan.includedDemos} live demo tailors`
       : `${plan.monthlyTailors} tailored resumes / month`,
-  modelAccess: plan.fallbackModel
-    ? `${plan.primaryModel} primary, ${plan.fallbackModel} fallback`
-    : plan.primaryModel,
+  modelAccess:
+    plan.id === "premium"
+      ? "Grok 4 Fast primary for deeper rewrites on tougher JDs, with Grok 3 Mini as fallback."
+      : plan.id === "basic"
+        ? "Grok 3 Mini primary for faster, efficient tailoring, with Grok 4 Fast as fallback."
+        : "Demo access with Grok 3 Mini primary and Grok 4 Fast fallback.",
   features: plan.features,
   ctaLabel: plan.ctaLabel,
   href: plan.href,
