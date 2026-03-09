@@ -40,6 +40,7 @@ export default async function TrackerPage() {
         initialTotal={total}
         trackerParsesRemaining={trackerParsesRemaining}
         trackerStats={trackerStats}
+        userPlan={user.plan}
       />
     </div>
   );

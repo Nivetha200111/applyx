@@ -21,13 +21,18 @@ import { TrackerStats } from "@/components/tracker/tracker-stats";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import type { ApplicationStatus, TrackedApplicationRecord } from "@/lib/types";
+import type {
+  ApplicationStatus,
+  PlanTier,
+  TrackedApplicationRecord,
+} from "@/lib/types";
 
 interface TrackerViewProps {
   initialApplications: TrackedApplicationRecord[];
   initialTotal: number;
   trackerStats: { total: number; byStatus: Record<string, number>; responseRate: number };
   trackerParsesRemaining: number;
+  userPlan: PlanTier;
 }
 
 type SortField = "created_at" | "company_name" | "role_title" | "status" | "priority" | "applied_at";
@@ -45,6 +50,7 @@ export function TrackerView({
   initialTotal,
   trackerStats,
   trackerParsesRemaining,
+  userPlan,
 }: TrackerViewProps) {
   const router = useRouter();
   const [applications, setApplications] = useState(initialApplications);
@@ -288,6 +294,7 @@ export function TrackerView({
             router.refresh();
           }}
           parsesRemaining={trackerParsesRemaining}
+          userPlan={userPlan}
         />
       ) : null}
     </div>

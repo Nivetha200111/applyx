@@ -78,7 +78,10 @@ export async function POST(
            raw_jd_text = $11,
            parsed_jd_data = $12::jsonb,
            source_platform = coalesce(source_platform, $13),
-           prep_resources = $14::jsonb
+           prep_resources = $14::jsonb,
+           status = case when status = 'bookmarked' and $17 then 'applying'::application_status else status end,
+           applied_at = case when applied_at is null and $17 then timezone('utc', now()) else applied_at end,
+           follow_up_at = case when follow_up_at is null and $17 then timezone('utc', now()) + interval '7 days' else follow_up_at end
          where id = $15 and user_id = $16`,
         [
           parsed.company || "",
@@ -97,6 +100,7 @@ export async function POST(
           JSON.stringify(prepResources),
           params.id,
           currentUser.id,
+          currentUser.plan !== "free",
         ],
       );
 
@@ -127,7 +131,7 @@ export async function POST(
       }
     });
 
-    return NextResponse.json({ ok: true, parsed });
+    return NextResponse.json({ ok: true, parsed, plan: currentUser.plan });
   } catch (error) {
     return toErrorResponse(error, {
       fallbackMessage: "Unable to parse that job description right now.",

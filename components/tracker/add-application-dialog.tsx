@@ -1,26 +1,32 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { Sparkles, X } from "lucide-react";
 import { toast } from "sonner";
 import { SubmitButton } from "@/components/auth/submit-button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import type { PlanTier } from "@/lib/types";
 
 interface AddApplicationDialogProps {
   onClose: () => void;
   onCreated: () => void;
   parsesRemaining: number;
+  userPlan: PlanTier;
 }
 
 export function AddApplicationDialog({
   onClose,
   onCreated,
   parsesRemaining,
+  userPlan,
 }: AddApplicationDialogProps) {
   const [mode, setMode] = useState<"quick" | "paste">("paste");
-  const [isPending, startTransition] = useTransition();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [autoTailorStatus, setAutoTailorStatus] = useState<
+    "idle" | "tailoring" | "done" | "error"
+  >("idle");
 
   // Quick add fields
   const [companyName, setCompanyName] = useState("");
@@ -29,9 +35,22 @@ export function AddApplicationDialog({
 
   // Paste JD fields
   const [rawJdText, setRawJdText] = useState("");
+  const isAutoTailoring = autoTailorStatus === "tailoring";
+  const isBusy = isSubmitting || isAutoTailoring;
+  const parseHelperText =
+    userPlan === "premium"
+      ? "Premium parses also auto-tailor your primary resume when one is available."
+      : userPlan === "basic"
+        ? "Paid plans auto-mark parsed roles as applying and schedule a follow-up reminder."
+        : "Free plan parses the JD, but follow-ups and auto-tailor stay manual.";
 
-  function handleSubmit() {
-    startTransition(async () => {
+  async function handleSubmit() {
+    if (isBusy) return;
+
+    setIsSubmitting(true);
+    try {
+      setAutoTailorStatus("idle");
+
       const body: Record<string, string> = {};
 
       if (mode === "paste") {
@@ -60,7 +79,7 @@ export function AddApplicationDialog({
       });
 
       const payload = (await response.json().catch(() => null)) as
-        | { error?: string; ok?: boolean }
+        | { error?: string; ok?: boolean; applicationId?: string; plan?: string; usedAiParse?: boolean }
         | null;
 
       if (!response.ok) {
@@ -68,13 +87,58 @@ export function AddApplicationDialog({
         return;
       }
 
-      toast.success(
-        mode === "paste"
-          ? "Application added and JD parsed with AI."
-          : "Application added.",
-      );
+      // Auto-tailor for premium users when JD was parsed
+      if (
+        payload?.usedAiParse &&
+        payload?.plan === "premium" &&
+        payload?.applicationId
+      ) {
+        toast.success("JD parsed. Auto-tailoring your resume...");
+        setAutoTailorStatus("tailoring");
+        let autoTailorFailed = false;
+
+        try {
+          const tailorRes = await fetch(
+            `/api/applications/${payload.applicationId}/auto-tailor`,
+            { method: "POST" },
+          );
+          const tailorData = (await tailorRes.json().catch(() => null)) as
+            | { ok?: boolean; skipped?: boolean; reason?: string; matchScoreAfter?: number; error?: string }
+            | null;
+
+          if (tailorRes.ok && tailorData?.ok && !tailorData?.skipped) {
+            toast.success(
+              `Resume auto-tailored! Match score: ${tailorData.matchScoreAfter ?? "—"}%`,
+            );
+          } else if (tailorData?.skipped) {
+            toast.info("Resume already tailored for this application.");
+          } else {
+            autoTailorFailed = true;
+            setAutoTailorStatus("error");
+            toast.warning(tailorData?.error ?? "Auto-tailor skipped. You can tailor manually.");
+          }
+        } catch {
+          autoTailorFailed = true;
+          setAutoTailorStatus("error");
+          toast.warning("Auto-tailor couldn't complete. You can tailor manually.");
+        }
+
+        if (!autoTailorFailed) {
+          setAutoTailorStatus("done");
+        }
+      } else {
+        const msg = mode === "paste"
+          ? userPlan !== "free"
+            ? "Application added, JD parsed, and follow-up set."
+            : "Application added and JD parsed with AI."
+          : "Application added.";
+        toast.success(msg);
+      }
+
       onCreated();
-    });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -84,6 +148,7 @@ export function AddApplicationDialog({
           <h2 className="text-xl font-semibold">Add application</h2>
           <button
             className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted"
+            disabled={isBusy}
             onClick={onClose}
             type="button"
           >
@@ -99,6 +164,7 @@ export function AddApplicationDialog({
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             }`}
+            disabled={isBusy}
             onClick={() => setMode("paste")}
             type="button"
           >
@@ -111,6 +177,7 @@ export function AddApplicationDialog({
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             }`}
+            disabled={isBusy}
             onClick={() => setMode("quick")}
             type="button"
           >
@@ -127,6 +194,7 @@ export function AddApplicationDialog({
                 </label>
                 <Textarea
                   className="min-h-[180px]"
+                  disabled={isBusy}
                   id="add-jd"
                   onChange={(e) => setRawJdText(e.target.value)}
                   placeholder="Paste the full job description here. AI will extract company, role, skills, salary, and more."
@@ -137,6 +205,7 @@ export function AddApplicationDialog({
                     ? `${parsesRemaining} AI auto-fills remaining this month`
                     : "AI auto-fill limit reached. Use Quick add instead."}
                 </p>
+                <p className="text-xs leading-5 text-muted-foreground">{parseHelperText}</p>
               </div>
             </>
           ) : null}
@@ -147,6 +216,7 @@ export function AddApplicationDialog({
                 Company {mode === "paste" ? "(optional)" : ""}
               </label>
               <Input
+                disabled={isBusy}
                 id="add-company"
                 onChange={(e) => setCompanyName(e.target.value)}
                 placeholder="Google, TCS, etc."
@@ -158,6 +228,7 @@ export function AddApplicationDialog({
                 Role {mode === "paste" ? "(optional)" : ""}
               </label>
               <Input
+                disabled={isBusy}
                 id="add-role"
                 onChange={(e) => setRoleTitle(e.target.value)}
                 placeholder="Software Engineer"
@@ -171,6 +242,7 @@ export function AddApplicationDialog({
               Job URL (optional)
             </label>
             <Input
+              disabled={isBusy}
               id="add-url"
               onChange={(e) => setSourceUrl(e.target.value)}
               placeholder="https://linkedin.com/jobs/..."
@@ -178,15 +250,28 @@ export function AddApplicationDialog({
             />
           </div>
 
+          {isAutoTailoring ? (
+            <div className="rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-muted-foreground">
+              Premium auto-tailor is running now. We&apos;re generating a tailored resume,
+              linking it to this application, and setting the next follow-up.
+            </div>
+          ) : null}
+
           <div className="flex gap-3 pt-2">
-            <Button className="flex-1" onClick={onClose} variant="outline">
+            <Button className="flex-1" disabled={isBusy} onClick={onClose} variant="outline">
               Cancel
             </Button>
             <SubmitButton
               className="flex-1"
-              isPending={isPending}
+              isPending={isBusy}
               onClick={handleSubmit}
-              pendingLabel={mode === "paste" ? "Parsing with AI..." : "Adding..."}
+              pendingLabel={
+                mode === "paste"
+                  ? isAutoTailoring
+                    ? "Auto-tailoring..."
+                    : "Parsing with AI..."
+                  : "Adding..."
+              }
             >
               {mode === "paste" ? "Parse & Add" : "Add"}
             </SubmitButton>

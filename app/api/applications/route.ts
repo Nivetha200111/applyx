@@ -195,27 +195,35 @@ export async function POST(request: Request) {
         }
       }
 
+      // Auto-set follow-up and status for paid plans when JD is parsed
+      const isPaid = currentUser.plan !== "free";
+      const autoStatus = usedAiParse && isPaid ? "applying" : payload.status;
+      const autoAppliedAt = usedAiParse && isPaid ? new Date().toISOString() : null;
+      const autoFollowUpAt = usedAiParse && isPaid
+        ? new Date(Date.now() + 7 * 86400000).toISOString()
+        : null;
+
       const result = await client.query<{ id: string }>(
         `insert into public.tracked_applications (
           user_id, company_name, role_title, location, work_mode,
           salary_min, salary_max, salary_currency, status, source_url,
           source_platform, raw_jd_text, parsed_jd_data,
           required_skills, preferred_skills, experience_required,
-          notes, prep_resources
+          notes, prep_resources, applied_at, follow_up_at
         ) values (
           $1, $2, $3, $4, $5::work_mode,
           $6, $7, $8, $9::application_status, $10,
           $11, $12, $13::jsonb,
           $14, $15, $16,
-          $17, $18::jsonb
+          $17, $18::jsonb, $19, $20
         )
         returning id`,
         [
           currentUser.id, companyName, roleTitle, location, workMode,
-          salaryMin, salaryMax, salaryCurrency, payload.status, payload.sourceUrl || null,
+          salaryMin, salaryMax, salaryCurrency, autoStatus, payload.sourceUrl || null,
           sourcePlatform, rawJdText || null, parsedJdData ? JSON.stringify(parsedJdData) : null,
           requiredSkills, preferredSkills, experienceRequired,
-          payload.notes || null, JSON.stringify(prepResources),
+          payload.notes || null, JSON.stringify(prepResources), autoAppliedAt, autoFollowUpAt,
         ],
       );
 
@@ -234,7 +242,12 @@ export async function POST(request: Request) {
       return result.rows[0]?.id;
     });
 
-    return NextResponse.json({ ok: true, applicationId: created });
+    return NextResponse.json({
+      ok: true,
+      applicationId: created,
+      plan: currentUser.plan,
+      usedAiParse,
+    });
   } catch (error) {
     return toErrorResponse(error, {
       fallbackMessage: "Failed to create application right now.",
