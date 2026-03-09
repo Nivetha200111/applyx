@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <style>
+    path {
+      stroke: #238a83;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      path {
+        stroke: #25c4f1;
+      }
+    }
+  </style>
+  <path
+    d="M24 18V14C24 11.7909 25.7909 10 28 10H36C38.2091 10 40 11.7909 40 14V18"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="4.25"
+  />
+  <path
+    d="M15 23C15 20.2386 17.2386 18 20 18H44C46.7614 18 49 20.2386 49 23V43C49 45.7614 46.7614 48 44 48H37.5L33.4947 36.7193C32.9341 35.1401 30.7212 35.1401 30.1606 36.7193L26.1553 48H20C17.2386 48 15 45.7614 15 43V23Z"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="4.25"
+  />
+  <path
+    d="M27 36H37"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="4.25"
+  />
+</svg>
