@@ -911,16 +911,16 @@ export function ImmersiveLanding() {
           <div className="relative grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
             <div className="space-y-6">
               <Badge className="w-fit border border-white/10 bg-white/10 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-slate-200">
-                Final CTA
+                Ready to move faster
               </Badge>
               <div className="space-y-4">
                 <h2 className="max-w-2xl text-3xl font-semibold sm:text-4xl lg:text-5xl">
-                  If you wanted an advanced animated page, this is the direction.
+                  Stop letting strong applications die in drafts, tabs, and follow-up debt.
                 </h2>
                 <p className="max-w-xl text-lg leading-8 text-slate-300">
-                  The homepage now behaves like a motion-driven product story: layered
-                  backgrounds, stacked scene changes, expandable capability cards, and a
-                  darker CTA zone that closes with real depth instead of another flat block.
+                  ApplyX helps you tailor faster, keep every role organized, and follow up
+                  while the opportunity still has heat, so more of your effort turns into
+                  real interview chances.
                 </p>
               </div>
 
@@ -932,7 +932,7 @@ export function ImmersiveLanding() {
                   )}
                   href="/signup"
                 >
-                  Launch the experience
+                  Start with 2 free demos
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
@@ -950,18 +950,18 @@ export function ImmersiveLanding() {
             <div className="grid gap-3 md:grid-cols-3">
               {[
                 {
-                  title: "Visual density",
-                  value: "High-signal hierarchy",
+                  title: "Tailor faster",
+                  value: "Less rewriting",
                   icon: Radar,
                 },
                 {
-                  title: "Motion language",
-                  value: "Stack, swap, expand",
+                  title: "Stay organized",
+                  value: "No spreadsheet chaos",
                   icon: Workflow,
                 },
                 {
-                  title: "Conversion focus",
-                  value: "Actions stay visible",
+                  title: "Follow up on time",
+                  value: "Keep warm roles alive",
                   icon: Sparkles,
                 },
               ].map((item, index) => {
