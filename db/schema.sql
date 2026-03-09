@@ -247,6 +247,14 @@ create table if not exists public.request_rate_limits (
   primary key (route_key, identifier_hash)
 );
 
+create table if not exists public.dismissed_jobs (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.users(id) on delete cascade,
+  external_job_id text not null,
+  source text not null,
+  created_at timestamptz not null default timezone('utc', now())
+);
+
 -- Indexes
 
 create index if not exists users_plan_idx on public.users (plan);
@@ -268,6 +276,8 @@ create index if not exists tracked_apps_user_status_idx on public.tracked_applic
 create index if not exists tracked_apps_user_archived_idx on public.tracked_applications (user_id, is_archived, updated_at desc);
 create index if not exists tracked_apps_skills_idx on public.tracked_applications using gin (required_skills);
 create index if not exists request_rate_limits_window_idx on public.request_rate_limits (window_started_at);
+create unique index if not exists dismissed_jobs_user_job_idx on public.dismissed_jobs (user_id, external_job_id);
+create index if not exists dismissed_jobs_user_id_idx on public.dismissed_jobs (user_id, created_at desc);
 
 -- Triggers
 

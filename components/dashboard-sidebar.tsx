@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { LayoutGroup, motion } from "framer-motion";
 import {
   BarChart3,
+  BriefcaseBusiness,
   ClipboardList,
   FileText,
   History,
@@ -28,6 +29,11 @@ const navItems = [
     href: "/tracker",
     label: "Tracker",
     icon: ClipboardList,
+  },
+  {
+    href: "/jobs",
+    label: "Jobs For You",
+    icon: BriefcaseBusiness,
   },
   {
     href: "/resumes",
