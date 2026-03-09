@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MarketingContentShell } from "@/components/marketing/marketing-content-shell";
 import { MobileNav } from "@/components/mobile-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ApplyxLogo } from "@/components/ui/applyx-logo";
@@ -47,7 +48,9 @@ export default function MarketingLayout({
           </div>
         </div>
       </header>
-      <main>{children}</main>
+      <main>
+        <MarketingContentShell>{children}</MarketingContentShell>
+      </main>
       <footer className="border-t border-border/40 bg-background/55 backdrop-blur-xl">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-muted-foreground sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div className="space-y-2">

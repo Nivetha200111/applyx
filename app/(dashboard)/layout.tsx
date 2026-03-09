@@ -1,4 +1,5 @@
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
+import { DashboardContentShell } from "@/components/dashboard-content-shell";
 import { requireUser } from "@/lib/auth";
 import { isDeveloperAdminUser } from "@/lib/developer-access";
 import { getRemainingTailors, refreshUserAccess } from "@/lib/data";
@@ -29,7 +30,7 @@ export default async function DashboardLayout({
         userName={user.fullName}
       />
       <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-        {children}
+        <DashboardContentShell>{children}</DashboardContentShell>
       </main>
     </div>
   );

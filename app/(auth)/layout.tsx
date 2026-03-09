@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { AuthEntrance } from "@/components/auth/auth-entrance";
 import { ApplyxLogo } from "@/components/ui/applyx-logo";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -42,7 +43,9 @@ export default async function AuthLayout({
         </p>
       </div>
       <div className="flex items-center justify-center px-4 py-12 sm:px-6">
-        <div className="w-full max-w-md">{children}</div>
+        <div className="w-full max-w-md">
+          <AuthEntrance>{children}</AuthEntrance>
+        </div>
       </div>
     </div>
   );

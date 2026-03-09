@@ -18,15 +18,15 @@ import { cn } from "@/lib/utils";
 const faqs = [
   {
     q: "What can I do on the free tier?",
-    a: "Track up to 10 applications, use 5 AI auto-fills from JDs, and get 2 free resume tailors. Enough to test the full flow before committing.",
+    a: "Track up to 10 applications, use 5 AI auto-fills from JDs, and get 2 free resume tailors. Status, follow-ups, and tailoring stay manual.",
   },
   {
-    q: "What is an AI auto-fill?",
-    a: "Paste a job description and AI extracts company, role, skills, salary, work mode, and experience into your tracker row. Each extraction uses one auto-fill credit.",
+    q: "What does automation mean on paid plans?",
+    a: "Basic auto-sets your status to applying and schedules a 7-day follow-up when you parse a JD. Premium goes further — it also auto-tailors your primary resume and links it to the application, all in one paste.",
   },
   {
-    q: "Which AI models power the auto-fill?",
-    a: "Tracker auto-fills use affordable Grok models for fast extraction. Basic tailoring prioritizes speed and volume, while Premium routes harder rewrite work through Grok 4 Fast first for better nuance. OpenAI stays only as an emergency backup.",
+    q: "Which AI models power the tailoring?",
+    a: "Basic uses Grok 3 Mini for fast, high-volume tailoring. Premium routes through Grok 4 Fast first for stronger rewrites on competitive roles, falling back to Grok 3 Mini.",
   },
   {
     q: "Are taxes included in the listed price?",
@@ -55,8 +55,8 @@ export default function PricingPage() {
         />
         <AnimatedPanel delay={0.4} hover={false}>
           <p className="text-lg leading-8 text-muted-foreground">
-            Start with 2 free demos, move to faster high-volume tailoring when
-            volume matters, and upgrade only when you want stronger rewrites.
+            Start with 2 free demos. Basic automates status tracking and follow-ups.
+            Premium auto-tailors your resume the moment you paste a JD.
           </p>
         </AnimatedPanel>
       </section>

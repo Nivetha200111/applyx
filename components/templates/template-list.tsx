@@ -136,7 +136,7 @@ export function TemplateList() {
       </div>
 
       {/* Template grid */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid auto-rows-max items-start gap-4 md:grid-cols-2">
         {filtered.map((template) => (
           <TemplateCard
             key={template.id}
@@ -178,7 +178,7 @@ function TemplateCard({
   return (
     <Card
       className={cn(
-        "cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
+        "self-start cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
         expanded && "ring-2 ring-primary/30",
       )}
     >

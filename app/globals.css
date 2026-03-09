@@ -390,6 +390,30 @@
   }
 }
 
+/* ── View Transitions API (Chrome / Edge) ── */
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: vt-fade-out 0.22s ease forwards,
+             vt-slide-out 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+::view-transition-new(root) {
+  animation: vt-fade-in 0.28s ease forwards,
+             vt-slide-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+::view-transition-old(page-content) {
+  animation: vt-scale-out 0.2s ease forwards;
+}
+
+::view-transition-new(page-content) {
+  animation: vt-scale-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
 /* Keyframes */
 
 @keyframes gradient-shift {
@@ -449,6 +473,39 @@
   }
   100% {
     transform: translate3d(-36px, -48px, 0);
+  }
+}
+
+/* View Transition keyframes */
+@keyframes vt-fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes vt-fade-in {
+  from { opacity: 0; }
+}
+
+@keyframes vt-slide-out {
+  to { transform: translateY(-8px); }
+}
+
+@keyframes vt-slide-in {
+  from { transform: translateY(14px); }
+}
+
+@keyframes vt-scale-out {
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+    filter: blur(4px);
+  }
+}
+
+@keyframes vt-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+    filter: blur(6px);
   }
 }
 

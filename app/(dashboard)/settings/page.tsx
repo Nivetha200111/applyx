@@ -27,9 +27,9 @@ export default async function SettingsPage() {
         <h1 className="text-3xl font-semibold">Account and billing</h1>
         <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
           {developerAdmin
-            ? "Developer access is active on this account. Premium features are unlocked and billing is bypassed."
+            ? "Developer access is active on this account. Premium features and full automation are unlocked."
             : hasDodo
-              ? "Upgrade between Free, Basic, and Premium using secure hosted checkout."
+              ? "Upgrade for automation: Basic auto-tracks status & follow-ups, Premium auto-tailors your resume on every JD paste."
               : "Billing is not configured yet for this deployment."}
         </p>
       </div>
@@ -52,10 +52,10 @@ export default async function SettingsPage() {
         </CardHeader>
         <CardContent className="text-sm leading-7 text-muted-foreground">
           {user.plan === "premium"
-            ? "Premium routes tailoring through Grok 4 Fast first for stronger rewrites on harder JDs, then falls back to Grok 3 Mini."
+            ? "Fully automated: paste a JD and ApplyX parses it, tailors your resume, sets status to applied, and schedules a follow-up — all in one step. Powered by Grok 4 Fast with Grok 3 Mini fallback."
             : user.plan === "basic"
-              ? "Basic routes to Grok 3 Mini first to keep tailoring fast and efficient, then falls back to Grok 4 Fast."
-              : "Free gives you 2 demo tailors before you upgrade into either the speed-focused Basic tier or the higher-quality Premium tier."}
+              ? "Semi-automated: paste a JD and ApplyX parses it, sets status to applying, and schedules a 7-day follow-up. Tailor your resume manually with fast Grok 3 Mini."
+              : "Manual mode: parse JDs with 5 free auto-fills and try 2 demo tailors. Upgrade for automation, follow-up reminders, and higher limits."}
         </CardContent>
       </Card>
 
