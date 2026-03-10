@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ExternalLink, MapPin, Wallet, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -72,10 +73,15 @@ function descriptionSnippet(value: string) {
 
 export function JobCard({ job, busyAction, onDismiss, onTrack }: JobCardProps) {
   const salary = formatSalary(job);
+  const [postedAtLabel, setPostedAtLabel] = useState("Recently posted");
   const matchTone =
     job.matchScore >= 70 ? "from-emerald-500/90 to-teal-400/90"
       : job.matchScore >= 40 ? "from-amber-400/90 to-orange-400/90"
         : "from-slate-400/80 to-slate-500/80";
+
+  useEffect(() => {
+    setPostedAtLabel(formatPostedAt(job.postedAt));
+  }, [job.postedAt]);
 
   return (
     <Card className="flex h-full flex-col overflow-hidden">
@@ -122,7 +128,7 @@ export function JobCard({ job, busyAction, onDismiss, onTrack }: JobCardProps) {
               {salary}
             </span>
           ) : null}
-          <span>{formatPostedAt(job.postedAt)}</span>
+          <span>{postedAtLabel}</span>
         </div>
 
         <p className="text-sm leading-7 text-muted-foreground">

@@ -45,6 +45,26 @@ interface FetchOptions {
   sortOrder?: SortOrder;
 }
 
+const trackerSalaryFormatter = new Intl.NumberFormat("en-US");
+const trackerAppliedDateFormatter = new Intl.DateTimeFormat("en-US", {
+  day: "numeric",
+  month: "short",
+  timeZone: "UTC",
+});
+
+function formatAppliedDate(value: string | null) {
+  if (!value) {
+    return "—";
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "—";
+  }
+
+  return trackerAppliedDateFormatter.format(date);
+}
+
 export function TrackerView({
   initialApplications,
   initialTotal,
@@ -172,7 +192,7 @@ export function TrackerView({
   const formatSalary = (min: number | null, max: number | null, currency: string) => {
     if (!min && !max) return "—";
     const fmt = (v: number) =>
-      currency === "INR" ? `${v} LPA` : `${currency} ${v.toLocaleString()}`;
+      currency === "INR" ? `${v} LPA` : `${currency} ${trackerSalaryFormatter.format(v)}`;
     if (min && max) return `${fmt(min)} – ${fmt(max)}`;
     return fmt(min ?? max!);
   };
@@ -418,12 +438,7 @@ function ApplicationRow({
           {formatSalary(app.salaryMin, app.salaryMax, app.salaryCurrency)}
         </td>
         <td className="px-3 py-3 text-muted-foreground">
-          {app.appliedAt
-            ? new Date(app.appliedAt).toLocaleDateString(undefined, {
-                day: "numeric",
-                month: "short",
-              })
-            : "—"}
+          {formatAppliedDate(app.appliedAt)}
         </td>
         <td className="px-3 py-3">
           <div className="flex items-center gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
