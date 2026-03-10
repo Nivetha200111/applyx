@@ -177,7 +177,7 @@ function ResumeSection({
 }) {
   return (
     <View style={styles.section}>
-      <View style={styles.sectionTitleWrap}>
+      <View style={styles.sectionTitleWrap} minPresenceAhead={72}>
         <Text style={styles.sectionTitle}>{title}</Text>
       </View>
       {children}

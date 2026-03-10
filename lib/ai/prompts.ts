@@ -116,25 +116,27 @@ export function buildResumeTailoringPrompt(
 
 ### Content Rules:
 1. NEVER fabricate experience, skills, or achievements the candidate doesn't have
-2. REWRITE bullet points to use keywords from the JD where the candidate's experience genuinely matches
-3. REORDER sections and bullets to put the most relevant experience first
-4. ADD a tailored professional summary (2-3 lines) that mirrors the JD's language
-5. In the skills section, PRIORITIZE skills that appear in the JD (move them to the front)
-6. ADD skills from the JD to the skills section ONLY if they are reasonably implied by the candidate's experience
-7. QUANTIFY achievements wherever possible (add metrics if they can be reasonably inferred)
-8. Use ACTION VERBS that match the JD's tone (e.g., if JD says "drive", use "drove" in bullets)
+2. NEVER change or upgrade the candidate's actual job titles, employer names, degree names, or dates. Keep original role titles exactly as provided in the resume
+3. DO NOT change the candidate's professional identity. If the original experience is primarily software engineering, describe them as a software engineer with AI/ML/LLM experience if accurate, NOT as an "AI Engineer" unless the original resume already supports that exact title
+4. REWRITE bullet points to use keywords from the JD where the candidate's experience genuinely matches
+5. REORDER sections and bullets to put the most relevant experience first
+6. ADD a tailored professional summary (2-3 lines) that mirrors the JD's language
+7. In the skills section, PRIORITIZE skills that appear in the JD (move them to the front)
+8. ADD skills from the JD to the skills section ONLY if they are reasonably implied by the candidate's experience
+9. QUANTIFY achievements wherever possible (add metrics if they can be reasonably inferred)
+10. Use ACTION VERBS that match the JD's tone (e.g., if JD says "drive", use "drove" in bullets)
 
 ### ATS Rules:
-9. Use standard section headings: "Professional Experience", "Education", "Skills", "Projects"
-10. Do NOT use tables, columns, graphics, or headers/footers (ATS can't parse them)
-11. Include the EXACT job title from the JD in the summary or headline if the candidate's experience supports it
-12. Spell out acronyms at least once (e.g., "Machine Learning (ML)")
-13. Mirror the JD's language for skill names (e.g., if JD says "React.js" don't write "React")
+11. Use standard section headings: "Professional Experience", "Education", "Skills", "Projects"
+12. Do NOT use tables, columns, graphics, or headers/footers (ATS can't parse them)
+13. Include the EXACT job title from the JD in the summary or headline only if the candidate's background genuinely supports it
+14. Spell out acronyms at least once (e.g., "Machine Learning (ML)")
+15. Mirror the JD's language for skill names (e.g., if JD says "React.js" don't write "React")
 
 ### Output Rules:
-14. Return the COMPLETE tailored resume in the same ParsedResume JSON schema
-15. Also return a "changes" array listing every modification you made and why
-16. Also return match_score_before (0-100) and match_score_after (0-100)
+16. Return the COMPLETE tailored resume in the same ParsedResume JSON schema
+17. Also return a "changes" array listing every modification you made and why
+18. Also return match_score_before (0-100) and match_score_after (0-100)
 
 ## INPUTS
 
