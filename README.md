@@ -63,6 +63,7 @@ The current build now includes:
 - Dodo hosted checkout, customer portal, and signed webhook routes
 - Manual billing fallback page, transaction submission flow, and approval scripts
 - Free, Basic, and Premium usage enforcement
+- Optional OpenClaw WhatsApp notification bridge for `applied` events
 
 To run it as a real product, you still need to provide:
 
@@ -77,6 +78,7 @@ To run it as a real product, you still need to provide:
 - `MANUAL_UPI_ID` and `MANUAL_UPI_NAME` for an in-app UPI QR code
 - or `MANUAL_UPI_PAYMENT_URL` / `MANUAL_INTERNATIONAL_PAYMENT_URL` if you want direct payment links
 - `NEXT_PUBLIC_APP_URL`
+- `OPENCLAW_NOTIFY_URL` and `OPENCLAW_NOTIFY_SECRET` if you want WhatsApp alerts through a VM-side OpenClaw bridge
 
 ## Manual Billing Operations
 
@@ -88,3 +90,14 @@ npm run billing:approve -- <payment-id-or-checkout-id>
 ```
 
 Users pay via the configured manual links, submit a transaction reference in the app, and you approve the payment to activate their plan for 30 days.
+
+## Optional OpenClaw Notifications
+
+If you want a WhatsApp alert whenever a tracked role enters the `applied` state, use the
+VM-side bridge in `services/openclaw-notifier/README.md`.
+
+ApplyX sends a signed webhook to your notifier service when:
+
+- an application is created directly as `applied`
+- a tracked application is updated into `applied`
+- auto-tailor promotes a tracked application into `applied`

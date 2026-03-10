@@ -5,10 +5,11 @@ import { isDeveloperAdminUser } from "@/lib/developer-access";
 import { getCurrentUser } from "@/lib/auth";
 import { dbQuery, firstRow, withTransaction } from "@/lib/db";
 import { getRemainingTailors, refreshUserAccess } from "@/lib/data";
+import { notifyApplicationApplied } from "@/lib/notifications/openclaw";
 import { getPlanById } from "@/lib/plans";
 import { HttpError, toErrorResponse } from "@/lib/security/api";
 import { enforceRateLimit } from "@/lib/security/rate-limit";
-import type { ParsedJD, ParsedResume } from "@/lib/types";
+import type { ApplicationStatus, ParsedJD, ParsedResume } from "@/lib/types";
 
 export const runtime = "nodejs";
 
@@ -17,6 +18,11 @@ type TrackedApplicationRow = {
   raw_jd_text: string | null;
   parsed_jd_data: ParsedJD | null;
   tailored_resume_id: string | null;
+  company_name: string;
+  role_title: string;
+  source_url: string | null;
+  applied_at: string | null;
+  status: ApplicationStatus;
 };
 
 type MasterResumeRow = {
@@ -57,7 +63,8 @@ export async function POST(
     }
 
     const appResult = await dbQuery<TrackedApplicationRow>(
-      `select id, raw_jd_text, parsed_jd_data, tailored_resume_id
+      `select id, raw_jd_text, parsed_jd_data, tailored_resume_id,
+              company_name, role_title, source_url, applied_at, status::text
        from public.tracked_applications
        where id = $1 and user_id = $2 and is_archived = false
        limit 1`,
@@ -276,6 +283,19 @@ export async function POST(
 
     if (!tailoredResumeId) {
       return NextResponse.json({ error: "Unable to save tailored resume." }, { status: 500 });
+    }
+
+    if (application.status === "bookmarked" || application.status === "applying") {
+      await notifyApplicationApplied({
+        applicationId,
+        userId: currentUser.id,
+        userEmail: currentUser.email,
+        userName: currentUser.fullName,
+        companyName: parsedJd.company || application.company_name || "Unknown company",
+        roleTitle: parsedJd.title || application.role_title || "Untitled role",
+        sourceUrl: application.source_url,
+        appliedAt: application.applied_at ?? new Date().toISOString(),
+      });
     }
 
     return NextResponse.json({

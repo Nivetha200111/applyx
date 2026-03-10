@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint --dir app --dir components --dir lib",
     "billing:list": "node scripts/billing-list.mjs",
-    "billing:approve": "node scripts/billing-approve.mjs"
+    "billing:approve": "node scripts/billing-approve.mjs",
+    "openclaw:notifier": "node services/openclaw-notifier/server.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",

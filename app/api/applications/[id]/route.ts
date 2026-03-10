@@ -2,8 +2,10 @@ import { z } from "zod";
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { dbQuery } from "@/lib/db";
+import { notifyApplicationApplied } from "@/lib/notifications/openclaw";
 import { toErrorResponse } from "@/lib/security/api";
 import { enforceRateLimit } from "@/lib/security/rate-limit";
+import type { ApplicationStatus } from "@/lib/types";
 
 export const runtime = "nodejs";
 
@@ -73,6 +75,26 @@ export async function PATCH(
       message: "Tracker update rate limit reached. Please wait a minute and try again.",
     });
 
+    const existingResult = await dbQuery<{
+      id: string;
+      company_name: string;
+      role_title: string;
+      status: ApplicationStatus;
+      source_url: string | null;
+      applied_at: string | null;
+    }>(
+      `select id, company_name, role_title, status::text, source_url, applied_at
+       from public.tracked_applications
+       where id = $1 and user_id = $2
+       limit 1`,
+      [params.id, sessionUser.id],
+    );
+    const existing = existingResult.rows[0];
+
+    if (!existing) {
+      return NextResponse.json({ error: "Application not found." }, { status: 404 });
+    }
+
     const payload = updateSchema.parse(await request.json());
     const setClauses: string[] = [];
     const values: unknown[] = [];
@@ -98,16 +120,48 @@ export async function PATCH(
       return NextResponse.json({ error: "No fields to update." }, { status: 400 });
     }
 
-    const result = await dbQuery(
+    if (payload.status === "applied" && payload.appliedAt === undefined) {
+      setClauses.push("applied_at = coalesce(applied_at, timezone('utc', now()))");
+    }
+
+    if (payload.status === "applied" && payload.followUpAt === undefined) {
+      setClauses.push(
+        "follow_up_at = coalesce(follow_up_at, timezone('utc', now()) + interval '7 days')",
+      );
+    }
+
+    const result = await dbQuery<{
+      id: string;
+      company_name: string;
+      role_title: string;
+      status: ApplicationStatus;
+      source_url: string | null;
+      applied_at: string | null;
+    }>(
       `update public.tracked_applications
        set ${setClauses.join(", ")}
        where id = $${paramIndex} and user_id = $${paramIndex + 1}
-       returning id`,
+       returning id, company_name, role_title, status::text, source_url, applied_at`,
       [...values, params.id, sessionUser.id],
     );
 
-    if (result.rowCount === 0) {
+    const updated = result.rows[0];
+
+    if (!updated) {
       return NextResponse.json({ error: "Application not found." }, { status: 404 });
+    }
+
+    if (existing.status !== "applied" && updated.status === "applied") {
+      await notifyApplicationApplied({
+        applicationId: updated.id,
+        userId: sessionUser.id,
+        userEmail: sessionUser.email,
+        userName: sessionUser.fullName,
+        companyName: updated.company_name || existing.company_name || "Unknown company",
+        roleTitle: updated.role_title || existing.role_title || "Untitled role",
+        sourceUrl: updated.source_url ?? existing.source_url,
+        appliedAt: updated.applied_at ?? new Date().toISOString(),
+      });
     }
 
     return NextResponse.json({ ok: true });

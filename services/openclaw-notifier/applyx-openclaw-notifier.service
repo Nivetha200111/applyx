@@ -1,0 +1,16 @@
+[Unit]
+Description=ApplyX OpenClaw notifier
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/applyx
+EnvironmentFile=/opt/applyx/services/openclaw-notifier/.env
+ExecStart=/usr/bin/node /opt/applyx/services/openclaw-notifier/server.mjs
+Restart=always
+RestartSec=5
+User=applyx
+Group=applyx
+
+[Install]
+WantedBy=multi-user.target

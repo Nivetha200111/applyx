@@ -9,6 +9,7 @@ import {
   getTrackedApplicationsForUser,
   refreshUserAccess,
 } from "@/lib/data";
+import { notifyApplicationApplied } from "@/lib/notifications/openclaw";
 import { getPlanById } from "@/lib/plans";
 import { suggestPrepResources } from "@/lib/prep-resources";
 import { HttpError, toErrorResponse } from "@/lib/security/api";
@@ -198,8 +199,9 @@ export async function POST(request: Request) {
       // Auto-set follow-up and status for paid plans when JD is parsed
       const isPaid = currentUser.plan !== "free";
       const autoStatus = usedAiParse && isPaid ? "applying" : payload.status;
-      const autoAppliedAt = usedAiParse && isPaid ? new Date().toISOString() : null;
-      const autoFollowUpAt = usedAiParse && isPaid
+      const appliedNow = autoStatus === "applied";
+      const autoAppliedAt = appliedNow ? new Date().toISOString() : null;
+      const autoFollowUpAt = (usedAiParse && isPaid) || appliedNow
         ? new Date(Date.now() + 7 * 86400000).toISOString()
         : null;
 
@@ -239,12 +241,36 @@ export async function POST(request: Request) {
         );
       }
 
-      return result.rows[0]?.id;
+      return {
+        id: result.rows[0]?.id ?? null,
+        companyName,
+        roleTitle,
+        status: autoStatus,
+        sourceUrl: payload.sourceUrl || null,
+        appliedAt: autoAppliedAt,
+      };
     });
+
+    if (!created?.id) {
+      throw new HttpError(500, "Failed to create application.");
+    }
+
+    if (created.status === "applied") {
+      await notifyApplicationApplied({
+        applicationId: created.id,
+        userId: currentUser.id,
+        userEmail: currentUser.email,
+        userName: currentUser.fullName,
+        companyName: created.companyName || "Unknown company",
+        roleTitle: created.roleTitle || "Untitled role",
+        sourceUrl: created.sourceUrl,
+        appliedAt: created.appliedAt ?? new Date().toISOString(),
+      });
+    }
 
     return NextResponse.json({
       ok: true,
-      applicationId: created,
+      applicationId: created.id,
       plan: currentUser.plan,
       usedAiParse,
     });
