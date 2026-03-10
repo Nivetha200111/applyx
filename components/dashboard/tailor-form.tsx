@@ -54,42 +54,51 @@ export function TailorForm({
           return;
         }
 
+        if (jobDescription.length < 100) {
+          setErrorMessage("Paste a fuller job description (at least 100 characters).");
+          return;
+        }
+
         if (remainingTailors <= 0) {
           setErrorMessage(`No ${planName} tailors remaining. Upgrade to continue.`);
           return;
         }
 
         startTransition(async () => {
-          const response = await fetch("/api/tailor", {
-            method: "POST",
-            headers: {
-              "content-type": "application/json",
-            },
-            body: JSON.stringify({
-              resumeId,
-              jobDescription,
-              sourceUrl: sourceUrl || null,
-              templateUsed,
-            }),
-          });
+          try {
+            const response = await fetch("/api/tailor", {
+              method: "POST",
+              headers: {
+                "content-type": "application/json",
+              },
+              body: JSON.stringify({
+                resumeId,
+                jobDescription,
+                sourceUrl: sourceUrl || null,
+                templateUsed,
+              }),
+            });
 
-          const payload = (await response.json().catch(() => null)) as
-            | {
-                error?: string;
-                tailoredResumeId?: string;
-                trackerSyncStatus?: "created" | "updated" | "skipped";
-                trackerMessage?: string | null;
-              }
-            | null;
+            const payload = (await response.json().catch(() => null)) as
+              | {
+                  error?: string;
+                  tailoredResumeId?: string;
+                  trackerSyncStatus?: "created" | "updated" | "skipped";
+                  trackerMessage?: string | null;
+                }
+              | null;
 
-          if (!response.ok || !payload?.tailoredResumeId) {
-            setErrorMessage(payload?.error ?? "Tailoring failed.");
-            return;
+            if (!response.ok || !payload?.tailoredResumeId) {
+              setErrorMessage(payload?.error ?? "Tailoring failed.");
+              return;
+            }
+
+            toast.success(payload.trackerMessage ?? "Tailored resume generated.");
+            router.push(`/tailored/${payload.tailoredResumeId}`);
+            router.refresh();
+          } catch {
+            setErrorMessage("Unable to reach the tailoring service right now.");
           }
-
-          toast.success(payload.trackerMessage ?? "Tailored resume generated.");
-          router.push(`/tailored/${payload.tailoredResumeId}`);
-          router.refresh();
         });
       }}
     >
@@ -122,10 +131,14 @@ export function TailorForm({
         </label>
         <Textarea
           id="job-description"
+          minLength={100}
           name="job_description"
           placeholder="Paste the job description here"
           required
         />
+        <p className="text-xs text-muted-foreground">
+          Paste at least 100 characters so the tailoring step has enough context.
+        </p>
       </div>
       <div className="space-y-2">
         <label className="text-sm font-medium" htmlFor="template-used">

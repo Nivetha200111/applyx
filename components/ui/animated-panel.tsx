@@ -1,8 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useHydratedReducedMotion } from "@/components/ui/use-hydrated-reduced-motion";
 
 interface AnimatedPanelProps {
   children: ReactNode;
@@ -17,7 +18,7 @@ export function AnimatedPanel({
   delay = 0,
   hover = true,
 }: AnimatedPanelProps) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
 
   return (
     <motion.div

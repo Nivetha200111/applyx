@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useHydratedReducedMotion } from "@/components/ui/use-hydrated-reduced-motion";
 
 const particles = [
   { x: "10%", y: "20%", size: 6, delay: 0, duration: 8 },
@@ -16,7 +17,7 @@ const particles = [
 ];
 
 export function FloatingParticles() {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
 
   if (reduceMotion) return null;
 

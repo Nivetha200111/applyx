@@ -1,8 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
+import { useHydratedReducedMotion } from "@/components/ui/use-hydrated-reduced-motion";
 
 const spring = {
   type: "spring" as const,
@@ -44,21 +45,17 @@ const variants = {
 
 export function PageTransition({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const reduceMotion = useReducedMotion();
-
-  if (reduceMotion) {
-    return <>{children}</>;
-  }
+  const reduceMotion = useHydratedReducedMotion();
 
   return (
     <AnimatePresence initial={false} mode="wait">
       <motion.div
         key={pathname}
-        animate="animate"
+        animate={reduceMotion ? undefined : "animate"}
         className="will-change-transform"
-        exit="exit"
-        initial="initial"
-        variants={variants}
+        exit={reduceMotion ? undefined : "exit"}
+        initial={reduceMotion ? false : "initial"}
+        variants={reduceMotion ? undefined : variants}
       >
         {children}
       </motion.div>
@@ -74,18 +71,14 @@ export function StaggerChildren({
   children: ReactNode;
   className?: string;
 }) {
-  const reduceMotion = useReducedMotion();
-
-  if (reduceMotion) {
-    return <div className={className}>{children}</div>;
-  }
+  const reduceMotion = useHydratedReducedMotion();
 
   return (
     <motion.div
-      animate="animate"
+      animate={reduceMotion ? undefined : "animate"}
       className={className}
-      initial="initial"
-      variants={{
+      initial={reduceMotion ? false : "initial"}
+      variants={reduceMotion ? undefined : {
         initial: {},
         animate: {
           transition: { staggerChildren: 0.07, delayChildren: 0.04 },
@@ -105,16 +98,12 @@ export function StaggerItem({
   children: ReactNode;
   className?: string;
 }) {
-  const reduceMotion = useReducedMotion();
-
-  if (reduceMotion) {
-    return <div className={className}>{children}</div>;
-  }
+  const reduceMotion = useHydratedReducedMotion();
 
   return (
     <motion.div
       className={className}
-      variants={{
+      variants={reduceMotion ? undefined : {
         initial: { opacity: 0, y: 18, filter: "blur(6px)" },
         animate: {
           opacity: 1,

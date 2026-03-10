@@ -6,7 +6,6 @@ import {
   AnimatePresence,
   LayoutGroup,
   motion,
-  useReducedMotion,
 } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -24,6 +23,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
+import { useHydratedReducedMotion } from "@/components/ui/use-hydrated-reduced-motion";
 import { cn } from "@/lib/utils";
 
 type WorkflowStage = {
@@ -345,7 +345,7 @@ const sectionEntrance = {
 };
 
 export function ImmersiveLanding() {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
   const [activeStage, setActiveStage] = useState(0);
   const [activeCapability, setActiveCapability] = useState(0);
   const liftHover = reduceMotion ? undefined : { y: -6, scale: 1.02 };

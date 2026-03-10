@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Check, Crown, Sparkles } from "lucide-react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import type { PricingTier } from "@/lib/types";
 import { SpotlightCard } from "@/components/ui/spotlight";
 import { buttonVariants } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useHydratedReducedMotion } from "@/components/ui/use-hydrated-reduced-motion";
 import { cn } from "@/lib/utils";
 
 interface PricingCardProps {
@@ -22,7 +23,7 @@ interface PricingCardProps {
 }
 
 export function PricingCard({ tier }: PricingCardProps) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
   const isPremium = tier.name === "Premium";
 
   return (

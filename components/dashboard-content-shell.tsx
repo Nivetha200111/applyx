@@ -1,8 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
+import { useHydratedReducedMotion } from "@/components/ui/use-hydrated-reduced-motion";
 
 const contentSpring = {
   type: "spring" as const,
@@ -13,27 +14,23 @@ const contentSpring = {
 
 export function DashboardContentShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const reduceMotion = useReducedMotion();
-
-  if (reduceMotion) {
-    return <>{children}</>;
-  }
+  const reduceMotion = useHydratedReducedMotion();
 
   return (
     <motion.div
       key={pathname}
-      animate={{
+      animate={reduceMotion ? undefined : {
         opacity: 1,
         y: 0,
         filter: "blur(0px)",
       }}
-      initial={{
+      initial={reduceMotion ? false : {
         opacity: 0,
         y: 16,
         filter: "blur(8px)",
       }}
       style={{ viewTransitionName: "page-content" }}
-      transition={{
+      transition={reduceMotion ? undefined : {
         ...contentSpring,
         filter: { duration: 0.28, ease: "easeOut" },
       }}

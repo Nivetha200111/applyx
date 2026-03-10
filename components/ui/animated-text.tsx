@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion, useInView } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useHydratedReducedMotion } from "@/components/ui/use-hydrated-reduced-motion";
 
 interface AnimatedTextProps {
   text: string;
@@ -17,7 +18,7 @@ export function AnimatedText({
   delay = 0,
   as: Tag = "span",
 }: AnimatedTextProps) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
   const words = text.split(" ");
 
   if (reduceMotion) {
@@ -61,7 +62,7 @@ export function AnimatedCounter({
   className,
   duration = 1.6,
 }: AnimatedCounterProps) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.5 });
   const [displayValue, setDisplayValue] = useState(0);

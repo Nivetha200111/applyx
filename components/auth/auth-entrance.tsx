@@ -1,30 +1,27 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useHydratedReducedMotion } from "@/components/ui/use-hydrated-reduced-motion";
 
 export function AuthEntrance({ children }: { children: ReactNode }) {
-  const reduceMotion = useReducedMotion();
-
-  if (reduceMotion) {
-    return <>{children}</>;
-  }
+  const reduceMotion = useHydratedReducedMotion();
 
   return (
     <motion.div
-      animate={{
+      animate={reduceMotion ? undefined : {
         opacity: 1,
         y: 0,
         scale: 1,
         filter: "blur(0px)",
       }}
-      initial={{
+      initial={reduceMotion ? false : {
         opacity: 0,
         y: 24,
         scale: 0.96,
         filter: "blur(10px)",
       }}
-      transition={{
+      transition={reduceMotion ? undefined : {
         type: "spring",
         stiffness: 320,
         damping: 28,

@@ -32,7 +32,14 @@ export function toErrorResponse(
     );
   }
 
-  if (error instanceof ZodError || error instanceof SyntaxError) {
+  if (error instanceof ZodError) {
+    return NextResponse.json(
+      { error: error.issues[0]?.message ?? "Invalid request." },
+      { status: 400 },
+    );
+  }
+
+  if (error instanceof SyntaxError) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 

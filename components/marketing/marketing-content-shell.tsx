@@ -1,33 +1,30 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
+import { useHydratedReducedMotion } from "@/components/ui/use-hydrated-reduced-motion";
 
 export function MarketingContentShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const reduceMotion = useReducedMotion();
-
-  if (reduceMotion) {
-    return <>{children}</>;
-  }
+  const reduceMotion = useHydratedReducedMotion();
 
   return (
     <motion.div
       key={pathname}
-      animate={{
+      animate={reduceMotion ? undefined : {
         opacity: 1,
         y: 0,
         scale: 1,
         filter: "blur(0px)",
       }}
-      initial={{
+      initial={reduceMotion ? false : {
         opacity: 0,
         y: 28,
         scale: 0.985,
         filter: "blur(10px)",
       }}
-      transition={{
+      transition={reduceMotion ? undefined : {
         type: "spring",
         stiffness: 280,
         damping: 26,
