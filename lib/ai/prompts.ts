@@ -83,6 +83,26 @@ ${resumeText}
 """`;
 }
 
+export function buildResumeParsingRepairPrompt(resumeText: string) {
+  return `You are repairing a resume-parse response that previously failed validation.
+
+Rules:
+- Return ONLY valid JSON
+- Include EVERY required top-level key from the schema
+- Use empty strings or empty arrays if a value is unknown
+- Never return null for resume fields
+- Preserve exact job titles, company names, dates, and bullet points from the resume text
+- Keep the output compact but complete
+
+Return the data in this exact schema:
+${parsedResumeSchema}
+
+Resume text:
+"""
+${resumeText}
+"""`;
+}
+
 export function buildJdAnalysisPrompt(jdText: string) {
   return `You are an expert job description analyst specializing in ATS keyword extraction. Analyze the following job description and extract structured data.
 
