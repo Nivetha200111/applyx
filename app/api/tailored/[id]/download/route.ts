@@ -12,6 +12,33 @@ export const runtime = "nodejs";
 
 const formatSchema = z.enum(["pdf", "docx"]);
 
+function slugPart(value: string | null | undefined, fallback: string) {
+  const normalized = (value ?? "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .toLowerCase();
+
+  if (!normalized) {
+    return fallback;
+  }
+
+  return normalized.slice(0, 48);
+}
+
+function buildDownloadFileName(input: {
+  jobTitle?: string | null;
+  companyName?: string | null;
+  resumeId: string;
+  format: "pdf" | "docx";
+}) {
+  const role = slugPart(input.jobTitle, "untitled-role");
+  const company = slugPart(input.companyName, "company");
+
+  return `applyx-${role}-${company}-${input.resumeId}.${input.format}`;
+}
+
 export async function GET(
   request: Request,
   { params }: { params: { id: string } },
@@ -67,13 +94,20 @@ export async function GET(
       ],
     );
 
+    const fileName = buildDownloadFileName({
+      jobTitle: tailored.jobTitle,
+      companyName: tailored.companyName,
+      resumeId: tailored.id,
+      format,
+    });
+
     return new NextResponse(new Uint8Array(buffer), {
       headers: {
         "content-type":
           format === "pdf"
             ? "application/pdf"
             : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "content-disposition": `attachment; filename="applyx-${tailored.id}.${format}"`,
+        "content-disposition": `attachment; filename="${fileName}"`,
       },
     });
   } catch (error) {
