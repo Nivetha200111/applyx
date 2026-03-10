@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { ZodError } from "zod";
 import type { ModelTier } from "@/lib/types";
 import {
   getEmergencyFallbackModel,
@@ -95,6 +96,18 @@ function isNonRetriableProviderError(error: unknown) {
   );
 }
 
+function getStructuredOutputErrorMessage(error: unknown) {
+  if (error instanceof ZodError) {
+    return error.issues[0]?.message ?? "Schema validation failed.";
+  }
+
+  if (error instanceof SyntaxError) {
+    return "Provider returned malformed JSON.";
+  }
+
+  return getErrorMessage(error) || "Provider returned invalid structured output.";
+}
+
 async function withRetry<T>(operation: () => Promise<T>) {
   let lastError: unknown;
 
@@ -142,16 +155,29 @@ export async function completeJson<T>(
   const targets = getModelTargets(options.modelTier);
   const primary = targets[0];
   const fallback = targets[1] ?? null;
-  let rawText = "";
-  let usedTarget = primary;
   const failedTargets: string[] = [];
   const failureDetails: string[] = [];
 
   for (const target of targets) {
     try {
-      rawText = await withRetry(() => callProvider(target, options));
-      usedTarget = target;
-      break;
+      const rawText = await withRetry(() => callProvider(target, options));
+
+      try {
+        const parsed = options.validate(JSON.parse(extractJsonCandidate(rawText)));
+
+        return {
+          data: parsed,
+          primaryModel: primary.label,
+          fallbackModel: fallback?.label ?? null,
+          usedModel: target.label,
+          usedModelTier: options.modelTier,
+        };
+      } catch (error) {
+        failedTargets.push(target.label);
+        const message = getStructuredOutputErrorMessage(error);
+        failureDetails.push(`${target.label}: ${message}`);
+        console.error(`[AI] ${target.label} returned invalid structured output: ${message}`);
+      }
     } catch (error) {
       failedTargets.push(target.label);
       const message = getErrorMessage(error) || "Unknown error";
@@ -160,19 +186,7 @@ export async function completeJson<T>(
     }
   }
 
-  if (!rawText) {
-    throw new Error(
-      `AI generation failed across ${failedTargets.join(", ")}. ${failureDetails.join(" | ")}`,
-    );
-  }
-
-  const parsed = options.validate(JSON.parse(extractJsonCandidate(rawText)));
-
-  return {
-    data: parsed,
-    primaryModel: primary.label,
-    fallbackModel: fallback?.label ?? null,
-    usedModel: usedTarget.label,
-    usedModelTier: options.modelTier,
-  };
+  throw new Error(
+    `AI generation failed across ${failedTargets.join(", ")}. ${failureDetails.join(" | ")}`,
+  );
 }
