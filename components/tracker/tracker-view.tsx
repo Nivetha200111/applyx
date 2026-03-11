@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState, useTransition } from "react";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import {
   Archive,
@@ -22,6 +23,7 @@ import { allStatuses, getStatusLabel } from "@/components/tracker/status-badge";
 import { TrackerStats } from "@/components/tracker/tracker-stats";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useHydratedReducedMotion } from "@/components/ui/use-hydrated-reduced-motion";
 import { cn } from "@/lib/utils";
 import type {
   ApplicationStatus,
@@ -443,6 +445,8 @@ function ApplicationRow({
   onDelete: (id: string) => void;
   onArchive: (id: string) => void;
 }) {
+  const reduceMotion = useHydratedReducedMotion();
+
   return (
     <>
       <tr className="group border-b border-border/40 transition-colors hover:bg-muted/30">
@@ -484,7 +488,7 @@ function ApplicationRow({
           />
         </td>
         <td className="px-3 py-3">
-          <JobSignalBadge app={app} />
+          <JobSignalBadge app={app} onClick={onToggleExpand} />
         </td>
         <td className="px-3 py-3">
           <StatusSelect
@@ -541,11 +545,27 @@ function ApplicationRow({
       {expanded ? (
         <tr>
           <td className="border-b border-border/40 bg-muted/20 px-6 py-4" colSpan={10}>
-            <ApplicationDetail
-              app={app}
-              onApplicationReplace={onApplicationReplace}
-              onUpdate={onUpdate}
-            />
+            <motion.div
+              animate={reduceMotion ? undefined : { opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+              initial={reduceMotion ? false : { opacity: 0, scale: 0.97, y: 22, filter: "blur(10px)" }}
+              transition={
+                reduceMotion
+                  ? undefined
+                  : {
+                      type: "spring",
+                      stiffness: 320,
+                      damping: 28,
+                      mass: 0.7,
+                      filter: { duration: 0.24, ease: "easeOut" },
+                    }
+              }
+            >
+              <ApplicationDetail
+                app={app}
+                onApplicationReplace={onApplicationReplace}
+                onUpdate={onUpdate}
+              />
+            </motion.div>
           </td>
         </tr>
       ) : null}

@@ -1,5 +1,8 @@
 "use client";
 
+import { useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useHydratedReducedMotion } from "@/components/ui/use-hydrated-reduced-motion";
 import { cn } from "@/lib/utils";
 import type { AuthenticityVerdict, TrackedApplicationRecord } from "@/lib/types";
 
@@ -51,21 +54,77 @@ function getTone(app: TrackedApplicationRecord) {
 export function JobSignalBadge({
   app,
   className,
+  onClick,
 }: {
   app: TrackedApplicationRecord;
   className?: string;
+  onClick?: () => void;
 }) {
   const tone = getTone(app);
+  const reduceMotion = useHydratedReducedMotion();
+  const [bursts, setBursts] = useState<number[]>([]);
+  const clickable = typeof onClick === "function";
+  const content = useMemo(
+    () => (app.authenticityScore === null ? tone.label : `${app.authenticityScore} · ${tone.label}`),
+    [app.authenticityScore, tone.label],
+  );
+
+  function handleClick() {
+    if (!clickable) {
+      return;
+    }
+
+    if (!reduceMotion) {
+      const id = Date.now();
+      setBursts((current) => [...current, id]);
+      window.setTimeout(() => {
+        setBursts((current) => current.filter((entry) => entry !== id));
+      }, 550);
+    }
+
+    onClick?.();
+  }
 
   return (
-    <span
+    <motion.button
       className={cn(
-        "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold",
+        "relative inline-flex items-center gap-1 overflow-visible rounded-full border px-2.5 py-1 text-xs font-semibold",
+        clickable && "cursor-pointer",
         tone.className,
         className,
       )}
+      onClick={handleClick}
+      title={clickable ? "Open signal details" : undefined}
+      type="button"
+      whileHover={reduceMotion || !clickable ? undefined : { scale: 1.04, y: -1 }}
+      whileTap={reduceMotion || !clickable ? undefined : { scale: 0.9, rotate: -2 }}
     >
-      {app.authenticityScore === null ? tone.label : `${app.authenticityScore} · ${tone.label}`}
-    </span>
+      <AnimatePresence>
+        {!reduceMotion
+          ? bursts.map((id) => (
+              <motion.span
+                key={id}
+                animate={{ opacity: 0, scale: 1.9 }}
+                className={cn(
+                  "pointer-events-none absolute inset-0 rounded-full border",
+                  tone.className,
+                )}
+                exit={{ opacity: 0 }}
+                initial={{ opacity: 0.45, scale: 0.88 }}
+                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              />
+            ))
+          : null}
+      </AnimatePresence>
+      <motion.span
+        animate={reduceMotion || !clickable ? undefined : { boxShadow: [
+          "0 0 0 rgba(0,0,0,0)",
+          "0 0 0 rgba(0,0,0,0)",
+        ] }}
+        className="relative z-[1]"
+      >
+        {content}
+      </motion.span>
+    </motion.button>
   );
 }
