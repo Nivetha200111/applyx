@@ -5,6 +5,8 @@ interface TrackerStatsProps {
     total: number;
     byStatus: Record<string, number>;
     responseRate: number;
+    signalsReady: number;
+    highConfidence: number;
   };
 }
 
@@ -25,11 +27,13 @@ export function TrackerStats({ stats }: TrackerStatsProps) {
     { label: "Applied", value: applied, icon: CheckCircle2 },
     { label: "Interviewing", value: interviewing, icon: MailQuestion },
     { label: "Offers", value: offers, icon: Target },
+    { label: "Signals ready", value: stats.signalsReady, icon: CheckCircle2 },
+    { label: "High confidence", value: stats.highConfidence, icon: Target },
     { label: "Response rate", value: `${stats.responseRate}%`, icon: Target },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-7">
       {items.map((item) => {
         const Icon = item.icon;
         return (

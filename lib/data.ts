@@ -391,6 +391,9 @@ type TrackedApplicationRow = {
   contact_email: string | null;
   tailored_resume_id: string | null;
   prep_resources: TrackedApplicationRecord["prepResources"];
+  authenticity_score: number | null;
+  authenticity_assessment: TrackedApplicationRecord["authenticityAssessment"];
+  authenticity_checked_at: string | null;
   followed_up: boolean;
   is_archived: boolean;
   created_at: string;
@@ -426,6 +429,9 @@ function mapTrackedApplication(row: TrackedApplicationRow): TrackedApplicationRe
     contactEmail: row.contact_email,
     tailoredResumeId: row.tailored_resume_id,
     prepResources: row.prep_resources ?? [],
+    authenticityScore: row.authenticity_score,
+    authenticityAssessment: row.authenticity_assessment,
+    authenticityCheckedAt: row.authenticity_checked_at,
     followedUp: row.followed_up ?? false,
     isArchived: row.is_archived,
     createdAt: row.created_at,
@@ -467,7 +473,16 @@ export async function getTrackedApplicationsForUser(
   }
 
   const where = conditions.join(" and ");
-  const allowedSorts = ["created_at", "updated_at", "company_name", "role_title", "status", "priority", "applied_at"];
+  const allowedSorts = [
+    "created_at",
+    "updated_at",
+    "company_name",
+    "role_title",
+    "status",
+    "priority",
+    "applied_at",
+    "authenticity_score",
+  ];
   const sortCol = allowedSorts.includes(options?.sort ?? "") ? options!.sort! : "created_at";
   const sortDir = options?.order === "asc" ? "asc" : "desc";
   const limit = Math.min(options?.limit ?? 50, 200);
@@ -522,9 +537,13 @@ export async function getTrackerStatsForUser(userId: string) {
     total: string;
     status: string;
     status_count: string;
+    signals_ready: string;
+    high_confidence: string;
   }>(
     `select
        (select count(*)::text from public.tracked_applications where user_id = $1 and is_archived = false) as total,
+       (select count(*)::text from public.tracked_applications where user_id = $1 and is_archived = false and authenticity_checked_at is not null) as signals_ready,
+       (select count(*)::text from public.tracked_applications where user_id = $1 and is_archived = false and coalesce(authenticity_score, 0) >= 75) as high_confidence,
        status::text,
        count(*)::text as status_count
      from public.tracked_applications
@@ -535,8 +554,12 @@ export async function getTrackerStatsForUser(userId: string) {
 
   const byStatus: Record<string, number> = {};
   let total = 0;
+  let signalsReady = 0;
+  let highConfidence = 0;
   for (const row of result.rows) {
     total = parseInt(row.total, 10);
+    signalsReady = parseInt(row.signals_ready, 10);
+    highConfidence = parseInt(row.high_confidence, 10);
     byStatus[row.status] = parseInt(row.status_count, 10);
   }
 
@@ -544,7 +567,7 @@ export async function getTrackerStatsForUser(userId: string) {
   const responded = (byStatus.screening ?? 0) + (byStatus.interviewing ?? 0) + (byStatus.offer ?? 0) + (byStatus.accepted ?? 0);
   const responseRate = applied > 0 ? Math.round((responded / applied) * 100) : 0;
 
-  return { total, byStatus, responseRate };
+  return { total, byStatus, responseRate, signalsReady, highConfidence };
 }
 
 export async function getDashboardSnapshot(user: AppUser) {

@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { withTransaction } from "@/lib/db";
 import { getActiveTrackedApplicationCount, refreshUserAccess } from "@/lib/data";
 import { canonicalizeSkill } from "@/lib/jobs/matcher";
+import { refreshTrackedApplicationAuthenticityAssessment } from "@/lib/job-authenticity";
 import { getPlanById } from "@/lib/plans";
 import { suggestPrepResources } from "@/lib/prep-resources";
 import { HttpError, toErrorResponse } from "@/lib/security/api";
@@ -179,6 +180,20 @@ export async function POST(request: Request) {
         alreadyTracked: false,
       };
     });
+
+    if (result.applicationId && !result.alreadyTracked) {
+      try {
+        await refreshTrackedApplicationAuthenticityAssessment(user.id, result.applicationId, {
+          allowExternalSourceCheck: false,
+        });
+      } catch (error) {
+        console.error(
+          `[job-authenticity] Failed to create baseline signal for ${result.applicationId}: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`,
+        );
+      }
+    }
 
     return NextResponse.json({
       ok: true,

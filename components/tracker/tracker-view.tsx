@@ -9,6 +9,7 @@ import {
   ChevronRight,
   ExternalLink,
   Plus,
+  Radar,
   Search,
   Star,
   Trash2,
@@ -16,6 +17,7 @@ import {
 import { toast } from "sonner";
 import { AddApplicationDialog } from "@/components/tracker/add-application-dialog";
 import { ApplicationDetail } from "@/components/tracker/application-detail";
+import { JobSignalBadge } from "@/components/tracker/job-signal-badge";
 import { allStatuses, getStatusLabel } from "@/components/tracker/status-badge";
 import { TrackerStats } from "@/components/tracker/tracker-stats";
 import { Button } from "@/components/ui/button";
@@ -30,12 +32,25 @@ import type {
 interface TrackerViewProps {
   initialApplications: TrackedApplicationRecord[];
   initialTotal: number;
-  trackerStats: { total: number; byStatus: Record<string, number>; responseRate: number };
+  trackerStats: {
+    total: number;
+    byStatus: Record<string, number>;
+    responseRate: number;
+    signalsReady: number;
+    highConfidence: number;
+  };
   trackerParsesRemaining: number;
   userPlan: PlanTier;
 }
 
-type SortField = "created_at" | "company_name" | "role_title" | "status" | "priority" | "applied_at";
+type SortField =
+  | "created_at"
+  | "company_name"
+  | "role_title"
+  | "status"
+  | "priority"
+  | "applied_at"
+  | "authenticity_score";
 type SortOrder = "asc" | "desc";
 
 interface FetchOptions {
@@ -81,6 +96,7 @@ export function TrackerView({
   const [sortField, setSortField] = useState<SortField>("created_at");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [isRefreshingSignals, setIsRefreshingSignals] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const fetchApplications = useCallback((options?: FetchOptions) => {
@@ -137,6 +153,12 @@ export function TrackerView({
     [fetchApplications],
   );
 
+  const handleApplicationReplace = useCallback((application: TrackedApplicationRecord) => {
+    setApplications((prev) =>
+      prev.map((item) => (item.id === application.id ? application : item)),
+    );
+  }, []);
+
   const handleDelete = useCallback(
     async (id: string) => {
       setApplications((prev) => prev.filter((app) => app.id !== id));
@@ -176,6 +198,44 @@ export function TrackerView({
   const handleSearchSubmit = useCallback(() => {
     fetchApplications();
   }, [fetchApplications]);
+
+  const handleRefreshSignals = useCallback(async () => {
+    setIsRefreshingSignals(true);
+
+    try {
+      const response = await fetch("/api/applications/authenticity", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ mode: "baseline", limit: 50 }),
+      });
+      const body = await response.json() as {
+        updatedCount?: number;
+        remaining?: number;
+        error?: string;
+      };
+
+      if (!response.ok) {
+        toast.error(body.error ?? "Unable to refresh job signals.");
+        return;
+      }
+
+      if (body.updatedCount && body.updatedCount > 0) {
+        toast.success(
+          body.remaining && body.remaining > 0
+            ? `Refreshed ${body.updatedCount} job signals. ${body.remaining} still pending.`
+            : `Refreshed ${body.updatedCount} job signal${body.updatedCount === 1 ? "" : "s"}.`,
+        );
+      } else {
+        toast.success("No jobs needed a refresh.");
+      }
+      fetchApplications();
+      router.refresh();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to refresh job signals.");
+    } finally {
+      setIsRefreshingSignals(false);
+    }
+  }, [fetchApplications, router]);
 
   const toggleStatusFilter = useCallback(
     (status: ApplicationStatus) => {
@@ -224,6 +284,16 @@ export function TrackerView({
           </span>
           <Button
             className="gap-2"
+            disabled={isRefreshingSignals}
+            onClick={handleRefreshSignals}
+            size="sm"
+            variant="outline"
+          >
+            <Radar className={cn("h-4 w-4", isRefreshingSignals && "animate-pulse")} />
+            Refresh Signals
+          </Button>
+          <Button
+            className="gap-2"
             onClick={() => setShowAddDialog(true)}
           >
             <Plus className="h-4 w-4" />
@@ -260,6 +330,7 @@ export function TrackerView({
               <th className="w-8 px-3 py-3" />
               <SortableHeader field="company_name" label="Company" sortField={sortField} sortOrder={sortOrder} onSort={handleSort} />
               <SortableHeader field="role_title" label="Role" sortField={sortField} sortOrder={sortOrder} onSort={handleSort} />
+              <SortableHeader field="authenticity_score" label="Signal" sortField={sortField} sortOrder={sortOrder} onSort={handleSort} />
               <SortableHeader field="status" label="Status" sortField={sortField} sortOrder={sortOrder} onSort={handleSort} />
               <SortableHeader field="priority" label="Priority" sortField={sortField} sortOrder={sortOrder} onSort={handleSort} />
               <th className="px-3 py-3">Location</th>
@@ -271,7 +342,7 @@ export function TrackerView({
           <tbody>
             {applications.length === 0 ? (
               <tr>
-                <td className="px-6 py-12 text-center text-muted-foreground" colSpan={9}>
+                <td className="px-6 py-12 text-center text-muted-foreground" colSpan={10}>
                   {search || statusFilter.length > 0
                     ? "No matching applications found."
                     : "No applications tracked yet. Click \"Add Application\" to start."}
@@ -285,6 +356,7 @@ export function TrackerView({
                   expanded={expandedId === app.id}
                   formatSalary={formatSalary}
                   onArchive={handleArchive}
+                  onApplicationReplace={handleApplicationReplace}
                   onDelete={handleDelete}
                   onToggleExpand={() =>
                     setExpandedId((prev) => (prev === app.id ? null : app.id))
@@ -358,6 +430,7 @@ function ApplicationRow({
   formatSalary,
   onToggleExpand,
   onUpdate,
+  onApplicationReplace,
   onDelete,
   onArchive,
 }: {
@@ -366,6 +439,7 @@ function ApplicationRow({
   formatSalary: (min: number | null, max: number | null, currency: string) => string;
   onToggleExpand: () => void;
   onUpdate: (id: string, field: string, value: unknown) => void;
+  onApplicationReplace: (application: TrackedApplicationRecord) => void;
   onDelete: (id: string) => void;
   onArchive: (id: string) => void;
 }) {
@@ -408,6 +482,9 @@ function ApplicationRow({
             onSave={(v) => onUpdate(app.id, "roleTitle", v)}
             value={app.roleTitle}
           />
+        </td>
+        <td className="px-3 py-3">
+          <JobSignalBadge app={app} />
         </td>
         <td className="px-3 py-3">
           <StatusSelect
@@ -463,8 +540,12 @@ function ApplicationRow({
       </tr>
       {expanded ? (
         <tr>
-          <td className="border-b border-border/40 bg-muted/20 px-6 py-4" colSpan={9}>
-            <ApplicationDetail app={app} onUpdate={onUpdate} />
+          <td className="border-b border-border/40 bg-muted/20 px-6 py-4" colSpan={10}>
+            <ApplicationDetail
+              app={app}
+              onApplicationReplace={onApplicationReplace}
+              onUpdate={onUpdate}
+            />
           </td>
         </tr>
       ) : null}

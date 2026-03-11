@@ -5,6 +5,7 @@ import { isDeveloperAdminUser } from "@/lib/developer-access";
 import { getCurrentUser } from "@/lib/auth";
 import { withTransaction } from "@/lib/db";
 import { refreshUserAccess } from "@/lib/data";
+import { refreshTrackedApplicationAuthenticityAssessment } from "@/lib/job-authenticity";
 import { getPlanById } from "@/lib/plans";
 import { suggestPrepResources } from "@/lib/prep-resources";
 import { HttpError, toErrorResponse } from "@/lib/security/api";
@@ -130,6 +131,18 @@ export async function POST(
         );
       }
     });
+
+    try {
+      await refreshTrackedApplicationAuthenticityAssessment(currentUser.id, params.id, {
+        allowExternalSourceCheck: false,
+      });
+    } catch (error) {
+      console.error(
+        `[job-authenticity] Failed to refresh baseline signal for ${params.id}: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      );
+    }
 
     return NextResponse.json({ ok: true, parsed, plan: currentUser.plan });
   } catch (error) {

@@ -29,7 +29,8 @@ export default async function TrackerPage() {
         <h1 className="text-3xl font-semibold">Application Tracker</h1>
         <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
           Track every job application in one place. Paste a job description to auto-fill
-          company, role, skills, and salary with AI. Click any cell to edit inline.
+          company, role, skills, and salary with AI, then score whether the job looks
+          credible and how well your resume fits. Click any cell to edit inline.
         </p>
       </div>
 

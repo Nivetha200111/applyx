@@ -9,6 +9,7 @@ import {
   getTrackedApplicationsForUser,
   refreshUserAccess,
 } from "@/lib/data";
+import { refreshTrackedApplicationAuthenticityAssessment } from "@/lib/job-authenticity";
 import { notifyApplicationApplied } from "@/lib/notifications/openclaw";
 import { getPlanById } from "@/lib/plans";
 import { suggestPrepResources } from "@/lib/prep-resources";
@@ -253,6 +254,18 @@ export async function POST(request: Request) {
 
     if (!created?.id) {
       throw new HttpError(500, "Failed to create application.");
+    }
+
+    try {
+      await refreshTrackedApplicationAuthenticityAssessment(currentUser.id, created.id, {
+        allowExternalSourceCheck: false,
+      });
+    } catch (error) {
+      console.error(
+        `[job-authenticity] Failed to create baseline signal for ${created.id}: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      );
     }
 
     if (created.status === "applied") {

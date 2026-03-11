@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ExternalLink } from "lucide-react";
+import { JobAuthenticityCard } from "@/components/tracker/job-authenticity-card";
 import { Badge } from "@/components/ui/badge";
 import { InterviewPrepPanel } from "@/components/tracker/interview-prep-panel";
 import { prepResourceCatalog, prepCategoryLabels } from "@/lib/prep-resources";
@@ -10,9 +11,14 @@ import type { PrepResource, TrackedApplicationRecord } from "@/lib/types";
 interface ApplicationDetailProps {
   app: TrackedApplicationRecord;
   onUpdate: (id: string, field: string, value: unknown) => void;
+  onApplicationReplace: (application: TrackedApplicationRecord) => void;
 }
 
-export function ApplicationDetail({ app, onUpdate }: ApplicationDetailProps) {
+export function ApplicationDetail({
+  app,
+  onUpdate,
+  onApplicationReplace,
+}: ApplicationDetailProps) {
   const [notes, setNotes] = useState(app.notes ?? "");
   const [notesTimer, setNotesTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
 
@@ -131,6 +137,7 @@ export function ApplicationDetail({ app, onUpdate }: ApplicationDetailProps) {
 
       {/* Right: Interview Prep + Resources */}
       <div className="min-w-0 space-y-4">
+        <JobAuthenticityCard app={app} onApplicationReplace={onApplicationReplace} />
         <InterviewPrepPanel
           requiredSkills={app.requiredSkills}
           preferredSkills={app.preferredSkills}
