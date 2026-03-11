@@ -36,7 +36,7 @@ try {
         p.id,
         p.user_id,
         p.plan_tier,
-        p.amount_inr,
+        p.amount,
         p.status,
         p.provider_checkout_id,
         p.provider_payment_id,

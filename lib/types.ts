@@ -90,7 +90,8 @@ export type UsageAction =
 export interface PlanDefinition {
   id: PlanTier;
   name: string;
-  priceInr: number;
+  price: number;
+  currency: string;
   cadence: "one-time" | "month";
   description: string;
   includedDemos: number;
@@ -329,7 +330,7 @@ export interface PaymentRecord {
   id: string;
   userId: string;
   planTier: PlanTier;
-  amountInr: number;
+  amount: number;
   currency: string;
   status: "pending" | "paid" | "failed" | "cancelled" | "refunded";
   billingProvider: string;

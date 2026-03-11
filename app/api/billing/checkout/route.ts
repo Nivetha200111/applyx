@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { NextResponse } from "next/server";
+import type { Currency } from "dodopayments/resources/misc.js";
 import { getCurrentUser } from "@/lib/auth";
 import { dbQuery } from "@/lib/db";
 import { isDeveloperAdminUser } from "@/lib/developer-access";
@@ -52,6 +53,7 @@ export async function POST(request: Request) {
           quantity: 1,
         },
       ],
+      billing_currency: plan.currency as Currency,
       customer: {
         email: user.email,
         name: user.fullName ?? undefined,
@@ -81,7 +83,7 @@ export async function POST(request: Request) {
       `insert into public.payments (
         user_id,
         plan_tier,
-        amount_inr,
+        amount,
         currency,
         status,
         billing_provider,
@@ -91,7 +93,7 @@ export async function POST(request: Request) {
       on conflict (provider_checkout_id) do update
       set
         plan_tier = excluded.plan_tier,
-        amount_inr = excluded.amount_inr,
+        amount = excluded.amount,
         currency = excluded.currency,
         billing_provider = excluded.billing_provider,
         payment_metadata = excluded.payment_metadata,
@@ -99,8 +101,8 @@ export async function POST(request: Request) {
       [
         user.id,
         parsed.planId,
-        plan.priceInr,
-        "INR",
+        plan.price,
+        plan.currency,
         checkoutSession.session_id,
         JSON.stringify({
           checkoutUrl: checkoutSession.checkout_url,

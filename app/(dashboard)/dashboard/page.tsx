@@ -17,6 +17,7 @@ import { isDeveloperAdminUser } from "@/lib/developer-access";
 import { hasDodoBillingConfig } from "@/lib/dodo/client";
 import { requireUser } from "@/lib/auth";
 import { getDashboardSnapshot } from "@/lib/data";
+import { formatCurrencyAmount } from "@/lib/money";
 import { getPlanById, planCatalog } from "@/lib/plans";
 import { cn } from "@/lib/utils";
 
@@ -382,7 +383,9 @@ export default async function DashboardPage() {
                   </CardHeader>
                   <CardContent className="space-y-4 pt-0">
                     <div>
-                      <div className="text-3xl font-semibold">₹{upgradePlan.priceInr}</div>
+                      <div className="text-3xl font-semibold">
+                        {formatCurrencyAmount(upgradePlan.price, upgradePlan.currency)}
+                      </div>
                       <div className="text-sm text-muted-foreground">per month</div>
                     </div>
                     <p className="text-sm leading-7 text-muted-foreground">

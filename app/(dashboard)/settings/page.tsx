@@ -12,6 +12,7 @@ import { requireUser } from "@/lib/auth";
 import { isDeveloperAdminUser } from "@/lib/developer-access";
 import { getPaymentsForUser, refreshUserAccess } from "@/lib/data";
 import { hasDodoBillingConfig } from "@/lib/dodo/client";
+import { formatCurrencyAmount } from "@/lib/money";
 import { planCatalog, pricingTiers } from "@/lib/plans";
 
 export default async function SettingsPage() {
@@ -90,7 +91,7 @@ export default async function SettingsPage() {
                     {hasDodo ? "Secure Dodo checkout" : "Billing setup required"}{" "}
                     for{" "}
                     {plan.monthlyTailors > 9999 ? "unlimited" : plan.monthlyTailors} monthly tailors
-                    at ₹{plan.priceInr}.
+                    at {formatCurrencyAmount(plan.price, plan.currency)}.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -131,7 +132,7 @@ export default async function SettingsPage() {
               >
                 <div className="font-semibold">
                   {payment.planTier[0].toUpperCase()}
-                  {payment.planTier.slice(1)} • ₹{payment.amountInr}
+                  {payment.planTier.slice(1)} • {formatCurrencyAmount(payment.amount, payment.currency)}
                 </div>
                 <div className="mt-1 text-sm text-muted-foreground">
                   {payment.status} • {new Date(payment.createdAt).toLocaleString()}

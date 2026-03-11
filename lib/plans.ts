@@ -1,10 +1,12 @@
+import { formatCurrencyAmount } from "@/lib/money";
 import type { PlanDefinition, PlanTier, PricingTier } from "@/lib/types";
 
 export const planCatalog: PlanDefinition[] = [
   {
     id: "free",
     name: "Free",
-    priceInr: 0,
+    price: 0,
+    currency: "USD",
     cadence: "one-time",
     description:
       "Try before you buy. Track 10 applications and get 2 free demo tailors.",
@@ -30,7 +32,8 @@ export const planCatalog: PlanDefinition[] = [
   {
     id: "basic",
     name: "Basic",
-    priceInr: 249,
+    price: 2.99,
+    currency: "USD",
     cadence: "month",
     description:
       "Unlimited tracker, 50 AI auto-fills, and 20 fast tailors for high-volume application weeks.",
@@ -60,7 +63,8 @@ export const planCatalog: PlanDefinition[] = [
   {
     id: "premium",
     name: "Premium",
-    priceInr: 599,
+    price: 6.99,
+    currency: "USD",
     cadence: "month",
     description:
       "Unlimited tracker, unlimited AI auto-fills, and 100 higher-quality tailors for nuanced or competitive roles.",
@@ -90,7 +94,10 @@ export const planCatalog: PlanDefinition[] = [
 export const pricingTiers: PricingTier[] = planCatalog.map((plan) => ({
   id: plan.id,
   name: plan.name,
-  price: plan.priceInr === 0 ? "₹0" : `₹${plan.priceInr}`,
+  price:
+    plan.price === 0
+      ? formatCurrencyAmount(0, plan.currency, { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+      : formatCurrencyAmount(plan.price, plan.currency),
   cadence: plan.cadence === "month" ? "/month" : "/demo access",
   description: plan.description,
   usage:

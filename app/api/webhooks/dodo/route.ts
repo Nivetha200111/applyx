@@ -58,12 +58,21 @@ function getWebhookId(headers: Record<string, string>) {
   return headers["webhook-id"] ?? null;
 }
 
-function amountInRupees(amountMinorUnits: number, fallback: number) {
+function amountFromMinorUnits(
+  amountMinorUnits: number,
+  currency: string,
+  fallback: number,
+) {
   if (!Number.isFinite(amountMinorUnits) || amountMinorUnits <= 0) {
     return fallback;
   }
 
-  return Math.max(0, Math.round(amountMinorUnits / 100));
+  const fractionDigits = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+  }).resolvedOptions().maximumFractionDigits ?? 2;
+
+  return Math.max(0, amountMinorUnits / 10 ** fractionDigits);
 }
 
 async function resolveUserId(
@@ -146,7 +155,7 @@ async function recordPaymentEvent(
     userId: string | null;
     planId: PaidPlanTier | null;
     status: "paid" | "failed" | "cancelled";
-    amountInr: number;
+    amount: number;
     currency: string;
     checkoutId: string | null;
     paymentId: string | null;
@@ -170,6 +179,8 @@ async function recordPaymentEvent(
          provider_event_type = $6,
          payment_metadata = coalesce(payment_metadata, '{}'::jsonb) || $7::jsonb,
          paid_at = case when $8::timestamptz is null then paid_at else $8::timestamptz end,
+         amount = $9,
+         currency = $10,
          updated_at = timezone('utc', now())
        where
          ($2::text is not null and provider_checkout_id = $2)
@@ -183,6 +194,8 @@ async function recordPaymentEvent(
         input.eventType,
         JSON.stringify(input.metadata),
         input.paidAt ?? null,
+        input.amount,
+        input.currency,
       ],
     );
 
@@ -200,7 +213,7 @@ async function recordPaymentEvent(
       `insert into public.payments (
         user_id,
         plan_tier,
-        amount_inr,
+        amount,
         currency,
         status,
         billing_provider,
@@ -225,7 +238,7 @@ async function recordPaymentEvent(
       [
         input.userId,
         input.planId,
-        input.amountInr,
+        input.amount,
         input.currency,
         input.status,
         input.checkoutId,
@@ -246,7 +259,7 @@ async function recordPaymentEvent(
       `insert into public.payments (
         user_id,
         plan_tier,
-        amount_inr,
+        amount,
         currency,
         status,
         billing_provider,
@@ -271,7 +284,7 @@ async function recordPaymentEvent(
       [
         input.userId,
         input.planId,
-        input.amountInr,
+        input.amount,
         input.currency,
         input.status,
         input.checkoutId,
@@ -450,7 +463,12 @@ export async function POST(request: Request) {
               : event.type === "payment.failed"
                 ? "failed"
                 : "cancelled",
-          amountInr: plan?.priceInr ?? amountInRupees(payment.total_amount, 0),
+          amount:
+            amountFromMinorUnits(
+              payment.total_amount,
+              payment.currency,
+              plan?.price ?? 0,
+            ),
           currency: payment.currency.toUpperCase(),
           checkoutId: payment.checkout_session_id ?? null,
           paymentId: payment.payment_id,

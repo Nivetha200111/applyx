@@ -86,7 +86,7 @@ type PaymentRow = {
   id: string;
   user_id: string;
   plan_tier: PaymentRecord["planTier"];
-  amount_inr: number;
+  amount: number | string;
   currency: string;
   status: PaymentRecord["status"];
   billing_provider: string;
@@ -186,7 +186,7 @@ function mapPayment(row: PaymentRow): PaymentRecord {
     id: row.id,
     userId: row.user_id,
     planTier: row.plan_tier,
-    amountInr: row.amount_inr,
+    amount: Number(row.amount),
     currency: row.currency,
     status: row.status,
     billingProvider: row.billing_provider,
