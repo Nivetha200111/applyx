@@ -230,6 +230,57 @@ export interface PrepResource {
   category: "dsa" | "system-design" | "behavioral" | "company-specific" | "general";
 }
 
+export type JobSignalRecommendation =
+  | "strong_apply"
+  | "apply_with_focus"
+  | "investigate_first"
+  | "avoid";
+
+export type AuthenticityVerdict = "credible" | "mixed" | "risky";
+
+export type CandidateFitVerdict = "strong" | "partial" | "weak" | "unknown";
+
+export interface JobSignalEvidenceItem {
+  source: "job_post" | "resume" | "source_url" | "manual";
+  sentiment: "positive" | "warning" | "negative" | "neutral";
+  label: string;
+  detail: string;
+}
+
+export interface JobSourceCheck {
+  domain: string | null;
+  finalUrl: string | null;
+  reachable: boolean | null;
+  httpStatus: number | null;
+  siteName: string | null;
+  title: string | null;
+  foundStructuredJobPosting: boolean;
+  datePosted: string | null;
+  validThrough: string | null;
+  hiringOrganization: string | null;
+}
+
+export interface JobAuthenticityAssessment {
+  version: 1;
+  provider: "rules-v1";
+  mode: "baseline" | "enriched";
+  generatedAt: string;
+  summary: string;
+  recommendation: JobSignalRecommendation;
+  overallScore: number;
+  authenticityScore: number;
+  authenticityVerdict: AuthenticityVerdict;
+  candidateFitScore: number | null;
+  candidateFitVerdict: CandidateFitVerdict;
+  matchedSkills: string[];
+  missingSkills: string[];
+  positiveSignals: string[];
+  riskSignals: string[];
+  nextSteps: string[];
+  evidence: JobSignalEvidenceItem[];
+  sourceCheck: JobSourceCheck | null;
+}
+
 export interface TrackedApplicationRecord {
   id: string;
   userId: string;
@@ -245,7 +296,7 @@ export interface TrackedApplicationRecord {
   sourceUrl: string | null;
   sourcePlatform: string | null;
   rawJdText: string | null;
-  parsedJdData: ParsedJD | null;
+  parsedJdData: TrackerParsedJD | null;
   requiredSkills: string[];
   preferredSkills: string[];
   experienceRequired: string | null;
@@ -258,6 +309,9 @@ export interface TrackedApplicationRecord {
   contactEmail: string | null;
   tailoredResumeId: string | null;
   prepResources: PrepResource[];
+  authenticityScore: number | null;
+  authenticityAssessment: JobAuthenticityAssessment | null;
+  authenticityCheckedAt: string | null;
   followedUp: boolean;
   isArchived: boolean;
   createdAt: string;

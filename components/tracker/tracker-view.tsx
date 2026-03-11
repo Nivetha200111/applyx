@@ -137,6 +137,12 @@ export function TrackerView({
     [fetchApplications],
   );
 
+  const handleApplicationReplace = useCallback((application: TrackedApplicationRecord) => {
+    setApplications((prev) =>
+      prev.map((item) => (item.id === application.id ? application : item)),
+    );
+  }, []);
+
   const handleDelete = useCallback(
     async (id: string) => {
       setApplications((prev) => prev.filter((app) => app.id !== id));
@@ -285,6 +291,7 @@ export function TrackerView({
                   expanded={expandedId === app.id}
                   formatSalary={formatSalary}
                   onArchive={handleArchive}
+                  onApplicationReplace={handleApplicationReplace}
                   onDelete={handleDelete}
                   onToggleExpand={() =>
                     setExpandedId((prev) => (prev === app.id ? null : app.id))
@@ -358,6 +365,7 @@ function ApplicationRow({
   formatSalary,
   onToggleExpand,
   onUpdate,
+  onApplicationReplace,
   onDelete,
   onArchive,
 }: {
@@ -366,6 +374,7 @@ function ApplicationRow({
   formatSalary: (min: number | null, max: number | null, currency: string) => string;
   onToggleExpand: () => void;
   onUpdate: (id: string, field: string, value: unknown) => void;
+  onApplicationReplace: (application: TrackedApplicationRecord) => void;
   onDelete: (id: string) => void;
   onArchive: (id: string) => void;
 }) {
@@ -464,7 +473,11 @@ function ApplicationRow({
       {expanded ? (
         <tr>
           <td className="border-b border-border/40 bg-muted/20 px-6 py-4" colSpan={9}>
-            <ApplicationDetail app={app} onUpdate={onUpdate} />
+            <ApplicationDetail
+              app={app}
+              onApplicationReplace={onApplicationReplace}
+              onUpdate={onUpdate}
+            />
           </td>
         </tr>
       ) : null}

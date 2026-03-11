@@ -391,6 +391,9 @@ type TrackedApplicationRow = {
   contact_email: string | null;
   tailored_resume_id: string | null;
   prep_resources: TrackedApplicationRecord["prepResources"];
+  authenticity_score: number | null;
+  authenticity_assessment: TrackedApplicationRecord["authenticityAssessment"];
+  authenticity_checked_at: string | null;
   followed_up: boolean;
   is_archived: boolean;
   created_at: string;
@@ -426,6 +429,9 @@ function mapTrackedApplication(row: TrackedApplicationRow): TrackedApplicationRe
     contactEmail: row.contact_email,
     tailoredResumeId: row.tailored_resume_id,
     prepResources: row.prep_resources ?? [],
+    authenticityScore: row.authenticity_score,
+    authenticityAssessment: row.authenticity_assessment,
+    authenticityCheckedAt: row.authenticity_checked_at,
     followedUp: row.followed_up ?? false,
     isArchived: row.is_archived,
     createdAt: row.created_at,
