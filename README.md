@@ -76,10 +76,25 @@ To run it as a real product, you still need to provide:
 - `DODO_PAYMENTS_WEBHOOK_KEY`
 - `DODO_BASIC_PRODUCT_ID` for your monthly USD Basic product
 - `DODO_PREMIUM_PRODUCT_ID` for your monthly USD Premium product
+- `DODO_ENVIRONMENT=test_mode` if your Dodo merchant is not live-enabled yet
 - `MANUAL_UPI_ID` and `MANUAL_UPI_NAME` for an in-app UPI QR code
 - or `MANUAL_UPI_PAYMENT_URL` / `MANUAL_INTERNATIONAL_PAYMENT_URL` if you want direct payment links
 - `NEXT_PUBLIC_APP_URL`
 - `OPENCLAW_NOTIFY_URL` and `OPENCLAW_NOTIFY_SECRET` if you want WhatsApp alerts through a VM-side OpenClaw bridge
+
+## Dodo Billing Setup
+
+For ApplyX paid plans to work correctly with Dodo:
+
+- enable live payments on your Dodo merchant before using live-mode checkout
+- configure both ApplyX plans as recurring monthly subscription products, not one-time products
+- set Basic to `USD 2.99 / month`
+- set Premium to `USD 6.99 / month`
+- disable adaptive pricing / adaptive currency if you want fixed USD globally
+- if Dodo forces you to create replacement subscription products, update `DODO_BASIC_PRODUCT_ID` and `DODO_PREMIUM_PRODUCT_ID` in your app envs and redeploy
+
+If live payments are not enabled yet, the Dodo API will reject checkout session creation with
+`MERCHANT_NOT_LIVE`.
 
 ## Manual Billing Operations
 
