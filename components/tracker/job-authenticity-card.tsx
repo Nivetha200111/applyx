@@ -15,6 +15,7 @@ import type {
 interface JobAuthenticityCardProps {
   app: TrackedApplicationRecord;
   onApplicationReplace: (application: TrackedApplicationRecord) => void;
+  refreshEnabled?: boolean;
 }
 
 const checkedAtFormatter = new Intl.DateTimeFormat("en-US", {
@@ -88,6 +89,7 @@ function renderScore(value: number | null) {
 export function JobAuthenticityCard({
   app,
   onApplicationReplace,
+  refreshEnabled = true,
 }: JobAuthenticityCardProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const assessment = app.authenticityAssessment;
@@ -134,16 +136,18 @@ export function JobAuthenticityCard({
             {assessment?.summary ?? "Run a signal check to score posting credibility, freshness, and resume fit."}
           </div>
         </div>
-        <Button
-          className="gap-2 self-start"
-          disabled={isRefreshing}
-          onClick={handleRefresh}
-          size="sm"
-          variant="outline"
-        >
-          <RefreshCw className={cn("h-3.5 w-3.5", isRefreshing && "animate-spin")} />
-          {assessment ? "Refresh" : "Analyze"}
-        </Button>
+        {refreshEnabled ? (
+          <Button
+            className="gap-2 self-start"
+            disabled={isRefreshing}
+            onClick={handleRefresh}
+            size="sm"
+            variant="outline"
+          >
+            <RefreshCw className={cn("h-3.5 w-3.5", isRefreshing && "animate-spin")} />
+            {assessment ? "Refresh" : "Analyze"}
+          </Button>
+        ) : null}
       </div>
 
       {assessment ? (
