@@ -59,6 +59,7 @@ The current build now includes:
 - Email/password auth with Postgres-backed sessions
 - Resume upload and AI parsing for PDF and DOCX
 - JD analysis and AI tailoring with plan-based model selection
+- Job tracker authenticity and resume-fit signals for tracked roles
 - PDF and DOCX download generation
 - Dodo hosted checkout, customer portal, and signed webhook routes
 - Manual billing fallback page, transaction submission flow, and approval scripts
@@ -90,6 +91,15 @@ npm run billing:approve -- <payment-id-or-checkout-id>
 ```
 
 Users pay via the configured manual links, submit a transaction reference in the app, and you approve the payment to activate their plan for 30 days.
+
+## Job Signal Backfill
+
+After deploying tracker signal changes, apply the latest migration first. New tracked jobs
+will score automatically. Existing tracked jobs can be populated in two ways:
+
+- users can click `Refresh Signals` in the tracker to batch-generate missing scores
+- a developer admin can POST to `/api/admin/job-signals/backfill` while signed in to backfill
+  existing rows in batches
 
 ## Optional OpenClaw Notifications
 

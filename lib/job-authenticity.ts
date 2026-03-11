@@ -19,6 +19,15 @@ type AssessmentOptions = {
   allowExternalSourceCheck?: boolean;
 };
 
+type BatchRefreshTarget = {
+  userId: string;
+  applicationId: string;
+};
+
+type BatchRefreshOptions = AssessmentOptions & {
+  concurrency?: number;
+};
+
 type SourceUrlMetadata = {
   finalUrl: string | null;
   httpStatus: number | null;
@@ -857,4 +866,58 @@ export async function refreshTrackedApplicationAuthenticityAssessment(
   );
 
   return getTrackedApplicationForUser(userId, applicationId);
+}
+
+export async function refreshTrackedApplicationAuthenticityBatch(
+  targets: BatchRefreshTarget[],
+  options: BatchRefreshOptions = {},
+) {
+  const concurrency = Math.max(1, Math.min(options.concurrency ?? 3, 6));
+  const updatedIds: string[] = [];
+  const failedIds: string[] = [];
+  let cursor = 0;
+
+  async function worker() {
+    while (cursor < targets.length) {
+      const currentIndex = cursor;
+      cursor += 1;
+      const target = targets[currentIndex];
+
+      if (!target) {
+        return;
+      }
+
+      try {
+        const updated = await refreshTrackedApplicationAuthenticityAssessment(
+          target.userId,
+          target.applicationId,
+          options,
+        );
+
+        if (updated) {
+          updatedIds.push(updated.id);
+        } else {
+          failedIds.push(target.applicationId);
+        }
+      } catch (error) {
+        failedIds.push(target.applicationId);
+        console.error(
+          `[job-authenticity] Failed to refresh ${target.applicationId}: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`,
+        );
+      }
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, targets.length) }, () => worker()),
+  );
+
+  return {
+    updatedCount: updatedIds.length,
+    failedCount: failedIds.length,
+    updatedIds,
+    failedIds,
+  };
 }
