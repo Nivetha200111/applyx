@@ -1,25 +1,23 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { JobSignalRecommendation, TrackedApplicationRecord } from "@/lib/types";
+import type { AuthenticityVerdict, TrackedApplicationRecord } from "@/lib/types";
 
-function getRecommendationLabel(value: JobSignalRecommendation) {
+function getVerdictLabel(value: AuthenticityVerdict) {
   switch (value) {
-    case "strong_apply":
-      return "Strong";
-    case "apply_with_focus":
-      return "Focus";
-    case "investigate_first":
-      return "Review";
-    case "avoid":
-      return "Avoid";
+    case "credible":
+      return "Credible";
+    case "mixed":
+      return "Mixed";
+    case "risky":
+      return "Risky";
   }
 }
 
 function getTone(app: TrackedApplicationRecord) {
-  const recommendation = app.authenticityAssessment?.recommendation;
+  const verdict = app.authenticityAssessment?.authenticityVerdict;
 
-  if (!recommendation || app.authenticityScore === null) {
+  if (!verdict || app.authenticityScore === null) {
     return {
       label: "Pending",
       className:
@@ -27,32 +25,24 @@ function getTone(app: TrackedApplicationRecord) {
     };
   }
 
-  if (recommendation === "strong_apply") {
+  if (verdict === "credible") {
     return {
-      label: getRecommendationLabel(recommendation),
+      label: getVerdictLabel(verdict),
       className:
         "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-200",
     };
   }
 
-  if (recommendation === "apply_with_focus") {
+  if (verdict === "mixed") {
     return {
-      label: getRecommendationLabel(recommendation),
-      className:
-        "border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-900/50 dark:bg-sky-950/30 dark:text-sky-200",
-    };
-  }
-
-  if (recommendation === "investigate_first") {
-    return {
-      label: getRecommendationLabel(recommendation),
+      label: getVerdictLabel(verdict),
       className:
         "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200",
     };
   }
 
   return {
-    label: getRecommendationLabel(recommendation),
+    label: getVerdictLabel(verdict),
     className:
       "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-200",
   };

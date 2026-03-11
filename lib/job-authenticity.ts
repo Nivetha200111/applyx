@@ -807,12 +807,14 @@ export async function generateTrackedApplicationAuthenticityAssessment(
           ? "Your resume is a partial fit."
           : "Your resume looks weak against the role requirements.";
 
-  const summary =
+  const credibilitySummary =
     authenticityVerdict === "credible"
-      ? `${fitSummary} The posting has enough structure and sourcing detail to look credible.`
+      ? "The posting has enough structure and sourcing detail to look credible."
       : authenticityVerdict === "mixed"
-        ? `${fitSummary} The posting has some good signals, but it still needs verification.`
-        : `${fitSummary} The posting shows multiple risk signals and should be treated carefully.`;
+        ? "The posting has some good signals, but it still needs verification."
+        : "The posting shows multiple risk signals and should be treated carefully.";
+
+  const summary = `${credibilitySummary} ${fitSummary}`;
 
   return {
     version: 1,

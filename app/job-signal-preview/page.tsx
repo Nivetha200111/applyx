@@ -63,7 +63,7 @@ const previewApplication: TrackedApplicationRecord = {
     mode: "enriched",
     generatedAt: "2026-03-11T14:30:00.000Z",
     summary:
-      "Your resume looks like a partial fit. The posting has enough structure and sourcing detail to look credible.",
+      "The posting has enough structure and sourcing detail to look credible. Your resume looks like a partial fit.",
     recommendation: "apply_with_focus",
     overallScore: 79,
     authenticityScore: 86,

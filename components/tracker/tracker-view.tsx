@@ -330,7 +330,7 @@ export function TrackerView({
               <th className="w-8 px-3 py-3" />
               <SortableHeader field="company_name" label="Company" sortField={sortField} sortOrder={sortOrder} onSort={handleSort} />
               <SortableHeader field="role_title" label="Role" sortField={sortField} sortOrder={sortOrder} onSort={handleSort} />
-              <SortableHeader field="authenticity_score" label="Signal" sortField={sortField} sortOrder={sortOrder} onSort={handleSort} />
+              <SortableHeader field="authenticity_score" label="Credibility" sortField={sortField} sortOrder={sortOrder} onSort={handleSort} />
               <SortableHeader field="status" label="Status" sortField={sortField} sortOrder={sortOrder} onSort={handleSort} />
               <SortableHeader field="priority" label="Priority" sortField={sortField} sortOrder={sortOrder} onSort={handleSort} />
               <th className="px-3 py-3">Location</th>
