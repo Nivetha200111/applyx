@@ -11,9 +11,11 @@ import { signUpSchema } from "@/lib/validations/auth";
 
 interface SignupFormProps {
   next: string;
+  source?: string | null;
+  slug?: string | null;
 }
 
-export function SignupForm({ next }: SignupFormProps) {
+export function SignupForm({ next, source, slug }: SignupFormProps) {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -28,6 +30,8 @@ export function SignupForm({ next }: SignupFormProps) {
       email: formData.get("email"),
       password: formData.get("password"),
       next,
+      source,
+      slug,
     });
 
     if (!parsed.success) {

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createUserAccount } from "@/lib/auth";
+import { sendSignupConversion } from "@/lib/internal-conversions";
 import {
   buildRateLimitIdentifier,
   enforceRateLimit,
@@ -26,12 +27,18 @@ export async function POST(request: Request) {
 
     const parsed = signUpSchema.parse(body);
 
-    await createUserAccount({
+    const user = await createUserAccount({
       fullName: parsed.fullName,
       email: parsed.email,
       password: parsed.password,
       ipAddress,
       userAgent: request.headers.get("user-agent"),
+    });
+
+    await sendSignupConversion({
+      source: parsed.source,
+      slug: parsed.slug,
+      userId: user.id,
     });
 
     return NextResponse.json({

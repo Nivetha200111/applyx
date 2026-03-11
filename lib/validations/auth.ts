@@ -12,6 +12,8 @@ export const signUpSchema = z.object({
     .min(8, "Password must be at least 8 characters.")
     .max(72, "Password must be 72 characters or fewer."),
   next: z.string().trim().optional().default("/dashboard"),
+  source: z.string().trim().min(1).max(120).optional().nullable(),
+  slug: z.string().trim().min(1).max(160).optional().nullable(),
 });
 
 export const signInSchema = z.object({

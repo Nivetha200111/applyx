@@ -14,9 +14,13 @@ export default function SignupPage({
 }: {
   searchParams?: {
     next?: string;
+    source?: string | string[];
+    slug?: string | string[];
   };
 }) {
   const next = sanitizeNextPath(searchParams?.next);
+  const source = typeof searchParams?.source === "string" ? searchParams.source : null;
+  const slug = typeof searchParams?.slug === "string" ? searchParams.slug : null;
 
   return (
     <Card>
@@ -27,7 +31,7 @@ export default function SignupPage({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
-        <SignupForm next={next} />
+        <SignupForm next={next} source={source} slug={slug} />
         <p className="text-sm text-muted-foreground">
           Already have an account?{" "}
           <Link className="font-medium text-foreground" href="/login">

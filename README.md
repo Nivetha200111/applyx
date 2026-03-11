@@ -80,6 +80,7 @@ To run it as a real product, you still need to provide:
 - `MANUAL_UPI_ID` and `MANUAL_UPI_NAME` for an in-app UPI QR code
 - or `MANUAL_UPI_PAYMENT_URL` / `MANUAL_INTERNATIONAL_PAYMENT_URL` if you want direct payment links
 - `NEXT_PUBLIC_APP_URL`
+- `APPLYX_INTERNAL_API_KEY` if you want signup conversion callbacks sent to `grow.applyx.space`
 - `OPENCLAW_NOTIFY_URL` and `OPENCLAW_NOTIFY_SECRET` if you want WhatsApp alerts through a VM-side OpenClaw bridge
 
 ## Dodo Billing Setup
@@ -106,6 +107,23 @@ npm run billing:approve -- <payment-id-or-checkout-id>
 ```
 
 Users pay via the configured manual links, submit a transaction reference in the app, and you approve the payment to activate their plan for 30 days.
+
+## Internal Conversion Callback
+
+If you want marketing attribution from the real signup flow, set `APPLYX_INTERNAL_API_KEY`.
+ApplyX will send a server-side callback after successful signup to:
+
+- `https://grow.applyx.space/api/internal/conversion`
+
+The payload includes:
+
+- `eventType: "signup"`
+- `source` from `/signup?source=...`
+- `slug` from `/signup?slug=...`
+- `userId`
+- `metadata: null`
+
+If the internal key is missing or the callback fails, account creation still succeeds.
 
 ## Job Signal Backfill
 
