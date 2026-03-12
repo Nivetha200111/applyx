@@ -11,6 +11,7 @@ import {
   History,
   LayoutDashboard,
   Mail,
+  MessageSquare,
   Settings,
   Sparkles,
 } from "lucide-react";
@@ -44,6 +45,11 @@ const navItems = [
     href: "/tailored",
     label: "Tailored",
     icon: Sparkles,
+  },
+  {
+    href: "/interviews",
+    label: "Mock Interviews",
+    icon: MessageSquare,
   },
   {
     href: "/analytics",
