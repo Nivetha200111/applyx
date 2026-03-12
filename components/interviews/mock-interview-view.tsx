@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
@@ -10,10 +10,14 @@ import {
   ChevronRight,
   Loader2,
   MessageSquare,
+  Mic,
+  MicOff,
   RotateCcw,
   Sparkles,
   Target,
   Trophy,
+  Volume2,
+  VolumeX,
   XCircle,
   Zap,
 } from "lucide-react";
@@ -27,6 +31,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { VideoFeed } from "@/components/interviews/video-feed";
+import { useSpeechRecognition, useSpeechSynthesis } from "@/hooks/use-speech";
 
 // ── Types ──
 
@@ -168,6 +173,30 @@ function TerminalLine({ text, delay = 0 }: { text: string; delay?: number }) {
   );
 }
 
+// ── Voice Pulse Animation ──
+
+function VoicePulse() {
+  return (
+    <div className="flex items-center gap-1">
+      {[0, 1, 2, 3, 4].map((i) => (
+        <motion.div
+          key={i}
+          className="w-1 rounded-full bg-neon-pink"
+          animate={{
+            height: [8, 20, 8],
+          }}
+          transition={{
+            duration: 0.6,
+            repeat: Infinity,
+            delay: i * 0.1,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 // ══════════════════════════════════════════════════
 //   MAIN COMPONENT
 // ══════════════════════════════════════════════════
@@ -184,7 +213,53 @@ export function MockInterviewView() {
   const [summary, setSummary] = useState<InterviewSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [voiceMode, setVoiceMode] = useState(true); // Default to voice mode
   const answerRef = useRef<HTMLTextAreaElement>(null);
+
+  // ── Voice hooks ──
+  const {
+    transcript,
+    isListening,
+    isSupported: micSupported,
+    startListening,
+    stopListening,
+    resetTranscript,
+  } = useSpeechRecognition();
+
+  const {
+    speak,
+    stop: stopSpeaking,
+    isSpeaking,
+    isSupported: ttsSupported,
+  } = useSpeechSynthesis();
+
+  // ── Sync transcript → answer ──
+  useEffect(() => {
+    if (isListening && transcript) {
+      setCurrentAnswer(transcript);
+    }
+  }, [transcript, isListening]);
+
+  // ── Auto-read question aloud when it changes ──
+  const lastReadQuestion = useRef<number | null>(null);
+  useEffect(() => {
+    if (
+      phase === "interview" &&
+      voiceMode &&
+      ttsSupported &&
+      questions[currentQuestionIndex] &&
+      lastReadQuestion.current !== currentQuestionIndex
+    ) {
+      lastReadQuestion.current = currentQuestionIndex;
+      // Small delay to let the UI render first
+      const timer = setTimeout(() => {
+        speak(
+          `Question ${currentQuestionIndex + 1}. ${questions[currentQuestionIndex].question}`,
+        );
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [phase, currentQuestionIndex, questions, voiceMode, ttsSupported, speak]);
 
   // ── Start Interview ──
   async function handleStart() {
@@ -222,6 +297,10 @@ export function MockInterviewView() {
   async function handleSubmitAnswer() {
     if (!currentAnswer.trim() || isLoading) return;
 
+    // Stop any ongoing voice input
+    if (isListening) stopListening();
+    if (isSpeaking) stopSpeaking();
+
     setIsLoading(true);
     setPhase("evaluating");
     setError(null);
@@ -246,6 +325,13 @@ export function MockInterviewView() {
         ...prev,
         { question, answer: currentAnswer, feedback: data.feedback },
       ]);
+
+      // Read feedback aloud if voice mode is on
+      if (voiceMode && ttsSupported && data.feedback) {
+        const fb = data.feedback;
+        const feedbackText = `Score: ${fb.score} out of 100. ${fb.strengths.length > 0 ? `Strengths: ${fb.strengths.slice(0, 2).join(". ")}. ` : ""}${fb.improvements.length > 0 ? `To improve: ${fb.improvements.slice(0, 2).join(". ")}.` : ""}`;
+        setTimeout(() => speak(feedbackText), 300);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to evaluate answer.");
     } finally {
@@ -256,15 +342,31 @@ export function MockInterviewView() {
 
   // ── Next Question ──
   function handleNext() {
+    if (isSpeaking) stopSpeaking();
+    resetTranscript();
+
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((i) => i + 1);
       setCurrentAnswer("");
       setCurrentFeedback(null);
-      setTimeout(() => answerRef.current?.focus(), 100);
+      if (!voiceMode) {
+        setTimeout(() => answerRef.current?.focus(), 100);
+      }
     } else {
       handleFinish();
     }
   }
+
+  // ── Toggle mic ──
+  const toggleMic = useCallback(() => {
+    if (isListening) {
+      stopListening();
+    } else {
+      resetTranscript();
+      setCurrentAnswer("");
+      startListening();
+    }
+  }, [isListening, stopListening, resetTranscript, startListening]);
 
   // ── Finish Interview ──
   async function handleFinish() {
@@ -286,6 +388,18 @@ export function MockInterviewView() {
       const data = await res.json();
       setSummary(data.summary);
       setPhase("summary");
+
+      // Read summary aloud
+      if (voiceMode && ttsSupported && data.summary) {
+        const s = data.summary;
+        setTimeout(
+          () =>
+            speak(
+              `Interview complete. Your overall score is ${s.overallScore} out of 100. ${s.overallFeedback.substring(0, 200)}`,
+            ),
+          500,
+        );
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to generate summary.");
       setPhase("interview");
@@ -294,6 +408,10 @@ export function MockInterviewView() {
 
   // ── Reset ──
   function handleReset() {
+    if (isSpeaking) stopSpeaking();
+    if (isListening) stopListening();
+    resetTranscript();
+
     setPhase("setup");
     setJobTitle("");
     setJobDescription("");
@@ -304,6 +422,7 @@ export function MockInterviewView() {
     setCurrentFeedback(null);
     setSummary(null);
     setError(null);
+    lastReadQuestion.current = null;
   }
 
   const currentQuestion = questions[currentQuestionIndex] ?? null;
@@ -320,7 +439,27 @@ export function MockInterviewView() {
             <span>
               Question {Math.min(currentQuestionIndex + 1, questions.length)} of {questions.length}
             </span>
-            <span>{progress}% complete</span>
+            <div className="flex items-center gap-3">
+              {/* Voice mode toggle */}
+              {(micSupported || ttsSupported) && (
+                <button
+                  onClick={() => {
+                    setVoiceMode((v) => !v);
+                    if (isSpeaking) stopSpeaking();
+                    if (isListening) stopListening();
+                  }}
+                  className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-pixel transition-all ${
+                    voiceMode
+                      ? "bg-neon-pink/20 text-neon-pink border border-neon-pink/30"
+                      : "bg-white/5 text-white/30 border border-white/10"
+                  }`}
+                >
+                  {voiceMode ? <Volume2 className="h-3 w-3" /> : <VolumeX className="h-3 w-3" />}
+                  Voice {voiceMode ? "ON" : "OFF"}
+                </button>
+              )}
+              <span>{progress}% complete</span>
+            </div>
           </div>
           <div className="h-2 w-full overflow-hidden rounded-full bg-retro-darker border border-neon-cyan/20">
             <motion.div
@@ -364,7 +503,7 @@ export function MockInterviewView() {
                       Initialize Interview Protocol
                     </CardTitle>
                     <CardDescription className="font-retro text-sm text-neon-green/60">
-                      Gemini Embedding 2 • Gemini Vision • Live Body Language Coaching
+                      Gemini Embedding 2 • Gemini Vision • Voice Mode • Live Body Language
                     </CardDescription>
                   </div>
                 </div>
@@ -372,11 +511,11 @@ export function MockInterviewView() {
               <CardContent className="space-y-6">
                 {/* Terminal intro */}
                 <div className="rounded-lg border border-neon-green/20 bg-black/40 p-4 space-y-1">
-                  <TerminalLine text="MOCK_INTERVIEW_ENGINE v3.0 loaded" delay={0} />
+                  <TerminalLine text="MOCK_INTERVIEW_ENGINE v4.0 loaded" delay={0} />
                   <TerminalLine text="Gemini Embedding 2 model: ONLINE" delay={200} />
                   <TerminalLine text="Gemini Vision (body language): ONLINE" delay={400} />
-                  <TerminalLine text="Semantic similarity scoring: ENABLED" delay={600} />
-                  <TerminalLine text="Video analysis pipeline: READY" delay={800} />
+                  <TerminalLine text="Voice Recognition: ENABLED" delay={600} />
+                  <TerminalLine text="Text-to-Speech: ENABLED" delay={800} />
                   <TerminalLine text="Awaiting job parameters..." delay={1000} />
                 </div>
 
@@ -420,16 +559,15 @@ export function MockInterviewView() {
             </Card>
 
             {/* Feature cards */}
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <Card className="border-neon-green/20 bg-retro-darker/60">
                 <CardContent className="pt-6 space-y-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-neon-green/10 text-neon-green">
                     <Brain className="h-5 w-5" />
                   </div>
-                  <h3 className="font-pixel text-[10px] text-neon-green">Gemini Embedding 2</h3>
+                  <h3 className="font-pixel text-[10px] text-neon-green">Gemini Embedding</h3>
                   <p className="font-retro text-sm text-white/50">
-                    Your answers are embedded into vectors and compared against ideal responses
-                    using cosine similarity for precise scoring.
+                    Answers scored with cosine similarity against ideal responses.
                   </p>
                 </CardContent>
               </Card>
@@ -440,38 +578,29 @@ export function MockInterviewView() {
                   </div>
                   <h3 className="font-pixel text-[10px] text-neon-cyan">AI Feedback</h3>
                   <p className="font-retro text-sm text-white/50">
-                    Get detailed feedback on strengths, weaknesses, and specific improvements
-                    after every answer.
+                    Detailed strengths, weaknesses, and improvements after every answer.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-neon-pink/20 bg-retro-darker/60">
+                <CardContent className="pt-6 space-y-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-neon-pink/10 text-neon-pink">
+                    <Mic className="h-5 w-5" />
+                  </div>
+                  <h3 className="font-pixel text-[10px] text-neon-pink">Voice Mode</h3>
+                  <p className="font-retro text-sm text-white/50">
+                    Speak your answers naturally. Questions are read aloud to you.
                   </p>
                 </CardContent>
               </Card>
               <Card className="border-neon-purple/20 bg-retro-darker/60">
                 <CardContent className="pt-6 space-y-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-neon-purple/10 text-neon-purple">
-                    <Target className="h-5 w-5" />
+                    <Camera className="h-5 w-5" />
                   </div>
-                  <h3 className="font-pixel text-[10px] text-neon-purple">Hire Signal</h3>
+                  <h3 className="font-pixel text-[10px] text-neon-purple">Body Language</h3>
                   <p className="font-retro text-sm text-white/50">
-                    Get a final hiring likelihood assessment based on your overall performance
-                    across all questions.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="border-neon-pink/20 bg-retro-darker/60 md:col-span-3">
-                <CardContent className="pt-6 space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-neon-pink/10 text-neon-pink">
-                      <Camera className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-pixel text-[10px] text-neon-pink">Live Video Analysis</h3>
-                      <p className="font-retro text-xs text-white/40">NEW — Powered by Gemini Vision</p>
-                    </div>
-                  </div>
-                  <p className="font-retro text-sm text-white/50">
-                    Enable your camera during the interview and Gemini will analyze your body language
-                    in real-time — posture, eye contact, facial expressions, and hand gestures — giving
-                    you live coaching tips to nail your next real interview.
+                    Live webcam analysis of posture, eye contact, and gestures.
                   </p>
                 </CardContent>
               </Card>
@@ -530,153 +659,226 @@ export function MockInterviewView() {
                         </span>
                         {getDifficultyBadge(currentQuestion.difficulty)}
                       </div>
-                      <span className="font-retro text-sm text-white/30">
-                        Q{currentQuestionIndex + 1}/{questions.length}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        {/* TTS button for current question */}
+                        {ttsSupported && (
+                          <button
+                            onClick={() => {
+                              if (isSpeaking) {
+                                stopSpeaking();
+                              } else {
+                                speak(`Question ${currentQuestionIndex + 1}. ${currentQuestion.question}`);
+                              }
+                            }}
+                            className={`flex items-center gap-1 rounded-full px-2 py-1 transition-all ${
+                              isSpeaking
+                                ? "bg-neon-pink/20 text-neon-pink border border-neon-pink/30"
+                                : "bg-white/5 text-white/30 border border-white/10 hover:text-white/60"
+                            }`}
+                          >
+                            {isSpeaking ? (
+                              <VolumeX className="h-3 w-3" />
+                            ) : (
+                              <Volume2 className="h-3 w-3" />
+                            )}
+                            <span className="font-pixel text-[8px]">
+                              {isSpeaking ? "STOP" : "READ"}
+                            </span>
+                          </button>
+                        )}
+                        <span className="font-retro text-sm text-white/30">
+                          Q{currentQuestionIndex + 1}/{questions.length}
+                        </span>
+                      </div>
                     </div>
                     <CardTitle className="font-retro text-xl text-white leading-relaxed mt-4">
                       {currentQuestion.question}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <textarea
-                      ref={answerRef}
-                      value={currentAnswer}
-                      onChange={(e) => setCurrentAnswer(e.target.value)}
-                      placeholder="Type your answer here... Be specific, use examples, and structure your response clearly."
-                      rows={8}
-                      disabled={isLoading || !!currentFeedback}
-                      className="w-full rounded-lg border-2 border-neon-green/20 bg-black/40 px-4 py-3 font-retro text-base text-white placeholder:text-white/20 focus:border-neon-green/50 focus:outline-none focus:ring-2 focus:ring-neon-green/20 transition-all resize-none disabled:opacity-50"
-                    />
+                    {/* Answer area */}
+                    <div className="relative">
+                      <textarea
+                        ref={answerRef}
+                        value={currentAnswer}
+                        onChange={(e) => setCurrentAnswer(e.target.value)}
+                        placeholder={
+                          voiceMode && micSupported
+                            ? "Click the mic button below and speak your answer..."
+                            : "Type your answer here... Be specific, use examples, and structure your response clearly."
+                        }
+                        rows={8}
+                        disabled={isLoading || !!currentFeedback}
+                        className="w-full rounded-lg border-2 border-neon-green/20 bg-black/40 px-4 py-3 font-retro text-base text-white placeholder:text-white/20 focus:border-neon-green/50 focus:outline-none focus:ring-2 focus:ring-neon-green/20 transition-all resize-none disabled:opacity-50"
+                      />
 
-                {!currentFeedback && (
-                  <Button
-                    onClick={handleSubmitAnswer}
-                    disabled={!currentAnswer.trim() || isLoading}
-                    className="retro-btn retro-btn-cyan w-full font-pixel text-[11px] gap-2 py-5"
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Evaluating with Gemini Embedding 2...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="h-4 w-4" />
-                        Submit Answer
-                      </>
-                    )}
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Feedback card */}
-            {currentFeedback && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <Card className="overflow-hidden border-neon-green/20 bg-retro-darker/80">
-                  <CardHeader>
-                    <div className="flex items-center justify-between gap-4 flex-wrap">
-                      <CardTitle className="font-retro text-xl text-neon-green">
-                        Answer Feedback
-                      </CardTitle>
-                      <div className="flex items-center gap-4">
-                        <ScoreRing score={currentFeedback.score} size={80} label="AI Score" />
-                        <ScoreRing score={currentFeedback.semanticScore} size={80} label="Semantic" />
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    {/* Strengths */}
-                    {currentFeedback.strengths.length > 0 && (
-                      <div className="space-y-2">
-                        <h4 className="font-pixel text-[10px] uppercase tracking-widest text-neon-green/70">
-                          Strengths
-                        </h4>
-                        <ul className="space-y-1">
-                          {currentFeedback.strengths.map((s, i) => (
-                            <li key={i} className="flex items-start gap-2 font-retro text-sm text-white/70">
-                              <CheckCircle2 className="h-4 w-4 shrink-0 text-neon-green mt-0.5" />
-                              {s}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Improvements */}
-                    {currentFeedback.improvements.length > 0 && (
-                      <div className="space-y-2">
-                        <h4 className="font-pixel text-[10px] uppercase tracking-widest text-neon-orange/70">
-                          Areas to Improve
-                        </h4>
-                        <ul className="space-y-1">
-                          {currentFeedback.improvements.map((s, i) => (
-                            <li key={i} className="flex items-start gap-2 font-retro text-sm text-white/70">
-                              <ArrowRight className="h-4 w-4 shrink-0 text-neon-orange mt-0.5" />
-                              {s}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Key points */}
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      {currentFeedback.keyPointsCovered.length > 0 && (
-                        <div className="rounded-lg border border-neon-green/20 bg-neon-green/5 p-3 space-y-2">
-                          <h5 className="font-pixel text-[9px] text-neon-green/70">Points Covered</h5>
-                          {currentFeedback.keyPointsCovered.map((p, i) => (
-                            <p key={i} className="font-retro text-xs text-white/60">✓ {p}</p>
-                          ))}
-                        </div>
-                      )}
-                      {currentFeedback.keyPointsMissed.length > 0 && (
-                        <div className="rounded-lg border border-neon-pink/20 bg-neon-pink/5 p-3 space-y-2">
-                          <h5 className="font-pixel text-[9px] text-neon-pink/70">Points Missed</h5>
-                          {currentFeedback.keyPointsMissed.map((p, i) => (
-                            <p key={i} className="font-retro text-xs text-white/60">✗ {p}</p>
-                          ))}
+                      {/* Listening indicator in textarea */}
+                      {isListening && (
+                        <div className="absolute bottom-3 right-3 flex items-center gap-2 rounded-full bg-neon-pink/20 px-3 py-1.5 border border-neon-pink/30">
+                          <VoicePulse />
+                          <span className="font-pixel text-[8px] text-neon-pink">LISTENING</span>
                         </div>
                       )}
                     </div>
 
-                    {/* Sample improvement */}
-                    {currentFeedback.sampleResponse && (
-                      <div className="rounded-lg border border-neon-cyan/20 bg-neon-cyan/5 p-4 space-y-2">
-                        <h5 className="font-pixel text-[9px] text-neon-cyan/70">
-                          How to Improve Your Answer
-                        </h5>
-                        <p className="font-retro text-sm text-white/60 leading-relaxed">
-                          {currentFeedback.sampleResponse}
-                        </p>
+                    {/* Voice + Submit controls */}
+                    {!currentFeedback && (
+                      <div className="flex items-center gap-3">
+                        {/* Mic button */}
+                        {micSupported && (
+                          <Button
+                            onClick={toggleMic}
+                            disabled={isLoading}
+                            className={`shrink-0 gap-2 font-pixel text-[10px] py-5 px-5 ${
+                              isListening
+                                ? "bg-neon-pink/20 text-neon-pink border-2 border-neon-pink/50 hover:bg-neon-pink/30 animate-pulse"
+                                : "bg-neon-pink/10 text-neon-pink/70 border-2 border-neon-pink/20 hover:bg-neon-pink/20 hover:text-neon-pink"
+                            }`}
+                            variant="ghost"
+                          >
+                            {isListening ? (
+                              <>
+                                <MicOff className="h-5 w-5" />
+                                Stop
+                              </>
+                            ) : (
+                              <>
+                                <Mic className="h-5 w-5" />
+                                Speak
+                              </>
+                            )}
+                          </Button>
+                        )}
+
+                        {/* Submit button */}
+                        <Button
+                          onClick={handleSubmitAnswer}
+                          disabled={!currentAnswer.trim() || isLoading}
+                          className="retro-btn retro-btn-cyan flex-1 font-pixel text-[11px] gap-2 py-5"
+                        >
+                          {isLoading ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Evaluating...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="h-4 w-4" />
+                              Submit Answer
+                            </>
+                          )}
+                        </Button>
                       </div>
                     )}
-
-                    <Button
-                      onClick={handleNext}
-                      className="retro-btn w-full font-pixel text-[11px] gap-2 py-5"
-                    >
-                      {currentQuestionIndex < questions.length - 1 ? (
-                        <>
-                          Next Question
-                          <ChevronRight className="h-4 w-4" />
-                        </>
-                      ) : (
-                        <>
-                          <Trophy className="h-4 w-4" />
-                          Finish Interview & Get Results
-                        </>
-                      )}
-                    </Button>
                   </CardContent>
                 </Card>
-              </motion.div>
-            )}
+
+                {/* Feedback card */}
+                {currentFeedback && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <Card className="overflow-hidden border-neon-green/20 bg-retro-darker/80">
+                      <CardHeader>
+                        <div className="flex items-center justify-between gap-4 flex-wrap">
+                          <CardTitle className="font-retro text-xl text-neon-green">
+                            Answer Feedback
+                          </CardTitle>
+                          <div className="flex items-center gap-4">
+                            <ScoreRing score={currentFeedback.score} size={80} label="AI Score" />
+                            <ScoreRing score={currentFeedback.semanticScore} size={80} label="Semantic" />
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-6">
+                        {/* Strengths */}
+                        {currentFeedback.strengths.length > 0 && (
+                          <div className="space-y-2">
+                            <h4 className="font-pixel text-[10px] uppercase tracking-widest text-neon-green/70">
+                              Strengths
+                            </h4>
+                            <ul className="space-y-1">
+                              {currentFeedback.strengths.map((s, i) => (
+                                <li key={i} className="flex items-start gap-2 font-retro text-sm text-white/70">
+                                  <CheckCircle2 className="h-4 w-4 shrink-0 text-neon-green mt-0.5" />
+                                  {s}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* Improvements */}
+                        {currentFeedback.improvements.length > 0 && (
+                          <div className="space-y-2">
+                            <h4 className="font-pixel text-[10px] uppercase tracking-widest text-neon-orange/70">
+                              Areas to Improve
+                            </h4>
+                            <ul className="space-y-1">
+                              {currentFeedback.improvements.map((s, i) => (
+                                <li key={i} className="flex items-start gap-2 font-retro text-sm text-white/70">
+                                  <ArrowRight className="h-4 w-4 shrink-0 text-neon-orange mt-0.5" />
+                                  {s}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* Key points */}
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          {currentFeedback.keyPointsCovered.length > 0 && (
+                            <div className="rounded-lg border border-neon-green/20 bg-neon-green/5 p-3 space-y-2">
+                              <h5 className="font-pixel text-[9px] text-neon-green/70">Points Covered</h5>
+                              {currentFeedback.keyPointsCovered.map((p, i) => (
+                                <p key={i} className="font-retro text-xs text-white/60">✓ {p}</p>
+                              ))}
+                            </div>
+                          )}
+                          {currentFeedback.keyPointsMissed.length > 0 && (
+                            <div className="rounded-lg border border-neon-pink/20 bg-neon-pink/5 p-3 space-y-2">
+                              <h5 className="font-pixel text-[9px] text-neon-pink/70">Points Missed</h5>
+                              {currentFeedback.keyPointsMissed.map((p, i) => (
+                                <p key={i} className="font-retro text-xs text-white/60">✗ {p}</p>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Sample improvement */}
+                        {currentFeedback.sampleResponse && (
+                          <div className="rounded-lg border border-neon-cyan/20 bg-neon-cyan/5 p-4 space-y-2">
+                            <h5 className="font-pixel text-[9px] text-neon-cyan/70">
+                              How to Improve Your Answer
+                            </h5>
+                            <p className="font-retro text-sm text-white/60 leading-relaxed">
+                              {currentFeedback.sampleResponse}
+                            </p>
+                          </div>
+                        )}
+
+                        <Button
+                          onClick={handleNext}
+                          className="retro-btn w-full font-pixel text-[11px] gap-2 py-5"
+                        >
+                          {currentQuestionIndex < questions.length - 1 ? (
+                            <>
+                              Next Question
+                              <ChevronRight className="h-4 w-4" />
+                            </>
+                          ) : (
+                            <>
+                              <Trophy className="h-4 w-4" />
+                              Finish Interview & Get Results
+                            </>
+                          )}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )}
               </div>
 
               {/* Right column: Video feed with body language analysis */}
@@ -844,4 +1046,3 @@ export function MockInterviewView() {
     </div>
   );
 }
-

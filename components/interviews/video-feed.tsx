@@ -73,6 +73,7 @@ export function VideoFeed({ isActive, analysisInterval = 10000 }: VideoFeedProps
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const [cameraOn, setCameraOn] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<BodyLanguageAnalysis | null>(null);
@@ -82,6 +83,8 @@ export function VideoFeed({ isActive, analysisInterval = 10000 }: VideoFeedProps
   const startCamera = useCallback(async () => {
     try {
       setCameraError(null);
+      setVideoReady(false);
+
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           width: { ideal: 640 },
@@ -95,6 +98,18 @@ export function VideoFeed({ isActive, analysisInterval = 10000 }: VideoFeedProps
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+
+        // Wait for video to actually have data before marking as ready
+        videoRef.current.onloadeddata = () => {
+          setVideoReady(true);
+        };
+
+        // Also handle the play promise
+        try {
+          await videoRef.current.play();
+        } catch {
+          // autoPlay should handle this, ignore
+        }
       }
 
       setCameraOn(true);
@@ -116,8 +131,10 @@ export function VideoFeed({ isActive, analysisInterval = 10000 }: VideoFeedProps
     }
     if (videoRef.current) {
       videoRef.current.srcObject = null;
+      videoRef.current.onloadeddata = null;
     }
     setCameraOn(false);
+    setVideoReady(false);
     setAnalysis(null);
   }, []);
 
@@ -125,25 +142,41 @@ export function VideoFeed({ isActive, analysisInterval = 10000 }: VideoFeedProps
   const captureFrame = useCallback((): string | null => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    if (!video || !canvas || !cameraOn) return null;
+    if (!video || !canvas || !cameraOn || !videoReady) return null;
+
+    // Make sure video actually has dimensions (not 0x0)
+    const vw = video.videoWidth;
+    const vh = video.videoHeight;
+    if (vw === 0 || vh === 0) {
+      console.warn("Video dimensions not ready:", vw, vh);
+      return null;
+    }
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
 
-    // Set canvas dimensions to match video
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
+    // Set canvas dimensions to match actual video resolution
+    canvas.width = vw;
+    canvas.height = vh;
 
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(video, 0, 0, vw, vh);
 
     // Convert to base64 JPEG (strip the data:image/jpeg;base64, prefix)
     const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
-    return dataUrl.split(",")[1] ?? null;
-  }, [cameraOn]);
+    const base64 = dataUrl.split(",")[1];
+
+    // Sanity check: if the image is too small, it's probably a black frame
+    if (!base64 || base64.length < 500) {
+      console.warn("Captured frame too small, likely black:", base64?.length);
+      return null;
+    }
+
+    return base64;
+  }, [cameraOn, videoReady]);
 
   // ── Analyze current frame ──
   const analyzeFrame = useCallback(async () => {
-    if (isAnalyzing || !cameraOn) return;
+    if (isAnalyzing || !cameraOn || !videoReady) return;
 
     const base64 = captureFrame();
     if (!base64) return;
@@ -169,12 +202,12 @@ export function VideoFeed({ isActive, analysisInterval = 10000 }: VideoFeedProps
     } finally {
       setIsAnalyzing(false);
     }
-  }, [isAnalyzing, cameraOn, captureFrame]);
+  }, [isAnalyzing, cameraOn, videoReady, captureFrame]);
 
   // ── Auto-analyze on interval when active ──
   useEffect(() => {
-    if (isActive && cameraOn) {
-      // Run initial analysis after 3 seconds
+    if (isActive && cameraOn && videoReady) {
+      // Run initial analysis after 3 seconds (give camera time to focus)
       const initialTimeout = setTimeout(() => analyzeFrame(), 3000);
 
       // Then run on interval
@@ -196,7 +229,7 @@ export function VideoFeed({ isActive, analysisInterval = 10000 }: VideoFeedProps
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
-  }, [isActive, cameraOn, analyzeFrame, analysisInterval]);
+  }, [isActive, cameraOn, videoReady, analyzeFrame, analysisInterval]);
 
   // ── Cleanup on unmount ──
   useEffect(() => {
@@ -209,6 +242,13 @@ export function VideoFeed({ isActive, analysisInterval = 10000 }: VideoFeedProps
       }
     };
   }, []);
+
+  // ── Auto-start camera when interview becomes active ──
+  useEffect(() => {
+    if (isActive && !cameraOn && !cameraError) {
+      startCamera();
+    }
+  }, [isActive, cameraOn, cameraError, startCamera]);
 
   return (
     <div className="space-y-3">
@@ -241,6 +281,13 @@ export function VideoFeed({ isActive, analysisInterval = 10000 }: VideoFeedProps
               <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
               <span className="font-pixel text-[8px] text-white/70">LIVE</span>
             </div>
+
+            {/* Video not ready indicator */}
+            {!videoReady && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+                <Loader2 className="h-8 w-8 animate-spin text-neon-cyan/60" />
+              </div>
+            )}
 
             {/* Overall confidence overlay */}
             <AnimatePresence>
@@ -386,4 +433,3 @@ export function VideoFeed({ isActive, analysisInterval = 10000 }: VideoFeedProps
     </div>
   );
 }
-
