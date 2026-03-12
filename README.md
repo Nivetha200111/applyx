@@ -1,19 +1,72 @@
 # ApplyX v2
 
-ApplyX v2 is a source-available AI resume tailoring and job application workflow product built with Next.js 14, TypeScript, Tailwind CSS, PostgreSQL, Anthropic, OpenAI fallback, and a billing layer that prefers Dodo Payments but can fall back to manual payment links. Users create an account, upload one master resume, paste any job description, and receive an ATS-optimized tailored resume in PDF or DOCX format.
+ApplyX v2 is a source-available AI resume tailoring, job application tracking, and mock interview platform built with Next.js 14, TypeScript, Tailwind CSS, PostgreSQL, and Google Gemini. Users create an account, upload a master resume, paste any job description, and receive an ATS-optimized tailored resume in PDF or DOCX format. The platform also includes AI-powered mock interviews with live video body language analysis and voice interaction.
 
 The code is visible for evaluation and upstream contributions, but commercial reuse is not permitted without written permission. See `LICENSE`.
 
 ## Stack
 
-- Next.js 14 App Router with Server Components and Server Actions
+- Next.js 14 App Router with Server Components, Streaming, and Suspense
 - TypeScript in strict mode
 - Tailwind CSS with local shadcn/ui-compatible components
+- Framer Motion for panel entrance animations, pure CSS for page transitions
 - PostgreSQL-backed auth, session, resume, tailoring, usage, and payment records
 - Provider-neutral PostgreSQL schema targeting Neon or any standard PostgreSQL host
-- Anthropic Claude with OpenAI fallback
+- Edge middleware for instant auth gating (cookie-based, zero DB calls)
+- Google Gemini 2.5 Flash / Flash Lite for AI tailoring and mock interview generation
+- Gemini Embedding (`gemini-embedding-001`) for semantic answer evaluation
+- Gemini 2.5 Flash Vision for live webcam body language analysis
+- Web Speech API for voice-powered interview responses (speech-to-text and text-to-speech)
 - Dodo Payments for hosted checkout when available
 - Manual UPI / international payment link fallback with founder approval scripts
+
+## Features
+
+### Resume Tailoring
+- Upload master resumes (PDF or DOCX) with AI parsing
+- Paste a job description and receive an ATS-optimized tailored resume
+- Plan-based tailoring quality (fast mode on Basic, deep rewrite on Premium)
+- PDF and DOCX download generation
+- Match score tracking before and after tailoring
+
+### Job Application Tracker
+- Spreadsheet-style tracker with AI auto-fill from pasted JDs
+- Authenticity and resume-fit signals for tracked roles
+- Status management, follow-up reminders, and snooze
+- Auto-set status and schedule follow-ups on JD parse (Basic+)
+- Full automation: parse → tailor → status → follow-up (Premium)
+
+### AI Mock Interviews
+- AI-generated interview questions based on role, company, and difficulty
+- Semantic answer evaluation using Gemini Embedding 2 for similarity scoring
+- Live webcam video feed with real-time body language analysis (posture, eye contact, gestures, facial expressions)
+- Voice-powered responses — speak answers instead of typing
+- Text-to-speech for AI questions and feedback
+- Post-interview summary with overall score and hiring likelihood
+
+### Jobs For You
+- Aggregated job feed from external sources (Adzuna, RemoteOK)
+- AI-powered job matching based on resume profile
+- Dismiss and track jobs directly from the feed
+
+### Analytics & History
+- Application analytics with response rates and status breakdowns
+- Activity history for resume parsing, tailoring, and billing events
+- Templates library for common resume formats
+
+### Performance
+- Edge middleware for sub-millisecond auth redirects
+- Synchronous layouts with instant skeleton loading states
+- Client-side data fetching for dashboard and sidebar (no layout blocking)
+- `React.cache()` deduplication for database calls
+- Pure CSS page transitions (retro CRT theme) — no JS overhead
+- `loading.tsx` skeletons on every dashboard route
+
+### Billing
+- Dodo Payments hosted checkout and customer portal
+- Signed webhook processing for subscription lifecycle
+- Manual billing fallback with UPI QR and international payment links
+- Free, Basic, and Premium usage enforcement
 
 ## Local Setup
 
@@ -52,36 +105,32 @@ psql "$DATABASE_URL" -f db/migrations/20260308193000_replace_razorpay_with_dodo.
 npm run dev
 ```
 
-## Current Status
+## Environment Variables
 
-The current build now includes:
+To run it as a real product, you need to provide:
 
-- Email/password auth with Postgres-backed sessions
-- Resume upload and AI parsing for PDF and DOCX
-- JD analysis and AI tailoring with plan-based model selection
-- Job tracker authenticity and resume-fit signals for tracked roles
-- PDF and DOCX download generation
-- Dodo hosted checkout, customer portal, and signed webhook routes
-- Manual billing fallback page, transaction submission flow, and approval scripts
-- Free, Basic, and Premium usage enforcement
-- Optional OpenClaw WhatsApp notification bridge for `applied` events
+### Required
+- `DATABASE_URL` — Neon PostgreSQL connection string
+- `NEXT_PUBLIC_APP_URL` — public URL of the deployed app
 
-To run it as a real product, you still need to provide:
+### AI & Tailoring
+- `ANTHROPIC_API_KEY` — Anthropic Claude for resume tailoring
+- `OPENAI_API_KEY` — OpenAI fallback for tailoring
+- `XAI_API_KEY` — xAI Grok models for plan-based tailoring
+- `GEMINI_API_KEY` — Google Gemini for mock interviews, embeddings, and body language analysis
 
-- `DATABASE_URL`
-- `ANTHROPIC_API_KEY`
-- `OPENAI_API_KEY`
-- `XAI_API_KEY`
+### Billing
 - `DODO_PAYMENTS_API_KEY`
 - `DODO_PAYMENTS_WEBHOOK_KEY`
-- `DODO_BASIC_PRODUCT_ID` for your monthly USD Basic product
-- `DODO_PREMIUM_PRODUCT_ID` for your monthly USD Premium product
-- `DODO_ENVIRONMENT=test_mode` if your Dodo merchant is not live-enabled yet
-- `MANUAL_UPI_ID` and `MANUAL_UPI_NAME` for an in-app UPI QR code
-- or `MANUAL_UPI_PAYMENT_URL` / `MANUAL_INTERNATIONAL_PAYMENT_URL` if you want direct payment links
-- `NEXT_PUBLIC_APP_URL`
-- `APPLYX_INTERNAL_API_KEY` if you want signup conversion callbacks sent to `grow.applyx.space`
-- `OPENCLAW_NOTIFY_URL` and `OPENCLAW_NOTIFY_SECRET` if you want WhatsApp alerts through a VM-side OpenClaw bridge
+- `DODO_BASIC_PRODUCT_ID` — monthly USD Basic subscription product
+- `DODO_PREMIUM_PRODUCT_ID` — monthly USD Premium subscription product
+- `DODO_ENVIRONMENT=test_mode` — if your Dodo merchant is not live-enabled yet
+- `MANUAL_UPI_ID` and `MANUAL_UPI_NAME` — for in-app UPI QR code
+- or `MANUAL_UPI_PAYMENT_URL` / `MANUAL_INTERNATIONAL_PAYMENT_URL` — for direct payment links
+
+### Optional
+- `APPLYX_INTERNAL_API_KEY` — signup conversion callbacks to `grow.applyx.space`
+- `OPENCLAW_NOTIFY_URL` and `OPENCLAW_NOTIFY_SECRET` — WhatsApp alerts through OpenClaw bridge
 
 ## Dodo Billing Setup
 
