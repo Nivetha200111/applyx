@@ -3,7 +3,6 @@ import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { isGeminiConfigured } from "@/lib/ai/gemini";
 import { generateInterviewQuestions } from "@/lib/ai/mock-interview";
-import { toErrorResponse } from "@/lib/security/api";
 
 const requestSchema = z.object({
   jobTitle: z.string().min(1).max(200),
@@ -21,12 +20,16 @@ export async function POST(request: Request) {
 
     if (!isGeminiConfigured()) {
       return NextResponse.json(
-        { error: "Gemini API is not configured. Add GEMINI_API_KEY to enable mock interviews." },
+        {
+          error:
+            "Gemini API is not configured. Add GEMINI_API_KEY to your environment variables.",
+        },
         { status: 503 },
       );
     }
 
-    const payload = requestSchema.parse(await request.json());
+    const body = await request.json();
+    const payload = requestSchema.parse(body);
     const questions = await generateInterviewQuestions(
       payload.jobTitle,
       payload.jobDescription,
@@ -35,10 +38,18 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ questions });
   } catch (error) {
-    return toErrorResponse(error, {
-      fallbackMessage: "Failed to generate interview questions.",
-      logLabel: "api/interviews/questions",
-    });
+    // Return the actual error message so we can debug on the client
+    const message =
+      error instanceof z.ZodError
+        ? `Validation error: ${error.issues.map((i) => i.message).join(", ")}`
+        : error instanceof Error
+          ? error.message
+          : "Unknown error generating interview questions.";
+
+    console.error("[api/interviews/questions]", message, error);
+
+    const status = error instanceof z.ZodError ? 400 : 500;
+    return NextResponse.json({ error: message }, { status });
   }
 }
 

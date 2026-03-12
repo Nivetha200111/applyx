@@ -3,7 +3,6 @@ import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { isGeminiConfigured } from "@/lib/ai/gemini";
 import { generateInterviewSummary } from "@/lib/ai/mock-interview";
-import { toErrorResponse } from "@/lib/security/api";
 
 const questionSchema = z.object({
   id: z.number(),
@@ -58,10 +57,17 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ summary });
   } catch (error) {
-    return toErrorResponse(error, {
-      fallbackMessage: "Failed to generate interview summary.",
-      logLabel: "api/interviews/summary",
-    });
+    const message =
+      error instanceof z.ZodError
+        ? `Validation error: ${error.issues.map((i) => i.message).join(", ")}`
+        : error instanceof Error
+          ? error.message
+          : "Unknown error generating summary.";
+
+    console.error("[api/interviews/summary]", message, error);
+
+    const status = error instanceof z.ZodError ? 400 : 500;
+    return NextResponse.json({ error: message }, { status });
   }
 }
 

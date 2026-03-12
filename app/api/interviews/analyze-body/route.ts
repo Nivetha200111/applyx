@@ -3,7 +3,6 @@ import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { isGeminiConfigured } from "@/lib/ai/gemini";
 import { analyzeBodyLanguage } from "@/lib/ai/mock-interview";
-import { toErrorResponse } from "@/lib/security/api";
 
 const requestSchema = z.object({
   // Base64-encoded image data (without the data: prefix)
@@ -31,10 +30,17 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ analysis });
   } catch (error) {
-    return toErrorResponse(error, {
-      fallbackMessage: "Failed to analyze body language.",
-      logLabel: "api/interviews/analyze-body",
-    });
+    const message =
+      error instanceof z.ZodError
+        ? `Validation error: ${error.issues.map((i) => i.message).join(", ")}`
+        : error instanceof Error
+          ? error.message
+          : "Unknown error analyzing body language.";
+
+    console.error("[api/interviews/analyze-body]", message, error);
+
+    const status = error instanceof z.ZodError ? 400 : 500;
+    return NextResponse.json({ error: message }, { status });
   }
 }
 

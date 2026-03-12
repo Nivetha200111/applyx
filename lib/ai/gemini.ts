@@ -1,27 +1,37 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY ?? "";
+// Read API key lazily — avoids module-level env issues on Vercel edge/serverless
+function getApiKey(): string {
+  return process.env.GEMINI_API_KEY ?? "";
+}
 
 const globalForGemini = globalThis as typeof globalThis & {
   __geminiClient?: GoogleGenerativeAI;
+  __geminiKeyUsed?: string;
 };
 
 function getGeminiClient() {
-  if (!GEMINI_API_KEY) {
-    throw new Error("GEMINI_API_KEY is not configured.");
+  const key = getApiKey();
+
+  if (!key) {
+    throw new Error(
+      "GEMINI_API_KEY is not configured. Set it in your environment variables.",
+    );
   }
 
-  if (globalForGemini.__geminiClient) {
+  // Reuse cached client only if the key hasn't changed
+  if (globalForGemini.__geminiClient && globalForGemini.__geminiKeyUsed === key) {
     return globalForGemini.__geminiClient;
   }
 
-  const client = new GoogleGenerativeAI(GEMINI_API_KEY);
+  const client = new GoogleGenerativeAI(key);
   globalForGemini.__geminiClient = client;
+  globalForGemini.__geminiKeyUsed = key;
   return client;
 }
 
 export function isGeminiConfigured() {
-  return Boolean(GEMINI_API_KEY);
+  return Boolean(getApiKey());
 }
 
 // ── Gemini Embedding 2 ──
@@ -75,6 +85,24 @@ export async function generateContent(prompt: string): Promise<string> {
 }
 
 /**
+ * Generate text content and force JSON output using responseMimeType.
+ * This tells Gemini to return raw JSON without markdown fences.
+ */
+export async function generateJsonRaw(prompt: string): Promise<string> {
+  const client = getGeminiClient();
+  const model = client.getGenerativeModel({
+    model: GENERATIVE_MODEL,
+    generationConfig: {
+      temperature: 0.7,
+      maxOutputTokens: 4096,
+      responseMimeType: "application/json",
+    },
+  });
+  const result = await model.generateContent(prompt);
+  return result.response.text();
+}
+
+/**
  * Analyze an image using Gemini 2.0 Flash vision capabilities.
  * Accepts a base64-encoded image (without the data: prefix) and a text prompt.
  */
@@ -86,7 +114,11 @@ export async function analyzeImage(
   const client = getGeminiClient();
   const model = client.getGenerativeModel({
     model: GENERATIVE_MODEL,
-    generationConfig: { temperature: 0.4, maxOutputTokens: 2048 },
+    generationConfig: {
+      temperature: 0.4,
+      maxOutputTokens: 2048,
+      responseMimeType: "application/json",
+    },
   });
 
   const result = await model.generateContent([
@@ -112,32 +144,51 @@ export async function analyzeImageJson<T>(
   validate: (value: unknown) => T,
 ): Promise<T> {
   const raw = await analyzeImage(base64Image, mimeType, prompt);
-  const fenced = raw.match(/```json\s*([\s\S]*?)```/i) || raw.match(/```\s*([\s\S]*?)```/i);
+  const parsed = extractAndParseJson(raw);
+  return validate(parsed);
+}
+
+/**
+ * Extract JSON from a string that may contain markdown fences or extra text.
+ */
+function extractAndParseJson(raw: string): unknown {
+  // Try direct parse first (works when responseMimeType is application/json)
+  try {
+    return JSON.parse(raw);
+  } catch {
+    // Fall through to manual extraction
+  }
+
+  // Extract from markdown code fences
+  const fenced =
+    raw.match(/```json\s*([\s\S]*?)```/i) ||
+    raw.match(/```\s*([\s\S]*?)```/i);
   const jsonStr = fenced?.[1]?.trim() ?? raw.trim();
 
-  const start = jsonStr.indexOf("{") >= 0 ? jsonStr.indexOf("{") : jsonStr.indexOf("[");
-  const end = jsonStr.lastIndexOf("}") >= 0 ? jsonStr.lastIndexOf("}") : jsonStr.lastIndexOf("]");
+  // Find the outermost JSON object or array
+  const start =
+    jsonStr.indexOf("{") >= 0 ? jsonStr.indexOf("{") : jsonStr.indexOf("[");
+  const end =
+    jsonStr.lastIndexOf("}") >= 0
+      ? jsonStr.lastIndexOf("}")
+      : jsonStr.lastIndexOf("]");
 
-  const cleaned = start >= 0 && end > start ? jsonStr.slice(start, end + 1) : jsonStr;
-  return validate(JSON.parse(cleaned));
+  const cleaned =
+    start >= 0 && end > start ? jsonStr.slice(start, end + 1) : jsonStr;
+
+  return JSON.parse(cleaned);
 }
 
 /**
  * Generate structured JSON content with Gemini.
+ * Uses responseMimeType: "application/json" for reliable JSON output.
  */
 export async function generateJsonContent<T>(
   prompt: string,
   validate: (value: unknown) => T,
 ): Promise<T> {
-  const raw = await generateContent(prompt);
-  // Extract JSON from possible markdown fencing
-  const fenced = raw.match(/```json\s*([\s\S]*?)```/i) || raw.match(/```\s*([\s\S]*?)```/i);
-  const jsonStr = fenced?.[1]?.trim() ?? raw.trim();
-
-  const start = jsonStr.indexOf("{") >= 0 ? jsonStr.indexOf("{") : jsonStr.indexOf("[");
-  const end = jsonStr.lastIndexOf("}") >= 0 ? jsonStr.lastIndexOf("}") : jsonStr.lastIndexOf("]");
-
-  const cleaned = start >= 0 && end > start ? jsonStr.slice(start, end + 1) : jsonStr;
-  return validate(JSON.parse(cleaned));
+  const raw = await generateJsonRaw(prompt);
+  const parsed = extractAndParseJson(raw);
+  return validate(parsed);
 }
 
