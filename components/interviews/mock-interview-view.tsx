@@ -14,7 +14,7 @@ import {
   MicOff,
   RotateCcw,
   Sparkles,
-  Target,
+
   Trophy,
   Volume2,
   VolumeX,
