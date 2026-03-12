@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type {
   AppUser,
   ApplicationStatus,
@@ -203,7 +204,10 @@ function mapPayment(row: PaymentRow): PaymentRecord {
   };
 }
 
-export async function refreshUserAccess(user: AppUser) {
+// Wrapped with React cache() so multiple calls within one render pass
+// (e.g. layout + page both calling refreshUserAccess) only run the
+// billing-cycle check once.
+export const refreshUserAccess = cache(async function refreshUserAccess(user: AppUser) {
   if (isDeveloperAdminUser(user)) {
     return user;
   }
@@ -235,7 +239,7 @@ export async function refreshUserAccess(user: AppUser) {
 
   const updated = firstRow(result);
   return updated ? mapUser(updated) : user;
-}
+});
 
 export function getRemainingTailors(user: AppUser) {
   if (user.plan === "free") {

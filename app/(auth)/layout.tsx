@@ -2,16 +2,16 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthEntrance } from "@/components/auth/auth-entrance";
 import { ApplyxLogo } from "@/components/ui/applyx-logo";
-import { getCurrentUser } from "@/lib/auth";
+import { hasSessionCookie } from "@/lib/auth";
 
-export default async function AuthLayout({
+export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getCurrentUser();
-
-  if (user) {
+  // Fast cookie check — if user has a session cookie they're probably
+  // logged in, redirect to dashboard without a DB round-trip.
+  if (hasSessionCookie()) {
     redirect("/dashboard");
   }
 
