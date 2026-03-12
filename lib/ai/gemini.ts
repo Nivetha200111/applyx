@@ -79,7 +79,7 @@ export async function generateContent(prompt: string): Promise<string> {
   const client = getGeminiClient();
   const model = client.getGenerativeModel({
     model: GENERATIVE_MODEL,
-    generationConfig: { temperature: 0.7, maxOutputTokens: 4096 },
+    generationConfig: { temperature: 0.7, maxOutputTokens: 16384 },
   });
   const result = await model.generateContent(prompt);
   return result.response.text();
@@ -88,6 +88,7 @@ export async function generateContent(prompt: string): Promise<string> {
 /**
  * Generate text content and force JSON output using responseMimeType.
  * This tells Gemini to return raw JSON without markdown fences.
+ * Uses a high token limit to prevent truncation of large JSON responses.
  */
 export async function generateJsonRaw(prompt: string): Promise<string> {
   const client = getGeminiClient();
@@ -95,7 +96,7 @@ export async function generateJsonRaw(prompt: string): Promise<string> {
     model: GENERATIVE_MODEL,
     generationConfig: {
       temperature: 0.7,
-      maxOutputTokens: 4096,
+      maxOutputTokens: 16384,
       responseMimeType: "application/json",
     },
   });
@@ -117,7 +118,7 @@ export async function analyzeImage(
     model: GENERATIVE_MODEL,
     generationConfig: {
       temperature: 0.4,
-      maxOutputTokens: 2048,
+      maxOutputTokens: 4096,
       responseMimeType: "application/json",
     },
   });
