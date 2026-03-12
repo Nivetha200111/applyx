@@ -1,12 +1,11 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { motion } from "framer-motion";
-import { useHydratedReducedMotion } from "@/components/ui/use-hydrated-reduced-motion";
 
 /**
- * Lightweight page wrapper — no AnimatePresence, no exit blocking.
- * Each layout's content shell handles its own entrance animation.
+ * Lightweight passthrough — page transitions handled by CSS View Transitions
+ * and each content shell's own CSS entrance animation.
+ * No AnimatePresence, no JS animation blocking.
  */
 export function PageTransition({ children }: { children: ReactNode }) {
   return <>{children}</>;
@@ -20,22 +19,10 @@ export function StaggerChildren({
   children: ReactNode;
   className?: string;
 }) {
-  const reduceMotion = useHydratedReducedMotion();
-
   return (
-    <motion.div
-      animate={reduceMotion ? undefined : "animate"}
-      className={className}
-      initial={reduceMotion ? false : "initial"}
-      variants={reduceMotion ? undefined : {
-        initial: {},
-        animate: {
-          transition: { staggerChildren: 0.07, delayChildren: 0.04 },
-        },
-      }}
-    >
+    <div className={className} style={{ animation: "retro-fade-in 0.3s ease-out" }}>
       {children}
-    </motion.div>
+    </div>
   );
 }
 
@@ -47,25 +34,9 @@ export function StaggerItem({
   children: ReactNode;
   className?: string;
 }) {
-  const reduceMotion = useHydratedReducedMotion();
-
   return (
-    <motion.div
-      className={className}
-      variants={reduceMotion ? undefined : {
-        initial: { opacity: 0, y: 12 },
-        animate: {
-          opacity: 1,
-          y: 0,
-          transition: {
-            type: "spring",
-            stiffness: 400,
-            damping: 30,
-          },
-        },
-      }}
-    >
+    <div className={className} style={{ animation: "retro-slide-up 0.25s ease-out both" }}>
       {children}
-    </motion.div>
+    </div>
   );
 }

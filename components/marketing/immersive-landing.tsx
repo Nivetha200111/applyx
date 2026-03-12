@@ -115,32 +115,7 @@ function CursorFollower() {
 
 function FloatingStars() {
   return (
-    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-      {Array.from({ length: 30 }).map((_, i) => (
-        <div
-          key={i}
-          className="absolute rounded-full"
-          style={{
-            width: `${Math.random() * 2 + 1}px`,
-            height: `${Math.random() * 2 + 1}px`,
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-            background: [
-              "rgba(232,96,155,0.6)",
-              "rgba(91,207,219,0.6)",
-              "rgba(108,217,88,0.5)",
-              "rgba(210,200,60,0.5)",
-              "rgba(180,114,224,0.5)",
-              "rgba(255,255,255,0.4)",
-            ][Math.floor(Math.random() * 6)],
-            boxShadow: `0 0 ${Math.random() * 3 + 1}px currentColor`,
-            animation: `float ${Math.random() * 8 + 6}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 5}s`,
-            opacity: Math.random() * 0.4 + 0.15,
-          }}
-        />
-      ))}
-    </div>
+    <div className="pointer-events-none fixed inset-0 z-0 star-field opacity-30" />
   );
 }
 

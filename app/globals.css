@@ -640,30 +640,78 @@
     animation: blink 1s step-end infinite;
     color: #39ff14;
   }
+
+  /* ═══════════════════════════════════════════ */
+  /* ★ RETRO PAGE TRANSITIONS ★ */
+  /* ═══════════════════════════════════════════ */
+
+  /* CRT power-on entrance for pages */
+  .retro-page-enter {
+    animation: crt-power-on 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* ═══════════════════════════════════════════ */
+  /* ★ HOVER ZOOM EFFECTS ★ */
+  /* ═══════════════════════════════════════════ */
+
+  /* Nav links and interactive elements get a retro zoom on hover */
+  .retro-cursor a,
+  .retro-hover-zoom {
+    transition: transform 0.2s ease, filter 0.2s ease, text-shadow 0.2s ease;
+  }
+
+  .retro-cursor a:hover,
+  .retro-hover-zoom:hover {
+    transform: scale(1.06);
+    filter: brightness(1.15);
+  }
+
+  .retro-cursor nav a:hover {
+    transform: scale(1.1);
+  }
+
+  /* Buttons get a bolder zoom + glow */
+  .retro-cursor button:hover,
+  .retro-cursor [role="button"]:hover,
+  .retro-cursor .retro-btn:hover {
+    transform: scale(1.05) translateY(-2px);
+    filter: brightness(1.1);
+  }
+
+  /* Cards zoom on hover */
+  .retro-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .retro-card:hover {
+    transform: scale(1.03) translateY(-3px);
+    border-color: rgba(0, 240, 255, 0.3);
+    box-shadow:
+      0 0 14px rgba(0, 0, 0, 0.5),
+      0 0 4px rgba(0, 240, 255, 0.1);
+  }
 }
 
-/* ── View Transitions API (Chrome / Edge) ── */
+/* ── View Transitions API (Chrome / Edge) — Retro CRT style ── */
 
 @view-transition {
   navigation: auto;
 }
 
 ::view-transition-old(root) {
-  animation: vt-fade-out 0.22s ease forwards,
-             vt-slide-out 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
+  animation: vt-crt-off 0.2s ease forwards;
 }
 
 ::view-transition-new(root) {
-  animation: vt-fade-in 0.28s ease forwards,
-             vt-slide-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: vt-crt-on 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 ::view-transition-old(page-content) {
-  animation: vt-scale-out 0.2s ease forwards;
+  animation: vt-crt-off 0.15s ease forwards;
 }
 
 ::view-transition-new(page-content) {
-  animation: vt-scale-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: vt-crt-on 0.25s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* ═══════════════════════════════════════════ */
@@ -746,37 +794,37 @@
   50% { opacity: 0; }
 }
 
-/* View Transition keyframes */
-@keyframes vt-fade-out {
-  to { opacity: 0; }
+/* Retro View Transition keyframes — CRT power off/on */
+@keyframes vt-crt-off {
+  0% { opacity: 1; transform: scale(1); filter: brightness(1); }
+  60% { opacity: 0.8; transform: scaleY(0.005) scaleX(1); filter: brightness(2); }
+  100% { opacity: 0; transform: scaleY(0) scaleX(0); filter: brightness(0); }
 }
 
-@keyframes vt-fade-in {
+@keyframes vt-crt-on {
+  0% { opacity: 0; transform: scaleY(0.005) scaleX(0.6); filter: brightness(3); }
+  40% { opacity: 0.7; transform: scaleY(0.005) scaleX(1); filter: brightness(2); }
+  60% { opacity: 0.9; transform: scaleY(1) scaleX(1); filter: brightness(1.3); }
+  100% { opacity: 1; transform: scale(1); filter: brightness(1); }
+}
+
+/* CRT power-on entrance for page content */
+@keyframes crt-power-on {
+  0% { opacity: 0; transform: scaleY(0.01) scaleX(0.8); filter: brightness(2.5) saturate(0); }
+  30% { opacity: 0.6; transform: scaleY(0.01) scaleX(1); filter: brightness(2) saturate(0.5); }
+  50% { opacity: 0.8; transform: scaleY(1) scaleX(1); filter: brightness(1.4) saturate(0.8); }
+  100% { opacity: 1; transform: scale(1); filter: brightness(1) saturate(1); }
+}
+
+/* Generic retro fade/slide for stagger items */
+@keyframes retro-fade-in {
   from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@keyframes vt-slide-out {
-  to { transform: translateY(-8px); }
-}
-
-@keyframes vt-slide-in {
-  from { transform: translateY(14px); }
-}
-
-@keyframes vt-scale-out {
-  to {
-    opacity: 0;
-    transform: scale(0.98);
-    filter: blur(4px);
-  }
-}
-
-@keyframes vt-scale-in {
-  from {
-    opacity: 0;
-    transform: scale(0.98);
-    filter: blur(6px);
-  }
+@keyframes retro-slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes marquee {
