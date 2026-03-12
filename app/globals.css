@@ -650,6 +650,11 @@
     animation: crt-power-on 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
+  /* Auth page entrance — pure CSS so visible before JS hydration */
+  .auth-entrance {
+    animation: auth-slide-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
   /* ═══════════════════════════════════════════ */
   /* ★ HOVER ZOOM EFFECTS ★ */
   /* ═══════════════════════════════════════════ */
@@ -812,6 +817,12 @@
 @keyframes crt-power-on {
   0% { opacity: 0; filter: brightness(1.3) saturate(0.5); }
   100% { opacity: 1; filter: brightness(1) saturate(1); }
+}
+
+/* Auth page slide-in — runs from server HTML, no JS needed */
+@keyframes auth-slide-in {
+  0% { opacity: 0; transform: translateY(18px) scale(0.97); filter: blur(6px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); }
 }
 
 /* Generic retro fade/slide for stagger items */
