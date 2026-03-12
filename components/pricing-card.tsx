@@ -15,7 +15,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useHydratedReducedMotion } from "@/components/ui/use-hydrated-reduced-motion";
 import { cn } from "@/lib/utils";
 
 interface PricingCardProps {
@@ -23,17 +22,15 @@ interface PricingCardProps {
 }
 
 export function PricingCard({ tier }: PricingCardProps) {
-  const reduceMotion = useHydratedReducedMotion();
   const isPremium = tier.name === "Premium";
 
   return (
     <motion.div
       className="h-full"
-      initial={reduceMotion ? undefined : { opacity: 0, y: 22, scale: 0.98, filter: "blur(6px)" }}
+      initial={{ opacity: 0, y: 22, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
-      viewport={{ once: true, amount: 0.2 }}
-      whileHover={reduceMotion ? undefined : { y: -10, scale: 1.02 }}
-      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+      whileHover={{ y: -10, scale: 1.02 }}
     >
       <SpotlightCard className="h-full">
         <Card
@@ -90,10 +87,9 @@ export function PricingCard({ tier }: PricingCardProps) {
               <motion.div
                 key={feature}
                 className="flex items-start gap-3 text-sm text-muted-foreground"
-                initial={reduceMotion ? undefined : { opacity: 0, x: -10 }}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: 0.4 + i * 0.06, ease: "easeOut" }}
-                viewport={{ once: true }}
-                whileInView={reduceMotion ? undefined : { opacity: 1, x: 0 }}
               >
                 <Check className={cn(
                   "mt-0.5 h-4 w-4",

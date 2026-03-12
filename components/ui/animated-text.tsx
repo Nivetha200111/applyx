@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { useHydratedReducedMotion } from "@/components/ui/use-hydrated-reduced-motion";
 
 interface AnimatedTextProps {
   text: string;
@@ -18,12 +17,7 @@ export function AnimatedText({
   delay = 0,
   as: Tag = "span",
 }: AnimatedTextProps) {
-  const reduceMotion = useHydratedReducedMotion();
   const words = text.split(" ");
-
-  if (reduceMotion) {
-    return <Tag className={className}>{text}</Tag>;
-  }
 
   return (
     <Tag className={cn("flex flex-wrap", className)}>
@@ -32,13 +26,12 @@ export function AnimatedText({
           key={`${word}-${i}`}
           className="mr-[0.3em] inline-block"
           initial={{ opacity: 0, y: 28, rotateX: 90, filter: "blur(6px)" }}
+          animate={{ opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" }}
           transition={{
             duration: 0.55,
             delay: delay + i * 0.06,
             ease: [0.22, 1, 0.36, 1],
           }}
-          viewport={{ once: true, amount: 0.5 }}
-          whileInView={{ opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" }}
         >
           {word}
         </motion.span>
@@ -62,16 +55,12 @@ export function AnimatedCounter({
   className,
   duration = 1.6,
 }: AnimatedCounterProps) {
-  const reduceMotion = useHydratedReducedMotion();
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.5 });
   const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
-    if (!isInView || reduceMotion) {
-      if (reduceMotion) setDisplayValue(target);
-      return;
-    }
+    if (!isInView) return;
 
     const startTime = performance.now();
     const durationMs = duration * 1000;
@@ -88,7 +77,7 @@ export function AnimatedCounter({
     }
 
     requestAnimationFrame(tick);
-  }, [isInView, target, duration, reduceMotion]);
+  }, [isInView, target, duration]);
 
   return (
     <span ref={ref} className={cn("tabular-nums", className)}>

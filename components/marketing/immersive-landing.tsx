@@ -802,8 +802,7 @@ export function ImmersiveLanding() {
           <motion.div
             className="relative text-center"
             initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
             {/* Decorative badge */}
@@ -872,8 +871,7 @@ export function ImmersiveLanding() {
             <motion.div
               className="mt-16 grid grid-cols-3 gap-4 sm:mx-auto sm:max-w-xl"
               initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
             >
               {[
@@ -886,8 +884,7 @@ export function ImmersiveLanding() {
                   className="retro-card rounded-sm p-4 text-center"
                   whileHover={{ scale: 1.05, y: -5 }}
                   initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 + i * 0.1, duration: 0.5 }}
                 >
                   <div className={cn("font-pixel text-xs sm:text-sm", item.color)}>{item.value}</div>
