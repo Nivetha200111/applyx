@@ -96,11 +96,11 @@ function CursorFollower() {
           ref={(el) => { if (el) trailRefs.current[i] = el; }}
           className="fixed rounded-full"
           style={{
-            background: i % 2 === 0 ? "#ff2d95" : "#00f0ff",
+            background: i % 2 === 0 ? "rgba(232,96,155,0.5)" : "rgba(91,207,219,0.5)",
             mixBlendMode: "screen",
             boxShadow: i % 2 === 0
-              ? "0 0 8px #ff2d95"
-              : "0 0 8px #00f0ff",
+              ? "0 0 4px rgba(255,45,149,0.2)"
+              : "0 0 4px rgba(0,240,255,0.2)",
             pointerEvents: "none",
           }}
         />
@@ -116,22 +116,27 @@ function CursorFollower() {
 function FloatingStars() {
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-      {Array.from({ length: 50 }).map((_, i) => (
+      {Array.from({ length: 30 }).map((_, i) => (
         <div
           key={i}
           className="absolute rounded-full"
           style={{
-            width: `${Math.random() * 3 + 1}px`,
-            height: `${Math.random() * 3 + 1}px`,
+            width: `${Math.random() * 2 + 1}px`,
+            height: `${Math.random() * 2 + 1}px`,
             top: `${Math.random() * 100}%`,
             left: `${Math.random() * 100}%`,
-            background: ["#ff2d95", "#00f0ff", "#39ff14", "#fff01f", "#b026ff", "#fff"][
-              Math.floor(Math.random() * 6)
-            ],
-            boxShadow: `0 0 ${Math.random() * 6 + 2}px currentColor`,
-            animation: `float ${Math.random() * 6 + 4}s ease-in-out infinite`,
+            background: [
+              "rgba(232,96,155,0.6)",
+              "rgba(91,207,219,0.6)",
+              "rgba(108,217,88,0.5)",
+              "rgba(210,200,60,0.5)",
+              "rgba(180,114,224,0.5)",
+              "rgba(255,255,255,0.4)",
+            ][Math.floor(Math.random() * 6)],
+            boxShadow: `0 0 ${Math.random() * 3 + 1}px currentColor`,
+            animation: `float ${Math.random() * 8 + 6}s ease-in-out infinite`,
             animationDelay: `${Math.random() * 5}s`,
-            opacity: Math.random() * 0.7 + 0.3,
+            opacity: Math.random() * 0.4 + 0.15,
           }}
         />
       ))}
@@ -578,8 +583,8 @@ function ChapterSection({ chapter, index }: { chapter: (typeof chapters)[number]
                     animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
                     transition={{ delay: 0.8 + statIndex * 0.1, duration: 0.5 }}
                     whileHover={{
-                      scale: 1.08,
-                      boxShadow: `0 0 30px ${chapter.color === "neon-pink" ? "rgba(255,45,149,0.4)" : chapter.color === "neon-cyan" ? "rgba(0,240,255,0.4)" : chapter.color === "neon-green" ? "rgba(57,255,20,0.4)" : "rgba(176,38,255,0.4)"}`,
+                      scale: 1.05,
+                      boxShadow: `0 0 16px ${chapter.color === "neon-pink" ? "rgba(255,45,149,0.15)" : chapter.color === "neon-cyan" ? "rgba(0,240,255,0.15)" : chapter.color === "neon-green" ? "rgba(57,255,20,0.15)" : "rgba(176,38,255,0.15)"}`,
                     }}
                   >
                     <span className="text-2xl">{stat.icon}</span>
@@ -647,11 +652,11 @@ export function ImmersiveLanding() {
       <section ref={heroRef} className="relative min-h-screen overflow-hidden">
         {/* Animated background */}
         <div className="absolute inset-0">
-          <div className="star-field absolute inset-0 opacity-60" />
-          <div className="retro-grid absolute inset-x-0 bottom-0 h-1/2 opacity-40" />
-          <div className="absolute left-1/4 top-1/4 h-96 w-96 rounded-full bg-neon-pink/10 blur-[120px]" />
-          <div className="absolute right-1/4 top-1/3 h-80 w-80 rounded-full bg-neon-cyan/10 blur-[100px]" />
-          <div className="absolute bottom-1/4 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-neon-purple/10 blur-[100px]" />
+          <div className="star-field absolute inset-0 opacity-40" />
+          <div className="retro-grid absolute inset-x-0 bottom-0 h-1/2 opacity-20" />
+          <div className="absolute left-1/4 top-1/4 h-96 w-96 rounded-full bg-neon-pink/5 blur-[150px]" />
+          <div className="absolute right-1/4 top-1/3 h-80 w-80 rounded-full bg-neon-cyan/5 blur-[130px]" />
+          <div className="absolute bottom-1/4 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-neon-purple/5 blur-[130px]" />
         </div>
 
         <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-center gap-8 px-4 py-20 text-center sm:px-6 lg:px-8">
@@ -815,9 +820,9 @@ export function ImmersiveLanding() {
 
         <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-32 lg:px-8">
           {/* Background effects */}
-          <div className="absolute inset-0 bg-gradient-to-t from-neon-pink/10 via-transparent to-neon-cyan/10" />
-          <div className="absolute left-1/4 top-1/2 h-80 w-80 -translate-y-1/2 rounded-full bg-neon-pink/10 blur-[120px]" />
-          <div className="absolute right-1/4 top-1/2 h-80 w-80 -translate-y-1/2 rounded-full bg-neon-cyan/10 blur-[120px]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-neon-pink/5 via-transparent to-neon-cyan/5" />
+          <div className="absolute left-1/4 top-1/2 h-80 w-80 -translate-y-1/2 rounded-full bg-neon-pink/4 blur-[150px]" />
+          <div className="absolute right-1/4 top-1/2 h-80 w-80 -translate-y-1/2 rounded-full bg-neon-cyan/4 blur-[150px]" />
 
           <motion.div
             className="relative text-center"
@@ -829,7 +834,7 @@ export function ImmersiveLanding() {
             {/* Decorative badge */}
             <motion.div
               className="mb-8 inline-flex items-center gap-2 rounded-sm border-2 border-neon-green/50 bg-retro-darker/80 px-5 py-2"
-              animate={{ boxShadow: ["0 0 10px rgba(57,255,20,0.3)", "0 0 30px rgba(57,255,20,0.6)", "0 0 10px rgba(57,255,20,0.3)"] }}
+              animate={{ boxShadow: ["0 0 6px rgba(57,255,20,0.15)", "0 0 14px rgba(57,255,20,0.25)", "0 0 6px rgba(57,255,20,0.15)"] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
               <Trophy className="h-5 w-5 text-neon-green" />
@@ -860,12 +865,12 @@ export function ImmersiveLanding() {
                   whileTap={{ scale: 0.95 }}
                   animate={{
                     boxShadow: [
-                      "0 4px 0 #990044, 0 0 20px rgba(255,45,149,0.4)",
-                      "0 4px 0 #990044, 0 0 40px rgba(255,45,149,0.6), 0 0 80px rgba(255,45,149,0.3)",
-                      "0 4px 0 #990044, 0 0 20px rgba(255,45,149,0.4)",
+                      "0 4px 0 rgba(100,0,50,0.8), 0 0 10px rgba(255,45,149,0.12)",
+                      "0 4px 0 rgba(100,0,50,0.8), 0 0 18px rgba(255,45,149,0.2)",
+                      "0 4px 0 rgba(100,0,50,0.8), 0 0 10px rgba(255,45,149,0.12)",
                     ],
                   }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  transition={{ duration: 3, repeat: Infinity }}
                 >
                   <span className="flex items-center gap-2">
                     <Rocket className="h-4 w-4" />

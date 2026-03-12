@@ -89,7 +89,7 @@ export default function MarketingLayout({
           </div>
         </div>
         {/* Rainbow divider at the very bottom */}
-        <div className="h-1 bg-gradient-to-r from-neon-pink via-neon-cyan to-neon-green" />
+        <div className="h-px bg-gradient-to-r from-neon-pink/40 via-neon-cyan/40 to-neon-green/40" />
       </footer>
     </div>
   );
