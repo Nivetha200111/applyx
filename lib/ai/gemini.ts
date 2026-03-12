@@ -36,9 +36,11 @@ export function isGeminiConfigured() {
 
 // ── Models ──
 // Embedding: gemini-embedding-001 (stable, 3072 dims)
-// Generative: gemini-2.5-flash (latest stable flash model)
+// Generative: gemini-2.5-flash-lite (fast, no thinking overhead — fits Vercel 10s timeout)
+// Vision: gemini-2.5-flash (full model for image analysis)
 const EMBEDDING_MODEL = "gemini-embedding-001";
-const GENERATIVE_MODEL = "gemini-2.5-flash";
+const GENERATIVE_MODEL = "gemini-2.5-flash-lite";
+const VISION_MODEL = "gemini-2.5-flash";
 
 /**
  * Generate an embedding vector using Gemini Embedding 2.
@@ -115,7 +117,7 @@ export async function analyzeImage(
 ): Promise<string> {
   const client = getGeminiClient();
   const model = client.getGenerativeModel({
-    model: GENERATIVE_MODEL,
+    model: VISION_MODEL,
     generationConfig: {
       temperature: 0.4,
       maxOutputTokens: 4096,

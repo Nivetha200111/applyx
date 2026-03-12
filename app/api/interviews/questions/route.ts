@@ -4,6 +4,9 @@ import { getCurrentUser } from "@/lib/auth";
 import { isGeminiConfigured } from "@/lib/ai/gemini";
 import { generateInterviewQuestions } from "@/lib/ai/mock-interview";
 
+// Allow up to 30s for Gemini to generate questions (Vercel Pro: 60s, Hobby: 10s)
+export const maxDuration = 30;
+
 const requestSchema = z.object({
   jobTitle: z.string().min(1).max(200),
   jobDescription: z.string().min(10).max(10000),

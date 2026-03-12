@@ -4,6 +4,8 @@ import { getCurrentUser } from "@/lib/auth";
 import { isGeminiConfigured } from "@/lib/ai/gemini";
 import { generateInterviewSummary } from "@/lib/ai/mock-interview";
 
+export const maxDuration = 30;
+
 const questionSchema = z.object({
   id: z.number(),
   question: z.string(),

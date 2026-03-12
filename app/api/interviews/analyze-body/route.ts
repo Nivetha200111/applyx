@@ -4,6 +4,8 @@ import { getCurrentUser } from "@/lib/auth";
 import { isGeminiConfigured } from "@/lib/ai/gemini";
 import { analyzeBodyLanguage } from "@/lib/ai/mock-interview";
 
+export const maxDuration = 30;
+
 const requestSchema = z.object({
   // Base64-encoded image data (without the data: prefix)
   image: z.string().min(100).max(2_000_000),
