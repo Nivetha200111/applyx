@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Manrope } from "next/font/google";
+import { IBM_Plex_Mono, Manrope, Press_Start_2P, VT323 } from "next/font/google";
 import Script from "next/script";
 import { Toaster } from "sonner";
 import "./globals.css";
@@ -15,6 +15,18 @@ const ibmPlexMono = IBM_Plex_Mono({
   variable: "--font-ibm-plex-mono",
   subsets: ["latin"],
   weight: ["400", "500"],
+});
+
+const pressStart2P = Press_Start_2P({
+  variable: "--font-press-start",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const vt323 = VT323({
+  variable: "--font-vt323",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -59,6 +71,8 @@ export default function RootLayout({
         className={cn(
           manrope.variable,
           ibmPlexMono.variable,
+          pressStart2P.variable,
+          vt323.variable,
           "min-h-screen bg-background font-sans text-foreground antialiased",
         )}
       >

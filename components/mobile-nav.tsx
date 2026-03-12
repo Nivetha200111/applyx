@@ -3,9 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface MobileNavProps {
   isLoggedIn: boolean;
@@ -21,23 +19,24 @@ export function MobileNav({ isLoggedIn }: MobileNavProps) {
         onClick={() => setOpen(!open)}
         size="sm"
         variant="ghost"
+        className="text-neon-cyan hover:text-neon-pink"
       >
         {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
       </Button>
 
       {open ? (
-        <div className="absolute left-0 right-0 top-full z-40 border-b border-border/40 bg-background/95 px-4 pb-6 pt-4 backdrop-blur-2xl">
+        <div className="absolute left-0 right-0 top-full z-40 border-b-2 border-neon-pink/30 bg-retro-darker/95 px-4 pb-6 pt-4 backdrop-blur-xl">
           <nav className="flex flex-col gap-3">
             <Link
-              className="rounded-2xl px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="rounded-sm border border-neon-cyan/20 px-4 py-3 font-retro text-lg text-neon-cyan/70 transition-all hover:border-neon-cyan/50 hover:bg-neon-cyan/10 hover:text-neon-cyan"
               href="/pricing"
               onClick={() => setOpen(false)}
             >
-              Pricing
+              ★ Pricing
             </Link>
             {isLoggedIn ? (
               <Link
-                className={cn(buttonVariants(), "shimmer")}
+                className="retro-btn retro-btn-cyan text-center font-pixel text-[10px]"
                 href="/dashboard"
                 onClick={() => setOpen(false)}
               >
@@ -46,14 +45,14 @@ export function MobileNav({ isLoggedIn }: MobileNavProps) {
             ) : (
               <>
                 <Link
-                  className="rounded-2xl px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  className="rounded-sm border border-neon-pink/20 px-4 py-3 font-retro text-lg text-neon-pink/70 transition-all hover:border-neon-pink/50 hover:bg-neon-pink/10 hover:text-neon-pink"
                   href="/login"
                   onClick={() => setOpen(false)}
                 >
-                  Sign in
+                  ★ Sign In
                 </Link>
                 <Link
-                  className={cn(buttonVariants(), "shimmer")}
+                  className="retro-btn text-center font-pixel text-[10px]"
                   href="/signup"
                   onClick={() => setOpen(false)}
                 >
@@ -61,9 +60,6 @@ export function MobileNav({ isLoggedIn }: MobileNavProps) {
                 </Link>
               </>
             )}
-            <div className="pt-2">
-              <ThemeToggle />
-            </div>
           </nav>
         </div>
       ) : null}
