@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   Brain,
+  Camera,
   CheckCircle2,
   ChevronRight,
   Loader2,
@@ -25,6 +26,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { VideoFeed } from "@/components/interviews/video-feed";
 
 // ── Types ──
 
@@ -362,7 +364,7 @@ export function MockInterviewView() {
                       Initialize Interview Protocol
                     </CardTitle>
                     <CardDescription className="font-retro text-sm text-neon-green/60">
-                      Powered by Gemini Embedding 2 • Semantic Answer Analysis
+                      Gemini Embedding 2 • Gemini Vision • Live Body Language Coaching
                     </CardDescription>
                   </div>
                 </div>
@@ -370,10 +372,12 @@ export function MockInterviewView() {
               <CardContent className="space-y-6">
                 {/* Terminal intro */}
                 <div className="rounded-lg border border-neon-green/20 bg-black/40 p-4 space-y-1">
-                  <TerminalLine text="MOCK_INTERVIEW_ENGINE v2.0 loaded" delay={0} />
+                  <TerminalLine text="MOCK_INTERVIEW_ENGINE v3.0 loaded" delay={0} />
                   <TerminalLine text="Gemini Embedding 2 model: ONLINE" delay={200} />
-                  <TerminalLine text="Semantic similarity scoring: ENABLED" delay={400} />
-                  <TerminalLine text="Awaiting job parameters..." delay={600} />
+                  <TerminalLine text="Gemini Vision (body language): ONLINE" delay={400} />
+                  <TerminalLine text="Semantic similarity scoring: ENABLED" delay={600} />
+                  <TerminalLine text="Video analysis pipeline: READY" delay={800} />
+                  <TerminalLine text="Awaiting job parameters..." delay={1000} />
                 </div>
 
                 <div className="space-y-4">
@@ -453,6 +457,24 @@ export function MockInterviewView() {
                   </p>
                 </CardContent>
               </Card>
+              <Card className="border-neon-pink/20 bg-retro-darker/60 md:col-span-3">
+                <CardContent className="pt-6 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-neon-pink/10 text-neon-pink">
+                      <Camera className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-pixel text-[10px] text-neon-pink">Live Video Analysis</h3>
+                      <p className="font-retro text-xs text-white/40">NEW — Powered by Gemini Vision</p>
+                    </div>
+                  </div>
+                  <p className="font-retro text-sm text-white/50">
+                    Enable your camera during the interview and Gemini will analyze your body language
+                    in real-time — posture, eye contact, facial expressions, and hand gestures — giving
+                    you live coaching tips to nail your next real interview.
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </motion.div>
         )}
@@ -494,34 +516,38 @@ export function MockInterviewView() {
             exit={{ opacity: 0, x: -30 }}
             className="space-y-6"
           >
-            {/* Question card */}
-            <Card className="overflow-hidden border-neon-pink/20 bg-retro-darker/80">
-              <CardHeader>
-                <div className="flex items-center justify-between gap-4 flex-wrap">
-                  <div className="flex items-center gap-3">
-                    <span className={`font-pixel text-[10px] uppercase ${getTypeColor(currentQuestion.type)}`}>
-                      {currentQuestion.type}
-                    </span>
-                    {getDifficultyBadge(currentQuestion.difficulty)}
-                  </div>
-                  <span className="font-retro text-sm text-white/30">
-                    Q{currentQuestionIndex + 1}/{questions.length}
-                  </span>
-                </div>
-                <CardTitle className="font-retro text-xl text-white leading-relaxed mt-4">
-                  {currentQuestion.question}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <textarea
-                  ref={answerRef}
-                  value={currentAnswer}
-                  onChange={(e) => setCurrentAnswer(e.target.value)}
-                  placeholder="Type your answer here... Be specific, use examples, and structure your response clearly."
-                  rows={8}
-                  disabled={isLoading || !!currentFeedback}
-                  className="w-full rounded-lg border-2 border-neon-green/20 bg-black/40 px-4 py-3 font-retro text-base text-white placeholder:text-white/20 focus:border-neon-green/50 focus:outline-none focus:ring-2 focus:ring-neon-green/20 transition-all resize-none disabled:opacity-50"
-                />
+            {/* Main interview layout: question + video sidebar */}
+            <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+              {/* Left column: Question + Answer */}
+              <div className="space-y-6">
+                {/* Question card */}
+                <Card className="overflow-hidden border-neon-pink/20 bg-retro-darker/80">
+                  <CardHeader>
+                    <div className="flex items-center justify-between gap-4 flex-wrap">
+                      <div className="flex items-center gap-3">
+                        <span className={`font-pixel text-[10px] uppercase ${getTypeColor(currentQuestion.type)}`}>
+                          {currentQuestion.type}
+                        </span>
+                        {getDifficultyBadge(currentQuestion.difficulty)}
+                      </div>
+                      <span className="font-retro text-sm text-white/30">
+                        Q{currentQuestionIndex + 1}/{questions.length}
+                      </span>
+                    </div>
+                    <CardTitle className="font-retro text-xl text-white leading-relaxed mt-4">
+                      {currentQuestion.question}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <textarea
+                      ref={answerRef}
+                      value={currentAnswer}
+                      onChange={(e) => setCurrentAnswer(e.target.value)}
+                      placeholder="Type your answer here... Be specific, use examples, and structure your response clearly."
+                      rows={8}
+                      disabled={isLoading || !!currentFeedback}
+                      className="w-full rounded-lg border-2 border-neon-green/20 bg-black/40 px-4 py-3 font-retro text-base text-white placeholder:text-white/20 focus:border-neon-green/50 focus:outline-none focus:ring-2 focus:ring-neon-green/20 transition-all resize-none disabled:opacity-50"
+                    />
 
                 {!currentFeedback && (
                   <Button
@@ -651,6 +677,38 @@ export function MockInterviewView() {
                 </Card>
               </motion.div>
             )}
+              </div>
+
+              {/* Right column: Video feed with body language analysis */}
+              <div className="hidden lg:block">
+                <div className="sticky top-24 space-y-3">
+                  <h3 className="font-pixel text-[9px] uppercase tracking-widest text-neon-pink/70">
+                    Live Body Language Coach
+                  </h3>
+                  <VideoFeed
+                    isActive={phase === "interview" || phase === "evaluating"}
+                    analysisInterval={12000}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile: Video feed below question on small screens */}
+            <div className="lg:hidden">
+              <details className="group">
+                <summary className="flex cursor-pointer items-center gap-2 rounded-lg border border-neon-pink/20 bg-retro-darker/60 px-4 py-3 font-pixel text-[10px] text-neon-pink/70 hover:text-neon-pink transition-colors">
+                  <Camera className="h-4 w-4" />
+                  <span>Body Language Camera</span>
+                  <ChevronRight className="ml-auto h-4 w-4 transition-transform group-open:rotate-90" />
+                </summary>
+                <div className="mt-3">
+                  <VideoFeed
+                    isActive={phase === "interview" || phase === "evaluating"}
+                    analysisInterval={15000}
+                  />
+                </div>
+              </details>
+            </div>
           </motion.div>
         )}
 

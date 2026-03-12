@@ -75,6 +75,54 @@ export async function generateContent(prompt: string): Promise<string> {
 }
 
 /**
+ * Analyze an image using Gemini 2.0 Flash vision capabilities.
+ * Accepts a base64-encoded image (without the data: prefix) and a text prompt.
+ */
+export async function analyzeImage(
+  base64Image: string,
+  mimeType: string,
+  prompt: string,
+): Promise<string> {
+  const client = getGeminiClient();
+  const model = client.getGenerativeModel({
+    model: GENERATIVE_MODEL,
+    generationConfig: { temperature: 0.4, maxOutputTokens: 2048 },
+  });
+
+  const result = await model.generateContent([
+    prompt,
+    {
+      inlineData: {
+        mimeType,
+        data: base64Image,
+      },
+    },
+  ]);
+
+  return result.response.text();
+}
+
+/**
+ * Analyze an image and return structured JSON using Gemini vision.
+ */
+export async function analyzeImageJson<T>(
+  base64Image: string,
+  mimeType: string,
+  prompt: string,
+  validate: (value: unknown) => T,
+): Promise<T> {
+  const raw = await analyzeImage(base64Image, mimeType, prompt);
+  const fenced = raw.match(/```json\s*([\s\S]*?)```/i) || raw.match(/```\s*([\s\S]*?)```/i);
+  const jsonStr = fenced?.[1]?.trim() ?? raw.trim();
+
+  const start = jsonStr.indexOf("{") >= 0 ? jsonStr.indexOf("{") : jsonStr.indexOf("[");
+  const end = jsonStr.lastIndexOf("}") >= 0 ? jsonStr.lastIndexOf("}") : jsonStr.lastIndexOf("]");
+
+  const cleaned = start >= 0 && end > start ? jsonStr.slice(start, end + 1) : jsonStr;
+  return validate(JSON.parse(cleaned));
+}
+
+/**
  * Generate structured JSON content with Gemini.
  */
 export async function generateJsonContent<T>(

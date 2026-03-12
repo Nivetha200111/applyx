@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { embedText, cosineSimilarity, generateJsonContent } from "./gemini";
+import { embedText, cosineSimilarity, generateJsonContent, analyzeImageJson } from "./gemini";
 
 // ── Schemas ──
 
@@ -185,5 +185,63 @@ Provide a comprehensive interview summary. Return JSON:
 }`;
 
   return generateJsonContent(prompt, (v) => interviewSummarySchema.parse(v));
+}
+
+// ── Body Language Analysis via Gemini Vision ──
+
+const bodyLanguageSchema = z.object({
+  overallConfidence: z.number().min(0).max(100),
+  posture: z.object({
+    score: z.number().min(0).max(100),
+    feedback: z.string(),
+  }),
+  eyeContact: z.object({
+    score: z.number().min(0).max(100),
+    feedback: z.string(),
+  }),
+  facialExpression: z.object({
+    score: z.number().min(0).max(100),
+    feedback: z.string(),
+  }),
+  handGestures: z.object({
+    score: z.number().min(0).max(100),
+    feedback: z.string(),
+  }),
+  overallTip: z.string(),
+});
+
+export type BodyLanguageAnalysis = z.infer<typeof bodyLanguageSchema>;
+
+export async function analyzeBodyLanguage(
+  base64Image: string,
+  mimeType: string,
+): Promise<BodyLanguageAnalysis> {
+  const prompt = `You are an expert interview body language coach analyzing a webcam frame of someone during a mock interview.
+
+Analyze the person's body language and provide detailed feedback on:
+
+1. **Posture** — Are they sitting up straight? Shoulders back? Leaning in appropriately?
+2. **Eye Contact** — Are they looking at the camera (simulating eye contact)? Or looking away/down?
+3. **Facial Expression** — Do they appear confident, nervous, friendly, or blank?
+4. **Hand Gestures** — Are their hands visible? Are they using appropriate gestures or fidgeting?
+
+For each category, give a score from 0-100 and a short specific feedback sentence.
+Also provide an overallConfidence score (0-100) and a single concise overallTip they can act on right now.
+
+If you cannot clearly see the person or the image is too dark/blurry, still provide your best assessment and note it in the feedback.
+
+Return ONLY valid JSON matching this schema:
+{
+  "overallConfidence": <0-100>,
+  "posture": { "score": <0-100>, "feedback": "..." },
+  "eyeContact": { "score": <0-100>, "feedback": "..." },
+  "facialExpression": { "score": <0-100>, "feedback": "..." },
+  "handGestures": { "score": <0-100>, "feedback": "..." },
+  "overallTip": "..."
+}`;
+
+  return analyzeImageJson(base64Image, mimeType, prompt, (v) =>
+    bodyLanguageSchema.parse(v),
+  );
 }
 
