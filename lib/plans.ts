@@ -52,7 +52,7 @@ export const planCatalog: PlanDefinition[] = [
       "3 master resumes",
       "Auto-set status & follow-up on parse",
       "Follow-up reminders & snooze",
-      "Fast tailoring with Grok 3 Mini",
+      "Fast, efficient AI tailoring",
       "Analytics, templates & interview prep",
       "PDF and DOCX export",
     ],
@@ -83,7 +83,7 @@ export const planCatalog: PlanDefinition[] = [
       "Unlimited master resumes",
       "Full automation: parse → tailor → status → follow-up",
       "Auto-tailor primary resume on JD paste",
-      "Grok 4 Fast primary for higher-quality rewrites",
+      "Deep rewrite pass for higher-quality results",
       "Analytics, templates & interview prep",
     ],
     ctaLabel: "Go Premium",
@@ -106,10 +106,10 @@ export const pricingTiers: PricingTier[] = planCatalog.map((plan) => ({
       : `${plan.monthlyTailors} tailored resumes / month`,
   modelAccess:
     plan.id === "premium"
-      ? "Grok 4 Fast primary for deeper rewrites on tougher JDs, with Grok 3 Mini as fallback."
+      ? "Deep rewrite pass for stronger results on competitive roles, with fast fallback."
       : plan.id === "basic"
-        ? "Grok 3 Mini primary for faster, efficient tailoring, with Grok 4 Fast as fallback."
-        : "Demo access with Grok 3 Mini primary and Grok 4 Fast fallback.",
+        ? "Fast, efficient tailoring optimized for high-volume application sprints."
+        : "Demo access with standard AI tailoring.",
   features: plan.features,
   ctaLabel: plan.ctaLabel,
   href: plan.href,

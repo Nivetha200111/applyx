@@ -53,9 +53,9 @@ export default async function SettingsPage() {
         </CardHeader>
         <CardContent className="text-sm leading-7 text-muted-foreground">
           {user.plan === "premium"
-            ? "Fully automated: paste a JD and ApplyX parses it, tailors your resume, sets status to applied, and schedules a follow-up — all in one step. Powered by Grok 4 Fast with Grok 3 Mini fallback."
+            ? "Fully automated: paste a JD and ApplyX parses it, tailors your resume, sets status to applied, and schedules a follow-up — all in one step. Deep rewrite pass for competitive roles."
             : user.plan === "basic"
-              ? "Semi-automated: paste a JD and ApplyX parses it, sets status to applying, and schedules a 7-day follow-up. Tailor your resume manually with fast Grok 3 Mini."
+              ? "Semi-automated: paste a JD and ApplyX parses it, sets status to applying, and schedules a 7-day follow-up. Fast, efficient AI tailoring."
               : "Manual mode: parse JDs with 5 free auto-fills and try 2 demo tailors. Upgrade for automation, follow-up reminders, and higher limits."}
         </CardContent>
       </Card>

@@ -1,4 +1,4 @@
-import { ArrowRight, CheckCircle2, Cpu, Zap } from "lucide-react";
+import { ArrowRight, CheckCircle2, Zap } from "lucide-react";
 import Link from "next/link";
 import { pricingTiers } from "@/lib/plans";
 import { PricingCard } from "@/components/pricing-card";
@@ -25,8 +25,8 @@ const faqs = [
     a: "Basic auto-sets your status to applying and schedules a 7-day follow-up when you parse a JD. Premium goes further — it also auto-tailors your primary resume and links it to the application, all in one paste.",
   },
   {
-    q: "Which AI models power the tailoring?",
-    a: "Basic uses Grok 3 Mini for fast, high-volume tailoring. Premium routes through Grok 4 Fast first for stronger rewrites on competitive roles, falling back to Grok 3 Mini.",
+    q: "How does AI tailoring differ between plans?",
+    a: "Basic optimizes for speed and volume — great for application sprints. Premium uses a deeper rewrite pass tuned for competitive roles where nuance and bullet ordering matter most.",
   },
   {
     q: "Are taxes included in the listed price?",
@@ -70,14 +70,14 @@ export default function PricingPage() {
         ))}
       </section>
 
-      {/* Model comparison */}
+      {/* Tailoring comparison */}
       <section className="space-y-8">
         <AnimatedPanel hover={false}>
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10">
-              <Cpu className="h-5 w-5 text-primary" />
+              <Zap className="h-5 w-5 text-primary" />
             </div>
-            <h2 className="text-2xl font-semibold">AI models by plan</h2>
+            <h2 className="text-2xl font-semibold">Tailoring quality by plan</h2>
           </div>
         </AnimatedPanel>
 
@@ -86,20 +86,20 @@ export default function PricingPage() {
             <Card className="h-full shimmer">
               <CardHeader>
                 <Badge className="w-fit">Basic tier</Badge>
-                <CardTitle>Grok 3 Mini + Grok 4 Fast</CardTitle>
+                <CardTitle>Fast &amp; efficient</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm leading-7 text-muted-foreground">
                 <div className="flex gap-3">
                   <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                  <span>Grok 3 Mini handles most tailors first to keep cost and turnaround low</span>
+                  <span>Optimized for speed — tailored resumes generated in seconds</span>
                 </div>
                 <div className="flex gap-3">
                   <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                  <span>Best for high-volume application sprints where speed matters more than nuance</span>
+                  <span>Best for high-volume application sprints where turnaround matters most</span>
                 </div>
                 <div className="flex gap-3">
                   <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                  <span>Grok 4 Fast stays available as fallback if the primary pass fails</span>
+                  <span>Smart fallback ensures every tailor completes reliably</span>
                 </div>
               </CardContent>
             </Card>
@@ -109,16 +109,16 @@ export default function PricingPage() {
             <Card className="h-full border-primary/40 shimmer">
               <CardHeader>
                 <Badge variant="success" className="w-fit">Premium tier</Badge>
-                <CardTitle className="text-gradient">Grok 4 Fast + Grok 3 Mini</CardTitle>
+                <CardTitle className="text-gradient">Deep &amp; precise</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm leading-7 text-muted-foreground">
                 <div className="flex gap-3">
                   <Zap className="mt-1 h-4 w-4 shrink-0 text-amber-500" />
-                  <span>Grok 4 Fast handles the first pass for denser, more nuanced job descriptions</span>
+                  <span>Deeper rewrite pass tuned for dense, nuanced job descriptions</span>
                 </div>
                 <div className="flex gap-3">
                   <Zap className="mt-1 h-4 w-4 shrink-0 text-amber-500" />
-                  <span>Better for stronger bullet ordering, cleaner emphasis, and tougher fit decisions</span>
+                  <span>Stronger bullet ordering, cleaner emphasis, and smarter fit decisions</span>
                 </div>
                 <div className="flex gap-3">
                   <Zap className="mt-1 h-4 w-4 shrink-0 text-amber-500" />
