@@ -34,10 +34,11 @@ export function isGeminiConfigured() {
   return Boolean(getApiKey());
 }
 
-// ── Gemini Embedding 2 ──
-// https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-embedding-2/
-const EMBEDDING_MODEL = "gemini-embedding-exp-03-07";
-const GENERATIVE_MODEL = "gemini-2.0-flash";
+// ── Models ──
+// Embedding: gemini-embedding-001 (stable, 3072 dims)
+// Generative: gemini-2.5-flash (latest stable flash model)
+const EMBEDDING_MODEL = "gemini-embedding-001";
+const GENERATIVE_MODEL = "gemini-2.5-flash";
 
 /**
  * Generate an embedding vector using Gemini Embedding 2.
