@@ -808,12 +808,10 @@
   100% { opacity: 1; transform: scale(1); filter: brightness(1); }
 }
 
-/* CRT power-on entrance for page content */
+/* CRT power-on entrance for page content — lightweight fade to avoid layout issues */
 @keyframes crt-power-on {
-  0% { opacity: 0; transform: scaleY(0.01) scaleX(0.8); filter: brightness(2.5) saturate(0); }
-  30% { opacity: 0.6; transform: scaleY(0.01) scaleX(1); filter: brightness(2) saturate(0.5); }
-  50% { opacity: 0.8; transform: scaleY(1) scaleX(1); filter: brightness(1.4) saturate(0.8); }
-  100% { opacity: 1; transform: scale(1); filter: brightness(1) saturate(1); }
+  0% { opacity: 0; filter: brightness(1.3) saturate(0.5); }
+  100% { opacity: 1; filter: brightness(1) saturate(1); }
 }
 
 /* Generic retro fade/slide for stagger items */
