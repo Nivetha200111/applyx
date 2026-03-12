@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutGroup, motion } from "framer-motion";
@@ -80,18 +81,47 @@ const pillSpring = {
   mass: 0.8,
 };
 
-interface DashboardSidebarProps {
-  userName?: string | null;
+// ── Client-side user data fetching ──────────────────────────
+interface SidebarUserData {
+  userName: string | null;
   planLabel: string;
   usageLabel: string;
 }
 
-export function DashboardSidebar({
-  userName,
-  planLabel,
-  usageLabel,
-}: DashboardSidebarProps) {
+function useSidebarUser() {
+  const [data, setData] = useState<SidebarUserData | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch("/api/me")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (!cancelled && json) {
+          setData(json);
+        }
+      })
+      .catch(() => {
+        // Silently fail — middleware guarantees we have a cookie,
+        // if the session is invalid the page's requireUser will redirect.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return data;
+}
+
+// ── Sidebar component ───────────────────────────────────────
+export function DashboardSidebar() {
   const pathname = usePathname();
+  const userData = useSidebarUser();
+
+  const userName = userData?.userName ?? null;
+  const planLabel = userData?.planLabel ?? null;
+  const usageLabel = userData?.usageLabel ?? null;
 
   return (
     <>
@@ -99,17 +129,28 @@ export function DashboardSidebar({
         <Link className="inline-flex items-center gap-3" href="/">
           <ApplyxLogo />
         </Link>
-        {userName ? (
-          <div className="mt-6 rounded-[24px] border border-border/70 bg-background/65 p-4">
-            <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-              Signed in as
+
+        {/* User info — shows skeleton pulse while loading */}
+        <div className="mt-6 rounded-[24px] border border-border/70 bg-background/65 p-4">
+          {userName ? (
+            <>
+              <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                Signed in as
+              </div>
+              <div className="mt-2 font-semibold">{userName}</div>
+            </>
+          ) : (
+            <div className="space-y-2 animate-pulse">
+              <div className="h-3 w-16 rounded bg-muted" />
+              <div className="h-4 w-28 rounded bg-muted" />
             </div>
-            <div className="mt-2 font-semibold">{userName}</div>
-          </div>
-        ) : null}
+          )}
+        </div>
+
         <div className="mt-6">
           <ThemeToggle />
         </div>
+
         <LayoutGroup id="sidebar-nav">
           <nav className="mt-10 space-y-1">
             {navItems.map((item) => {
@@ -142,16 +183,30 @@ export function DashboardSidebar({
             })}
           </nav>
         </LayoutGroup>
+
+        {/* Plan info — shows skeleton while loading */}
         <div className="mt-10 rounded-[24px] border border-primary/20 bg-primary/10 p-4">
-          <div className="text-sm font-semibold text-primary">{planLabel}</div>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            {usageLabel}
-          </p>
+          {planLabel ? (
+            <>
+              <div className="text-sm font-semibold text-primary">{planLabel}</div>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                {usageLabel}
+              </p>
+            </>
+          ) : (
+            <div className="space-y-2 animate-pulse">
+              <div className="h-4 w-24 rounded bg-primary/20" />
+              <div className="h-3 w-full rounded bg-primary/10" />
+              <div className="h-3 w-3/4 rounded bg-primary/10" />
+            </div>
+          )}
         </div>
+
         <div className="mt-4">
           <LogoutButton />
         </div>
       </aside>
+
       {/* Mobile nav */}
       <div className="sticky top-0 z-30 border-b border-border/70 bg-background/95 backdrop-blur lg:hidden">
         <div className="flex items-center gap-3 px-4 py-2">
@@ -159,7 +214,9 @@ export function DashboardSidebar({
             <ApplyxLogo markOnly size="sm" />
             <span className="text-sm font-semibold">ApplyX</span>
           </Link>
-          <span className="ml-auto text-xs font-medium text-primary">{planLabel}</span>
+          <span className="ml-auto text-xs font-medium text-primary">
+            {planLabel ? planLabel : <span className="inline-block h-3 w-16 animate-pulse rounded bg-muted" />}
+          </span>
           <ThemeToggle />
         </div>
         <LayoutGroup id="mobile-nav">
