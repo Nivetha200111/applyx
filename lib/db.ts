@@ -32,9 +32,9 @@ function getPool() {
     throw new Error("DATABASE_URL is not configured.");
   }
 
-  if (process.env.NODE_ENV !== "production") {
-    globalForDb.__applyxPool = pool;
-  }
+  // Always cache — avoids creating a new Pool (and new TCP/WebSocket
+  // connection to Neon) on every single request in production.
+  globalForDb.__applyxPool = pool;
 
   return pool;
 }

@@ -1,4 +1,5 @@
 import { createHash, randomBytes } from "crypto";
+import { cache } from "react";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -185,7 +186,10 @@ export async function signOutUser() {
   cookies().delete(SESSION_COOKIE_NAME);
 }
 
-export async function getCurrentUser() {
+// Wrapped with React cache() so that multiple calls to getCurrentUser()
+// within the same server-component render pass (e.g. layout + page) only
+// hit the database ONCE instead of making duplicate round-trips.
+export const getCurrentUser = cache(async function getCurrentUser() {
   const token = cookies().get(SESSION_COOKIE_NAME)?.value;
 
   if (!token || !isDatabaseConfigured()) {
@@ -236,7 +240,7 @@ export async function getCurrentUser() {
 
     throw error;
   }
-}
+});
 
 export function hasSessionCookie() {
   return cookies().has(SESSION_COOKIE_NAME);
